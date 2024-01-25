@@ -5,12 +5,11 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Shooter extends SubsystemBase {
+public class KitBotShooter extends SubsystemBase {
     CANSparkMax feeder;
     CANSparkMax shooter;
 
-    public Shooter() {
-
+    public KitBotShooter() {
         feeder = new CANSparkMax(42, MotorType.kBrushless);
         feeder.setSmartCurrentLimit(35);
         shooter = new CANSparkMax(43, MotorType.kBrushless);

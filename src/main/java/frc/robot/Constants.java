@@ -24,6 +24,31 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final class EndEffectorConstants {
+    public static final int kIntakeMotorID = 0;
+    public static final int kFlywheelMotorTopID = 0;
+    public static final int kFlywheelMotorBottomID = 0;
+
+    public static final double kIntakeSpeed = 0.2;
+    public static final double kFlywheelMotorTopSpeed = 0.375;
+    public static final double kFlywheelMotorBottomSpeed = -0.375;
+  }
+
+  public static final class PivotConstants {
+    public static final int kPivotMotorLeftID = 0;
+    public static final int kPivotMotorRightID = 0;
+
+    public static final double kPivotP = 0.2;
+    public static final double kPivotI = 0;
+    public static final double kPivotD = 0;
+    public static final double kPivotIz = 0;
+    public static final double kPivotFF = 0;
+    public static final double kPivotMinOutput = -0.1;
+    public static final double kPivotMaxOutput = 0.1;
+
+    public static final double kPivotStartPosition = 0;
+  }
+
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds

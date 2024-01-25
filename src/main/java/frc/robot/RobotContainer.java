@@ -20,7 +20,8 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.KitBotShooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -45,7 +46,8 @@ public class RobotContainer {
   CommandPS4Controller m_driverController = new CommandPS4Controller(OIConstants.kDriverControllerPort);
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
 
-  Shooter shooter;
+  // KitBotShooter kbShooter;
+  EndEffector endEffector = new EndEffector();
 
   final Trigger driverL1 = m_driverController.L1();
   final Trigger driverR1 = m_driverController.R1();
@@ -56,7 +58,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Configure the button bindings
-    shooter = new Shooter();
+    // kbShooter = new KitBotShooter();
 
     configureButtonBindings();
 
@@ -85,30 +87,7 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    driverL1.onTrue(new InstantCommand(() -> {
-      shooter.setShooter(-0.375);
-      shooter.setFeeder(0.375);
-    }, shooter)).onFalse(new InstantCommand(() -> {
-        shooter.setShooter(0);
-        shooter.setFeeder(0);
-    }, shooter));
-
-    driverR1.onTrue(new InstantCommand(() -> {
-        shooter.setShooter(0.375);
-        shooter.setFeeder(-0.375);
-    }, shooter)).onFalse(new InstantCommand(() -> {
-        shooter.setShooter(0);
-        shooter.setFeeder(0);
-    }, shooter));
-
-    driverCross.onTrue(new InstantCommand(() -> {
-      shooter.setFeeder(-0.6);
-      shooter.setShooter(-0.6);
-    }, shooter)).onFalse(new InstantCommand(() -> {
-        shooter.setFeeder(0);
-
-        shooter.setShooter(0);
-    }, shooter));
+    
   }
 
   /**
