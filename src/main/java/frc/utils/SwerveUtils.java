@@ -86,4 +86,18 @@ public class SwerveUtils {
             return _angle;
         }
     }
+
+    public static double wrapAngleOptimize(double angle) {
+        double twoPi = 2 * Math.PI;
+
+        // Use modulo operation for efficiency and clarity:
+        angle = angle % twoPi;
+
+        // Ensure consistency around 0:
+        if (angle < 0) {
+            angle += twoPi;
+        }
+
+        return angle;
+    }
 }
