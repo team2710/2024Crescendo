@@ -1,4 +1,5 @@
 package frc.utils;
+import edu.wpi.first.math.MathUtil;
 
 public class SwerveUtils {
 
@@ -88,16 +89,7 @@ public class SwerveUtils {
     }
 
     public static double wrapAngleOptimize(double angle) {
-        double twoPi = 2 * Math.PI;
-
-        // Use modulo operation for efficiency and clarity:
-        angle = angle % twoPi;
-
-        // Ensure consistency around 0:
-        if (angle < 0) {
-            angle += twoPi;
-        }
-
-        return angle;
+       return MathUtil.inputModulus(angle,0, Math.PI * 2);
+   
     }
 }
