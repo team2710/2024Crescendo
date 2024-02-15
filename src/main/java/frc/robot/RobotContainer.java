@@ -46,12 +46,17 @@ public class RobotContainer {
   CommandPS4Controller m_driverController = new CommandPS4Controller(OIConstants.kDriverControllerPort);
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
 
-  // KitBotShooter kbShooter;
+  // KitBotShooter kbShooter = new KitBotShooter();
   EndEffector endEffector = new EndEffector();
 
   final Trigger driverL1 = m_driverController.L1();
   final Trigger driverR1 = m_driverController.R1();
   final Trigger driverCross = m_driverController.cross();
+
+  final Trigger auxL1 = m_auxController.L1();
+  final Trigger auxR1 = m_auxController.R1();
+  final Trigger auxCross = m_auxController.cross();
+  final Trigger auxTriangle = m_auxController.triangle();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -87,7 +92,30 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    
+    auxR1.onTrue(endEffector.toggleFlywheelCommand());
+    auxL1.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
+    auxTriangle.onTrue(endEffector.toggleIntakeCommand());
+    auxCross.onTrue(endEffector.toggleOuttakeCommand());
+
+    // auxR1.onTrue(new InstantCommand(() -> {
+    //   kbShooter.setShooter(1);
+    // })).onFalse(new InstantCommand(() -> {
+    //   kbShooter.setShooter(0);
+    // }));
+
+    // auxL1.onTrue(new InstantCommand(() -> {
+    //   kbShooter.setShooter(-1);
+    //   kbShooter.setFeeder(-1);
+    // })).onFalse(new InstantCommand(() -> {
+    //   kbShooter.setShooter(0);
+    //   kbShooter.setFeeder(0);
+    // }));
+
+    // auxCross.onTrue(new InstantCommand(() -> {
+    //   kbShooter.setFeeder(1);
+    // })).onFalse(new InstantCommand(() -> {
+    //   kbShooter.setFeeder(0);
+    // }));
   }
 
   /**

@@ -25,13 +25,20 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final class EndEffectorConstants {
-    public static final int kIntakeMotorID = 0;
-    public static final int kFlywheelMotorTopID = 0;
-    public static final int kFlywheelMotorBottomID = 0;
+    public static final int kIntakeMotorID = 44;
+    public static final int kFlywheelMotorTopID = 42;
+    public static final int kFlywheelMotorBottomID = 43;
 
-    public static final double kIntakeSpeed = 0.2;
-    public static final double kFlywheelMotorTopSpeed = 0.375;
-    public static final double kFlywheelMotorBottomSpeed = -0.375;
+    public static final double kIntakeSpeed = 0.25;
+    public static final double kFlywheelMotorSpeed = 3000;
+    
+    public static final double kFlywheelP = 0.002;
+    public static final double kFlywheelI = 0;
+    public static final double kFlywheelD = 0.0001;
+    public static final double kFlywheelIz = 0;
+    public static final double kFlywheelFF = 1f/6784f;
+    public static final double kFlywheelMinOutput = -1;
+    public static final double kFlywheelMaxOutput = 1;
   }
 
   public static final class PivotConstants {

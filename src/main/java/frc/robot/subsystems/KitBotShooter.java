@@ -10,10 +10,10 @@ public class KitBotShooter extends SubsystemBase {
     CANSparkMax shooter;
 
     public KitBotShooter() {
-        feeder = new CANSparkMax(42, MotorType.kBrushless);
-        feeder.setSmartCurrentLimit(35);
-        shooter = new CANSparkMax(43, MotorType.kBrushless);
-        shooter.setSmartCurrentLimit(35);
+        feeder = new CANSparkMax(40, MotorType.kBrushless);
+        feeder.setSmartCurrentLimit(40);
+        shooter = new CANSparkMax(41, MotorType.kBrushless);
+        shooter.setSmartCurrentLimit(40);
     }
 
     public void setFeeder(double speed) {
