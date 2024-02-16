@@ -24,6 +24,10 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final class VisionConstants {
+    public static final double kLimelightLatency = 0;
+  }
+
   public static final class EndEffectorConstants {
     public static final int kIntakeMotorID = 44;
     public static final int kFlywheelMotorTopID = 42;
