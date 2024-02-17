@@ -20,6 +20,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
@@ -75,8 +76,11 @@ public class DriveSubsystem extends SubsystemBase {
       },
       vision.getBotPose2d());
 
+  private Field2d m_field = new Field2d();
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+    SmartDashboard.putData("Field", m_field);
   }
 
   @Override
@@ -94,8 +98,10 @@ public class DriveSubsystem extends SubsystemBase {
         });
 
     if (vision.hasValidTargets()) {
-      m_poseEstimator.addVisionMeasurement(vision.getBotPose2d(), Timer.getFPGATimestamp() - VisionConstants.kLimelightLatency);
+      m_poseEstimator.addVisionMeasurement(vision.getBotPose2d(), Timer.getFPGATimestamp() - vision.getLatency());
     }
+
+    m_field.setRobotPose(getPose());
   }
 
   /**
@@ -150,7 +156,6 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
-    SmartDashboard.putNumber("Angle", getHeading());
     double xSpeedCommanded;
     double ySpeedCommanded;
 

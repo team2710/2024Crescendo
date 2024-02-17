@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 
@@ -27,6 +28,27 @@ public class Vision extends SubsystemBase {
 
     public Pose3d getPosePose3d() {
         return LimelightHelpers.getBotPose3d(limelightName);
+    }
+
+    public double getLatency() {
+        double tl = LimelightHelpers.getLatency_Pipeline(limelightName);
+        double cl = LimelightHelpers.getLatency_Capture(limelightName);
+        return (tl/1000.0) + (cl/1000.0);
+    }
+
+    @Override
+    public void periodic() {
+        boolean validTargets = hasValidTargets();
+
+        SmartDashboard.putBoolean("Has Vision Targets", validTargets);
+        if (validTargets) {
+            SmartDashboard.putNumber("Fiducial ID", getTagID());
+
+            Pose2d botPose2d = getBotPose2d();
+            SmartDashboard.putNumber("Vision Botpose X", botPose2d.getX());
+            SmartDashboard.putNumber("Vision Botpose Y", botPose2d.getY());
+            SmartDashboard.putNumber("Vision Rotation Degrees", botPose2d.getRotation().getDegrees());
+        }
     }
 
 }
