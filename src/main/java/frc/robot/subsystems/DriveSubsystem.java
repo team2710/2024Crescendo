@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -132,6 +134,9 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Gyro", getHeading());
+
+    // Advantage Kit Swerve Logging
+    Logger.recordOutput("ModuleStates", getModuleStates());
 
     // Update the odometry in the periodic block
     m_poseEstimator.update(
