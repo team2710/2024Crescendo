@@ -43,11 +43,6 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putBoolean("Has Vision Targets", validTargets);
         if (validTargets) {
             SmartDashboard.putNumber("Fiducial ID", getTagID());
-
-            Pose2d botPose2d = getBotPose2d();
-            SmartDashboard.putNumber("Vision Botpose X", botPose2d.getX());
-            SmartDashboard.putNumber("Vision Botpose Y", botPose2d.getY());
-            SmartDashboard.putNumber("Vision Rotation Degrees", botPose2d.getRotation().getDegrees());
         }
     }
 
