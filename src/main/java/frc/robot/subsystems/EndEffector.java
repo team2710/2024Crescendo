@@ -178,6 +178,43 @@ public class EndEffector extends SubsystemBase {
 
   }
 
+  public void IntakeSetter(IntakeState m_IntakeState) {
+    Debouncer delay = new Debouncer(0.5);
+    
+    switch (m_intakeState) {
+      case OFF:
+        stopIntake();
+        break;
+
+      case On: 
+        if(isNote) {
+          stopIntake();
+          m_intakeState = IntakeState.OFF;
+        }
+        else {
+          intake();
+          isNote = currentDetectIntake();
+        }
+        break;
+        
+      case Shoot:
+      spinupFlywheel();
+      if(MathUtil.isNear(setpoint, encoderTop.getVelocity() + encoderBottom.getVelocity() * 0.5, 50.0)) {
+        intake();
+        isNote = false;
+        if(delay.calculate(!isNote)) {
+          m_intakeState = IntakeState.OFF;
+        }
+      }
+
+      break;
+    default:
+    m_intakeState = IntakeState.OFF;
+    break;
+    }
+
+  }
+
   public void feed() {
     intakeMotor.set(-1);
   }
