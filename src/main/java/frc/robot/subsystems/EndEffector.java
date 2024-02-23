@@ -135,7 +135,9 @@ public class EndEffector extends SubsystemBase {
         }
         if(controller.getR1Button()) {
           m_intakeState = IntakeState.Shoot;
-        } 
+        } else {
+          stopFlywheel();
+        }
         break;
 
       case On: 
