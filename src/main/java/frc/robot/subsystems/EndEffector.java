@@ -15,6 +15,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.EndEffectorConstants;
 import com.revrobotics.SparkPIDController;
 
+/**
+ * The EndEffector class represents the subsystem responsible for controlling the end effector of the robot.
+ * It includes functionality for controlling the intake, flywheel, and feeding mechanism.
+ */
 public class EndEffector extends SubsystemBase {
 
   private CANSparkMax intakeMotor = new CANSparkMax(EndEffectorConstants.kIntakeMotorID, MotorType.kBrushless);
@@ -178,12 +182,18 @@ public class EndEffector extends SubsystemBase {
 
   }
 
+  /**
+   * Sets the intake state of the end effector.
+   * 
+   * @param m_IntakeState the desired intake state
+   */
   public void IntakeSetter(IntakeState m_IntakeState) {
     Debouncer delay = new Debouncer(0.5);
     
     switch (m_intakeState) {
       case OFF:
         stopIntake();
+        stopFlywheel();
         break;
 
       case On: 

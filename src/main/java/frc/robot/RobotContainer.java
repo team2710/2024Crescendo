@@ -26,6 +26,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.EndEffector.IntakeState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -47,6 +48,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  EndEffector endEffector = new EndEffector();
 
   // The driver's controller
   CommandPS4Controller m_driverControllerCommand = new CommandPS4Controller(OIConstants.kDriverControllerPort);
@@ -54,7 +56,10 @@ public class RobotContainer {
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
 
   // KitBotShooter kbShooter = new KitBotShooter();
-  EndEffector endEffector = new EndEffector();
+  Command shoot = new RunCommand(() -> endEffector.IntakeSetter(IntakeState.Shoot), endEffector);
+  Command stopIntake = new RunCommand(() -> endEffector.IntakeSetter(IntakeState.OFF), endEffector);
+  Command intakeOn = new RunCommand(() -> endEffector.IntakeSetter(IntakeState.On), endEffector);
+
 
   final Trigger driverL1 = m_driverControllerCommand.L1();
   final Trigger driverR1 = m_driverControllerCommand.R1();
@@ -108,11 +113,25 @@ public class RobotContainer {
    * passing it to a
    * {@link JoystickButton}.
    */
+  /**
+   * Configures the button bindings for the robot.
+   * Binds various commands to different buttons on the controller.
+   */
+  /**
+   * Configures the button bindings for the robot.
+   * Associates each button with its corresponding command or action.
+   */
   private void configureButtonBindings() {
     auxR1.onTrue(endEffector.toggleFlywheelCommand());
     auxL1.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
     auxTriangle.onTrue(endEffector.toggleIntakeCommand());
     auxCross.onTrue(endEffector.toggleOuttakeCommand());
+
+    //trigger and state machine (prob better implemenetation)
+    //uncomment to test
+    // auxR1.onTrue(shoot);
+    // auxTriangle.onTrue(intakeOn).onFalse(stopIntake);
+
   }
 
   /**
