@@ -127,7 +127,13 @@ public class EndEffector extends SubsystemBase {
     return false;
   }
 
+  /**
+   * Sets the intake state based on the controller input.
+   * 
+   * @param controller the PS4 controller object used for input
+   */
   public void IntakeSetter(PS4Controller controller) {
+    Debouncer delay = new Debouncer(0.5);
     
     switch (m_intakeState) {
       case OFF:
@@ -135,7 +141,7 @@ public class EndEffector extends SubsystemBase {
         if(controller.getTriangleButton()) {
           m_intakeState = IntakeState.On;
         }
-        if(controller.getR1Button()) {
+        else if(controller.getR1Button()) {
           m_intakeState = IntakeState.Shoot;
         } else {
           stopFlywheel();
@@ -158,7 +164,11 @@ public class EndEffector extends SubsystemBase {
       if(MathUtil.isNear(setpoint, encoderTop.getVelocity() + encoderBottom.getVelocity() * 0.5, 50.0)) {
         intake();
         isNote = false;
+        if(delay.calculate(!isNote)) {
+          m_intakeState = IntakeState.OFF;
+        }
       }
+
       break;
     default:
     // should never be reached, as liftState should never be null
