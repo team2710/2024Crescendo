@@ -1,4 +1,5 @@
 package frc.utils;
+import edu.wpi.first.math.MathUtil;
 
 public class SwerveUtils {
 
@@ -71,19 +72,7 @@ public class SwerveUtils {
      * @return An angle (in radians) from 0 and 2*PI (exclusive).
      */
     public static double WrapAngle(double _angle) {
-        double twoPi = 2*Math.PI;
+        return MathUtil.inputModulus( _angle,0, Math.PI * 2);
 
-        if (_angle == twoPi) { // Handle this case separately to avoid floating point errors with the floor after the division in the case below
-            return 0.0;
-        }
-        else if (_angle > twoPi) {
-            return _angle - twoPi*Math.floor(_angle / twoPi);
-        }
-        else if (_angle < 0.0) {
-            return _angle + twoPi*(Math.floor((-_angle) / twoPi)+1);
-        }
-        else {
-            return _angle;
-        }
     }
 }
