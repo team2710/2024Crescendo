@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -25,7 +26,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.EndEffector;
-import frc.robot.subsystems.KitBotShooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -49,15 +49,16 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   // The driver's controller
-  CommandPS4Controller m_driverController = new CommandPS4Controller(OIConstants.kDriverControllerPort);
+  CommandPS4Controller m_driverControllerCommand = new CommandPS4Controller(OIConstants.kDriverControllerPort);
+  PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
 
   // KitBotShooter kbShooter = new KitBotShooter();
   EndEffector endEffector = new EndEffector();
 
-  final Trigger driverL1 = m_driverController.L1();
-  final Trigger driverR1 = m_driverController.R1();
-  final Trigger driverCross = m_driverController.cross();
+  final Trigger driverL1 = m_driverControllerCommand.L1();
+  final Trigger driverR1 = m_driverControllerCommand.R1();
+  final Trigger driverCross = m_driverControllerCommand.cross();
 
   final Trigger auxL1 = m_auxController.L1();
   final Trigger auxR1 = m_auxController.R1();
@@ -82,17 +83,18 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser("3 Note");
     SmartDashboard.putData(autoChooser);
+    // If you wanna test FSM uncomment
+    //endEffector.setDefaultCommand(new RunCommand(() -> endEffector.IntakeSetter(m_driverController), endEffector));
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
-            () -> 
-            m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+            () -> m_robotDrive.drive(
+                -MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
                 true, true),
             m_robotDrive));
   }

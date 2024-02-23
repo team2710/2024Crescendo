@@ -32,7 +32,6 @@ public class Pivot extends SubsystemBase {
     @Override
     public void periodic() {
         // get pid values
-
         pidController.setReference(position, ControlType.kPosition);
     }
 

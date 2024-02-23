@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -31,13 +32,13 @@ public class EndEffector extends SubsystemBase {
   private boolean isOuttaking = false;
   private boolean isNote = false;
 
-  public enum intakeState {
+  public enum IntakeState {
     OFF,
     On,
-    Outake
-  }
+    Shoot,
+  };
 
-
+  public static IntakeState m_intakeState = IntakeState.OFF;
 
   public EndEffector() {
     pidController = flywheelMotorTop.getPIDController();
@@ -100,67 +101,6 @@ public class EndEffector extends SubsystemBase {
     intakeMotor.set(-EndEffectorConstants.kIntakeSpeed);
   }
 
-  // public enum intakeState {
-  // public enum IntakeState {
-  // // Start state, no objects in the intake
-  // OFF {
-  // stopIntake();
-  // isIntaking = false;
-
-  // return isIntaking;
-  // }
-  // ,
-
-  // // Intake is open, waiting to intake object
-  // INTAKE_OPEN {
-  // public IntakeState nextState(SensorData sensorData) {
-  // // Transition to INTAKE_RUNNING if object detected and within intake range
-  // if (sensorData.isObjectDetected() && sensorData.isObjectInRange()) {
-  // return INTAKE_RUNNING;
-  // }
-  // // Stay in INTAKE_OPEN if object detected but not in range
-  // // Transition to OFF if no object detected
-  // return sensorData.isObjectDetected() ? this : OFF;
-  // }
-  // },
-
-  // // Intake is running, object is being pulled in
-  // INTAKE_RUNNING {
-  // public IntakeState nextState(SensorData sensorData) {
-  // // Transition to INTAKE_HOLD if object is fully inside
-  // if (!sensorData.isObjectDetected()) {
-  // return INTAKE_HOLD;
-  // }
-  // // Stay in INTAKE_RUNNING otherwise
-  // return this;
-  // }
-  // },
-
-  // // Object is fully inside, intake is holding it
-  // INTAKE_HOLD {
-  // public IntakeState nextState(SensorData sensorData) {
-  // // Transition to OUTTAKE if commanded to eject
-  // if (isOuttakeCommanded()) {
-  // return OUTTAKE;
-  // }
-  // // Stay in INTAKE_HOLD otherwise
-  // return this;
-  // }
-  // },
-
-  // // Ejecting object, intake is open
-  // OUTTAKE {
-  // public IntakeState nextState(SensorData sensorData) {
-  // // Transition to INTAKE_OPEN if object no longer detected
-  // if (!sensorData.isObjectDetected()) {
-  // return INTAKE_OPEN;
-  // }
-  // // Stay in OUTTAKE otherwise
-  // return this;
-  // }
-  // }
-  // }
-
   public void currentDetectionIntake() {
     double INTAKE_STALL_DETECTION = 15;
     Debouncer debounce = new Debouncer(1);
@@ -176,14 +116,49 @@ public class EndEffector extends SubsystemBase {
     }
   }
 
-  public void currentDetectIntake() {
+  public boolean currentDetectIntake() {
     double INTAKE_STALL_DETECTION = 15;
     Debouncer debounce = new Debouncer(1);
     if (debounce.calculate(intakeMotor.getOutputCurrent() > INTAKE_STALL_DETECTION)) {
       return true;
     }
-
+    return false;
   }
+
+  public void IntakeSetter(PS4Controller controller) {
+    
+    switch (m_intakeState) {
+      case OFF:
+        stopIntake();
+        if(controller.getTriangleButton()) {
+          m_intakeState = IntakeState.On;
+        }
+        if(controller.getR1Button()) {
+          m_intakeState = IntakeState.Shoot;
+        } 
+        break;
+
+      case On: 
+        if(isNote) {
+          stopIntake();
+          m_intakeState = IntakeState.OFF;
+        }
+        else {
+          intake();
+          isNote = currentDetectIntake();
+        }
+        break;
+        
+      case Shoot: 
+        spinupFlywheel();
+        isNote = false;
+        break;
+
+    default:
+    // should never be reached, as liftState should never be null
+    m_intakeState = IntakeState.OFF;
+    break;
+    }
 
   }
 
