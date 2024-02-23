@@ -5,6 +5,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,6 +32,7 @@ public class EndEffector extends SubsystemBase {
   private boolean isIntaking = false;
   private boolean isOuttaking = false;
   private boolean isNote = false;
+  private double setpoint = 2000;
 
   public enum IntakeState {
     OFF,
@@ -151,11 +153,13 @@ public class EndEffector extends SubsystemBase {
         }
         break;
         
-      case Shoot: 
-        spinupFlywheel();
+      case Shoot:
+      spinupFlywheel();
+      if(MathUtil.isNear(setpoint, encoderTop.getVelocity() + encoderBottom.getVelocity() * 0.5, 50.0)) {
+        intake();
         isNote = false;
-        break;
-
+      }
+      break;
     default:
     // should never be reached, as liftState should never be null
     m_intakeState = IntakeState.OFF;
@@ -204,7 +208,7 @@ public class EndEffector extends SubsystemBase {
   public void spinupFlywheel() {
     isFlywheelRunning = true;
     // pidController.setReference(flywheelSpeed, ControlType.kVelocity);
-    // pidControllerBottom.setReference(-2000, ControlType.kVelocity);
+    // pidControllerBottom.setReference(-2000, ControlType.kVelocity);\
     flywheelMotorTop.set(1);
     // flywheelMotorBottom.set(-1);
   }
