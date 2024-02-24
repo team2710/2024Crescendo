@@ -50,6 +50,7 @@ public final class Constants {
     public static final int kPivotMotorLeftID = 0;
     public static final int kPivotMotorRightID = 0;
 
+    public static final double kPivotGearRatio = 1;
     public static final double kPivotP = 0.2;
     public static final double kPivotI = 0;
     public static final double kPivotD = 0;
@@ -62,7 +63,7 @@ public final class Constants {
   }
 
   public static final class climber {
-    public static final int kClimberMotorID = 0;
+    public static final int kClimberMotorID = 99;
   }
 
   public static final class DriveConstants {

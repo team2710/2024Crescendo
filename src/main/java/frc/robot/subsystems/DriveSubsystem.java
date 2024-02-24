@@ -152,9 +152,11 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
-    if (vision.hasValidTargets()) {
-      m_poseEstimator.addVisionMeasurement(vision.getBotPose2d(), Timer.getFPGATimestamp() - vision.getLatency());
-    }
+
+    //uncomment till vision is configured
+    // if (vision.hasValidTargets()) {
+    //   m_poseEstimator.addVisionMeasurement(vision.getBotPose2d(), Timer.getFPGATimestamp() - vision.getLatency());
+    // }
 
     m_field.setRobotPose(getPose());
   }

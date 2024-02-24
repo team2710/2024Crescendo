@@ -16,6 +16,13 @@ public class Pivot extends SubsystemBase {
     private SparkPIDController pidController;
     private double position = PivotConstants.kPivotStartPosition;
 
+    public enum PivotState {
+        OFF,
+        Speaker,
+        AMP
+    };
+
+
     public Pivot() {
         pidController = pivotMotorLeft.getPIDController();
 
@@ -25,18 +32,43 @@ public class Pivot extends SubsystemBase {
         pidController.setIZone(PivotConstants.kPivotIz);
         pidController.setFF(PivotConstants.kPivotFF);
         pidController.setOutputRange(PivotConstants.kPivotMinOutput, PivotConstants.kPivotMaxOutput);
+        pivotMotorLeft.getEncoder().setPositionConversionFactor(PivotConstants.kPivotGearRatio);
 
         pivotMotorRight.follow(pivotMotorRight);
     }
 
     @Override
     public void periodic() {
-        // get pid values
+        SmartDashboard.putNumber("Pivot Position", pivotMotorLeft.getEncoder().getPosition());
+    }
+
+    public void PivotStateSetter(PivotState state){
+        switch (state) {
+            case OFF:
+                pivotMotorLeft.set(0);
+                break;
+            case Speaker:
+                setAngleDegree(45);
+                break;
+            case AMP:
+                setAngleDegree(90);
+                break;
+        default:
+            pivotMotorLeft.set(0);
+            state = PivotState.OFF;
+            break;
+        }
+    }
+
+    //remove one of the later
+    public void setAngle(double position) {
         pidController.setReference(position, ControlType.kPosition);
     }
 
-    public void setPositionRaw(double position) {
-        this.position = position;
+    public void setAngleDegree(double position) {
+        // pidController.setReference(position, ControlType.kPosition);
+        int ur_dad = 1;
+
     }
 
 }

@@ -26,6 +26,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.EndEffector.IntakeState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -38,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -56,10 +58,16 @@ public class RobotContainer {
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
 
   // KitBotShooter kbShooter = new KitBotShooter();
+  // Commands
   Command shoot = new RunCommand(() -> endEffector.IntakeSetter(IntakeState.Shoot), endEffector);
   Command stopIntake = new RunCommand(() -> endEffector.IntakeSetter(IntakeState.OFF), endEffector);
   Command intakeOn = new RunCommand(() -> endEffector.IntakeSetter(IntakeState.On), endEffector);
 
+  // Pivot Arm
+  Pivot pivot = new Pivot();
+  Command pivotSpeaker = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.Speaker), pivot);
+  Command pivotAMP = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.AMP), pivot);
+  Command pivotOff = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.OFF), pivot);
 
   final Trigger driverL1 = m_driverControllerCommand.L1();
   final Trigger driverR1 = m_driverControllerCommand.R1();
@@ -70,6 +78,8 @@ public class RobotContainer {
   final Trigger auxCross = m_auxController.cross();
   final Trigger auxTriangle = m_auxController.triangle();
 
+  final Trigger auxSquare = m_auxController.square();
+
   HttpCamera camera = new HttpCamera("Limelight", "http://10.27.10.11:5800/stream.mjpg");
 
   private final SendableChooser<Command> autoChooser;
@@ -78,6 +88,14 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    // Commands for Pathplanner
+    NamedCommands.registerCommand("Shoot", shoot);
+    NamedCommands.registerCommand("Stop Intake", stopIntake);
+    NamedCommands.registerCommand("Intake On", intakeOn);
+    NamedCommands.registerCommand("Pivot Speaker", pivotSpeaker);
+    NamedCommands.registerCommand("Pivot AMP", pivotAMP);
+    NamedCommands.registerCommand("Pivot Off", pivotOff);
+
     // kbShooter = new KitBotShooter();
 
     CameraServer.addCamera(camera);
@@ -89,7 +107,8 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser("3 Note");
     SmartDashboard.putData(autoChooser);
     // If you wanna test FSM uncomment
-    //endEffector.setDefaultCommand(new RunCommand(() -> endEffector.IntakeSetter(m_driverController), endEffector));
+    // endEffector.setDefaultCommand(new RunCommand(() ->
+    // endEffector.IntakeSetter(m_driverController), endEffector));
 
     // Configure default commands
     m_robotDrive.setDefaultCommand(
@@ -127,10 +146,11 @@ public class RobotContainer {
     auxTriangle.onTrue(endEffector.toggleIntakeCommand());
     auxCross.onTrue(endEffector.toggleOuttakeCommand());
 
-    //trigger and state machine (prob better implemenetation)
-    //uncomment to test
-    // auxR1.onTrue(shoot);
-    // auxTriangle.onTrue(intakeOn).onFalse(stopIntake);
+    // trigger and state machine (prob better implemenetation)
+    // uncomment to test
+    // auxR1.onTrue(shoot).onTrue(pivotSpeaker);
+    // auxTriangle.onTrue(intakeOn).onFalse(stopIntake).onFalse(pivotOff);
+    // auxSquare.onTrue(pivotAMP);
 
   }
 

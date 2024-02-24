@@ -14,16 +14,17 @@ public class Climb extends SubsystemBase {
     private CANSparkMax climber = new CANSparkMax(frc.robot.Constants.climber.kClimberMotorID, MotorType.kBrushless);
     private SparkPIDController pidController;
     public Climb() {
+        climber.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Climber Position", climberPosition());
-    
+        SmartDashboard.putNumber("Climber Position", climber.getEncoder().getPosition());
     }
 
     public void stopClimb() {
-        climber.set(0);
+        //really scuff feedfoward to prevent slipping
+        climber.set(-0.001);
     }
 
     public double climberPosition(){
