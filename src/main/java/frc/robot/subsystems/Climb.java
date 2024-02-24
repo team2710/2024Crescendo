@@ -7,14 +7,15 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.climber;;
+import frc.robot.Constants.ClimberConstants;
 
 public class Climb extends SubsystemBase {
     
-    private CANSparkMax climber = new CANSparkMax(frc.robot.Constants.climber.kClimberMotorID, MotorType.kBrushless);
+    private CANSparkMax climber = new CANSparkMax(ClimberConstants.kClimberMotorID, MotorType.kBrushless);
     private SparkPIDController pidController;
     public Climb() {
         climber.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        pidController = climber.getPIDController();
     }
 
     @Override

@@ -108,7 +108,7 @@ public class EndEffector extends SubsystemBase {
   }
 
   public void currentDetectionIntake() {
-    double INTAKE_STALL_DETECTION = 15;
+    double INTAKE_STALL_DETECTION = 45;
     Debouncer debounce = new Debouncer(1);
     intake();
     if (getIsFlywheelRunning()) {
@@ -187,7 +187,7 @@ public class EndEffector extends SubsystemBase {
    * 
    * @param m_IntakeState the desired intake state
    */
-  public void IntakeSetter(IntakeState m_IntakeState) {
+  public void IntakeSetter() {
     Debouncer delay = new Debouncer(0.5);
     
     switch (m_intakeState) {
@@ -210,7 +210,7 @@ public class EndEffector extends SubsystemBase {
       case Shoot:
       spinupFlywheel();
       if(MathUtil.isNear(setpoint, encoderTop.getVelocity() + encoderBottom.getVelocity() * 0.5, 50.0)) {
-        intake();
+        feed();
         isNote = false;
         if(delay.calculate(!isNote)) {
           m_intakeState = IntakeState.OFF;
@@ -284,6 +284,10 @@ public class EndEffector extends SubsystemBase {
     return isFlywheelRunning;
   }
 
+  public void setIntakeState(IntakeState intakeState) {
+    m_intakeState = intakeState;
+  }
+
   @Override
   public void periodic() {
     // double p = SmartDashboard.getNumber("Flywheel P Gain",
@@ -299,7 +303,9 @@ public class EndEffector extends SubsystemBase {
     // double min = SmartDashboard.getNumber("Flywheel Min Output",
     // EndEffectorConstants.kFlywheelMinOutput);
     // double max = SmartDashboard.getNumber("FLywheel Max Output",
-    // EndEffectorConstants.kFlywheelMaxOutput);
+    // EndEffectorConstants.kFlywheelMaxOutput)
+    
+    IntakeSetter();
 
     // if (p != pidController.getP()) pidController.setP(p);
     // if (i != pidController.getI()) pidController.setI(i);

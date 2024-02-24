@@ -1,9 +1,11 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,6 +16,7 @@ public class Pivot extends SubsystemBase {
     private CANSparkMax pivotMotorLeft = new CANSparkMax(PivotConstants.kPivotMotorLeftID, MotorType.kBrushless);
     private CANSparkMax pivotMotorRight = new CANSparkMax(PivotConstants.kPivotMotorRightID, MotorType.kBrushless);
     private SparkPIDController pidController;
+    private AbsoluteEncoder absoluteEncoder;
     private double position = PivotConstants.kPivotStartPosition;
 
     public enum PivotState {
@@ -25,6 +28,12 @@ public class Pivot extends SubsystemBase {
 
     public Pivot() {
         pidController = pivotMotorLeft.getPIDController();
+        absoluteEncoder = pivotMotorLeft.getAbsoluteEncoder(Type.kDutyCycle);
+        pidController.setFeedbackDevice(absoluteEncoder);
+        absoluteEncoder.setPositionConversionFactor(PivotConstants.kPivotGearRatio);
+
+        pivotMotorLeft.setSmartCurrentLimit(30);
+        pivotMotorRight.setSmartCurrentLimit(30);
 
         pidController.setP(PivotConstants.kPivotP);
         pidController.setI(PivotConstants.kPivotI);
@@ -32,9 +41,8 @@ public class Pivot extends SubsystemBase {
         pidController.setIZone(PivotConstants.kPivotIz);
         pidController.setFF(PivotConstants.kPivotFF);
         pidController.setOutputRange(PivotConstants.kPivotMinOutput, PivotConstants.kPivotMaxOutput);
-        pivotMotorLeft.getEncoder().setPositionConversionFactor(PivotConstants.kPivotGearRatio);
 
-        pivotMotorRight.follow(pivotMotorRight);
+        pivotMotorRight.follow(pivotMotorRight, true);
     }
 
     @Override
@@ -61,7 +69,7 @@ public class Pivot extends SubsystemBase {
     }
 
     //remove one of the later
-    public void setAngle(double position) {
+    public void setPosition(double position) {
         pidController.setReference(position, ControlType.kPosition);
     }
 

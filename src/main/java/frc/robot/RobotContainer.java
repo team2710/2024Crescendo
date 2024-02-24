@@ -59,9 +59,9 @@ public class RobotContainer {
 
   // KitBotShooter kbShooter = new KitBotShooter();
   // Commands
-  Command shoot = new RunCommand(() -> endEffector.IntakeSetter(IntakeState.Shoot), endEffector);
-  Command stopIntake = new RunCommand(() -> endEffector.IntakeSetter(IntakeState.OFF), endEffector);
-  Command intakeOn = new RunCommand(() -> endEffector.IntakeSetter(IntakeState.On), endEffector);
+  Command shoot = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Shoot), endEffector);
+  Command stopIntake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.OFF), endEffector);
+  Command intakeOn = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.On), endEffector);
 
   // Pivot Arm
   Pivot pivot = new Pivot();
@@ -123,6 +123,7 @@ public class RobotContainer {
             m_robotDrive));
   }
 
+
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by
@@ -141,15 +142,15 @@ public class RobotContainer {
    * Associates each button with its corresponding command or action.
    */
   private void configureButtonBindings() {
-    auxR1.onTrue(endEffector.toggleFlywheelCommand());
-    auxL1.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
-    auxTriangle.onTrue(endEffector.toggleIntakeCommand());
-    auxCross.onTrue(endEffector.toggleOuttakeCommand());
+    // auxR1.onTrue(endEffector.toggleFlywheelCommand());
+    // auxL1.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
+    // auxTriangle.onTrue(endEffector.toggleIntakeCommand());
+    // auxCross.onTrue(endEffector.toggleOuttakeCommand());
 
     // trigger and state machine (prob better implemenetation)
     // uncomment to test
-    // auxR1.onTrue(shoot).onTrue(pivotSpeaker);
-    // auxTriangle.onTrue(intakeOn).onFalse(stopIntake).onFalse(pivotOff);
+    auxR1.onTrue(shoot);
+    auxTriangle.onTrue(intakeOn).onFalse(stopIntake);
     // auxSquare.onTrue(pivotAMP);
 
   }
