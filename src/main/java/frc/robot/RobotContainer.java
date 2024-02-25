@@ -29,6 +29,7 @@ import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.EndEffector.IntakeState;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -59,15 +60,17 @@ public class RobotContainer {
 
   // KitBotShooter kbShooter = new KitBotShooter();
   // Commands
-  Command shoot = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Shoot), endEffector);
+  Command feed = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Feed), endEffector);
   Command stopIntake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.OFF), endEffector);
   Command intakeOn = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.On), endEffector);
+  Command outtake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Outtake));
 
   // Pivot Arm
   Pivot pivot = new Pivot();
   Command pivotSpeaker = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.Speaker), pivot);
   Command pivotAMP = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.AMP), pivot);
   Command pivotOff = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.OFF), pivot);
+
 
   final Trigger driverL1 = m_driverControllerCommand.L1();
   final Trigger driverR1 = m_driverControllerCommand.R1();
@@ -77,19 +80,21 @@ public class RobotContainer {
   final Trigger auxR1 = m_auxController.R1();
   final Trigger auxCross = m_auxController.cross();
   final Trigger auxTriangle = m_auxController.triangle();
+  final Trigger auxR2 = m_auxController.R2();
+  final Trigger auxL2 = m_auxController.L2();
 
   final Trigger auxSquare = m_auxController.square();
 
   HttpCamera camera = new HttpCamera("Limelight", "http://10.27.10.11:5800/stream.mjpg");
 
-  private final SendableChooser<Command> autoChooser;
+  // private final SendableChooser<Command> autoChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Commands for Pathplanner
-    NamedCommands.registerCommand("Shoot", shoot);
+    // NamedCommands.registerCommand("Shoot", shoot);
     NamedCommands.registerCommand("Stop Intake", stopIntake);
     NamedCommands.registerCommand("Intake On", intakeOn);
     NamedCommands.registerCommand("Pivot Speaker", pivotSpeaker);
@@ -104,8 +109,8 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    autoChooser = AutoBuilder.buildAutoChooser("3 Note");
-    SmartDashboard.putData(autoChooser);
+    // autoChooser = AutoBuilder.buildAutoChooser("3 Note");
+    // SmartDashboard.putData(autoChooser);
     // If you wanna test FSM uncomment
     // endEffector.setDefaultCommand(new RunCommand(() ->
     // endEffector.IntakeSetter(m_driverController), endEffector));
@@ -149,9 +154,16 @@ public class RobotContainer {
 
     // trigger and state machine (prob better implemenetation)
     // uncomment to test
-    auxR1.onTrue(shoot);
+    auxR1.onTrue(endEffector.toggleFlywheelCommand()).onFalse(stopIntake);
     auxTriangle.onTrue(intakeOn).onFalse(stopIntake);
-    // auxSquare.onTrue(pivotAMP);
+    auxL1.onTrue(feed).onFalse(stopIntake);
+    auxSquare.onTrue(outtake).onFalse(stopIntake);
+    auxR2.onTrue(new InstantCommand(() -> {
+      pivot.setPosition(0);
+    }));
+    auxL2.onTrue(new InstantCommand(() -> {
+      pivot.setPosition(0);
+    }));
 
   }
 
@@ -161,6 +173,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return Commands.none();
   }
 }

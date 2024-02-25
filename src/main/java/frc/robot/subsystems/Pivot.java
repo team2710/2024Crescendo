@@ -47,7 +47,7 @@ public class Pivot extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Pivot Position", pivotMotorLeft.getEncoder().getPosition());
+        SmartDashboard.putNumber("Pivot Position", pivotMotorRight.getEncoder().getPosition());
     }
 
     public void PivotStateSetter(PivotState state){

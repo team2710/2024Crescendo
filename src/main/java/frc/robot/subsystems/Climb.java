@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,6 +17,8 @@ public class Climb extends SubsystemBase {
     public Climb() {
         climber.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pidController = climber.getPIDController();
+        // climber.setSoftLimit(SoftLimitDirection.kReverse, 0);
+        // climber.setSoftLimit(SoftLimitDirection.kForward, 600);
     }
 
     @Override
@@ -25,7 +28,7 @@ public class Climb extends SubsystemBase {
 
     public void stopClimb() {
         //really scuff feedfoward to prevent slipping
-        climber.set(-0.001);
+        climber.set(-0.0001);
     }
 
     public double climberPosition(){

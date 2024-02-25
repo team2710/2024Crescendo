@@ -90,6 +90,8 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     SmartDashboard.putData("Field", m_field);
 
+    m_gyro.reset();
+
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
       new HolonomicPathFollowerConfig(

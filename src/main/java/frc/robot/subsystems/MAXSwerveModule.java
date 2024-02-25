@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class MAXSwerveModule {
@@ -78,6 +79,8 @@ public class MAXSwerveModule {
     m_turningPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
     m_turningPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
 
+    m_velocityPID = new VelocityVoltage(0);
+  
     // Set the PID gains for the driving motor. Note these are example gains, and you
     // may need to tune them for your own robot!
 
@@ -165,7 +168,8 @@ public class MAXSwerveModule {
 
     // Command driving and turning SPARKS MAX towards their respective setpoints.
     // m_drivingKraken.setControl(optimizedDesiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-    m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond * ModuleConstants.kDrivingEncoderVelocityFactor));
+    // m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond * (1/ModuleConstants.kDrivingEncoderVelocityFactor)));
+    m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
     // m_drivingKraken.setControl(m_velocityPIDFOC.withVelocity(optimizedDesiredState.speedMetersPerSecond * ModuleConstants.kDrivingEncoderVelocityFactor));
     m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
 

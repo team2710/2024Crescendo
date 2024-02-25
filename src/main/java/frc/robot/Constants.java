@@ -34,7 +34,7 @@ public final class Constants {
     public static final int kFlywheelMotorTopID = 42;
     public static final int kFlywheelMotorBottomID = 43;
 
-    public static final double kIntakeSpeed = 0.25;
+    public static final double kIntakeSpeed = 0.75;
     public static final double kFlywheelMotorSpeed = 3000;
     
     public static final double kFlywheelP = 0.002;
@@ -47,8 +47,8 @@ public final class Constants {
   }
 
   public static final class PivotConstants {
-    public static final int kPivotMotorLeftID = 0;
-    public static final int kPivotMotorRightID = 0;
+    public static final int kPivotMotorLeftID = 21;
+    public static final int kPivotMotorRightID = 20;
 
     public static final double kPivotGearRatio = 18.0/62.0;
     public static final double kPivotP = 0.2;
@@ -63,13 +63,13 @@ public final class Constants {
   }
 
   public static final class ClimberConstants {
-    public static final int kClimberMotorID = 99;
+    public static final int kClimberMotorID = 30;
   }
 
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
+    public static final double kMaxSpeedMetersPerSecond = 6.1;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -102,9 +102,9 @@ public final class Constants {
     public static final int kRearRightDrivingCanId = 17;
 
     public static final int kFrontLeftTurningCanId = 32;
-    public static final int kRearLeftTurningCanId = 12;
+    public static final int kRearLeftTurningCanId = 16;
     public static final int kFrontRightTurningCanId = 14;
-    public static final int kRearRightTurningCanId = 16;
+    public static final int kRearRightTurningCanId = 12;
 
     public static final boolean kGyroReversed = false;
   }
@@ -123,12 +123,12 @@ public final class Constants {
     public static final boolean kTurningEncoderInverted = true;
 
     // Calculations required for driving motor conversion factors and feed forward
-    public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
+    public static final double kDrivingMotorFreeSpeedRps = 6000 / 60;
     public static final double kWheelDiameterMeters = 0.0762;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
     // teeth on the bevel pinion
-    public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+    public static final double kDrivingMotorReduction = 3.56;
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 
