@@ -19,27 +19,48 @@ public class Climb extends SubsystemBase {
         pidController = climber.getPIDController();
         // climber.setSoftLimit(SoftLimitDirection.kReverse, 0);
         // climber.setSoftLimit(SoftLimitDirection.kForward, 600);
+
+        climber.setSmartCurrentLimit(40);
+
+        pidController.setP(0.2);
+        pidController.setI(0);
+        pidController.setD(0);
+        pidController.setIZone(0);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Climber Position", climber.getEncoder().getPosition());
+        SmartDashboard.putNumber("Climber Position", getClimberPosition());
+
+        if (getClimberPosition() >= ClimberConstants.kMaxPosition || getClimberPosition() <= ClimberConstants.kMinPosition) {
+            climber.set(0);
+        }
+    }
+
+    public void stow() {
+        pidController.setReference(ClimberConstants.kMinPosition, ControlType.kPosition);
     }
 
     public void stopClimb() {
-        //really scuff feedfoward to prevent slipping
-        climber.set(-0.0001);
+        pidController.setReference(getClimberPosition(), ControlType.kPosition);
     }
 
-    public double climberPosition(){
+    public double getClimberPosition() {
         return climber.getEncoder().getPosition();
     }
 
     public void climbUP() {
-        climber.set(1);
+        if (getClimberPosition() >= ClimberConstants.kMaxPosition) {
+            return;
+        }
+        climber.set(ClimberConstants.kUpSpeed);
     }
+
     public void climbDown() {
-        climber.set(-1);
+        if (getClimberPosition() <= ClimberConstants.kMinPosition) {
+            return;
+        }
+        climber.set(ClimberConstants.kDownSpeed);
     }
 
 }

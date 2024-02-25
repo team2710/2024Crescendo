@@ -64,6 +64,10 @@ public final class Constants {
 
   public static final class ClimberConstants {
     public static final int kClimberMotorID = 30;
+    public static final double kMaxPosition = 1;
+    public static final double kMinPosition = 0;
+    public static final double kUpSpeed = 0.2;
+    public static final double kDownSpeed = -0.2;
   }
 
   public static final class DriveConstants {

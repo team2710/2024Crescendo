@@ -40,6 +40,8 @@ public class EndEffector extends SubsystemBase {
   private boolean isNote = false;
   private double setpoint = 2000;
 
+  private Debouncer intakDebouncer = new Debouncer(0.2, DebounceType.kRising);
+
   public enum IntakeState {
     OFF,
     On,
@@ -146,8 +148,7 @@ public class EndEffector extends SubsystemBase {
 
   public boolean currentDetectIntake() {
     double INTAKE_STALL_DETECTION = 50;
-    Debouncer debounce = new Debouncer(0.2, DebounceType.kRising);
-    if (debounce.calculate(intakeMotor.getOutputCurrent() < INTAKE_STALL_DETECTION)) {
+    if (intakDebouncer.calculate(intakeMotor.getOutputCurrent() < INTAKE_STALL_DETECTION)) {
       return true;
     }
     return false;
@@ -210,14 +211,11 @@ public class EndEffector extends SubsystemBase {
    * @param m_IntakeState the desired intake state
    */
   public void IntakeSetter() {
-    Debouncer delay = new Debouncer(0.5);
-    
     switch (m_intakeState) {
       case OFF:
         stopIntake();
-        // stopFlywheel();
         break;
-
+        
       case On: 
         if(isNote) {
           stopIntake();
@@ -232,20 +230,13 @@ public class EndEffector extends SubsystemBase {
       case Outtake:
         outtake();
         break;
-        
       case Feed:
-      // if(MathUtil.isNear(setpoint, encoderTop.getVelocity() + encoderBottom.getVelocity() * 0.5, 50.0)) {
-      //   feed();
-      //   isNote = false;
-      //   if(delay.calculate(!isNote)) {
-      //     m_intakeState = IntakeState.OFF;
-      //   }
-          feed();
-          isNote = false;
-          break;
+        feed();
+        isNote = false;
+        break;
     default:
-    m_intakeState = IntakeState.OFF;
-    break;
+      m_intakeState = IntakeState.OFF;
+      break;
     }
 
   }
@@ -255,7 +246,6 @@ public void ShootSetter() {
       case OFF:
         stopFlywheel();
         break;
-
       case On: 
         if(isNote) {
           stopIntake();
@@ -267,8 +257,8 @@ public void ShootSetter() {
         }
         break;
     default:
-    m_shootState = FlywheelState.OFF;
-    break;
+      m_shootState = FlywheelState.OFF;
+      break;
     }
 
   }

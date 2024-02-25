@@ -32,8 +32,8 @@ public class Pivot extends SubsystemBase {
         pidController.setFeedbackDevice(absoluteEncoder);
         absoluteEncoder.setPositionConversionFactor(PivotConstants.kPivotGearRatio);
 
-        pivotMotorLeft.setSmartCurrentLimit(30);
-        pivotMotorRight.setSmartCurrentLimit(30);
+        pivotMotorLeft.setSmartCurrentLimit(40);
+        pivotMotorRight.setSmartCurrentLimit(40);
 
         pidController.setP(PivotConstants.kPivotP);
         pidController.setI(PivotConstants.kPivotI);
