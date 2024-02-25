@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -32,8 +33,7 @@ public class MAXSwerveModule {
   private final AbsoluteEncoder m_turningEncoder;
 
   private final SparkPIDController m_turningPIDController;
-  private VelocityVoltage m_velocityPID;
-  private VelocityTorqueCurrentFOC m_velocityPIDFOC;
+  private VelocityDutyCycle m_velocityPID;
 
 
 
@@ -79,7 +79,7 @@ public class MAXSwerveModule {
     m_turningPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
     m_turningPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
 
-    m_velocityPID = new VelocityVoltage(0);
+    m_velocityPID = new VelocityDutyCycle(0);
   
     // Set the PID gains for the driving motor. Note these are example gains, and you
     // may need to tune them for your own robot!
@@ -168,8 +168,15 @@ public class MAXSwerveModule {
 
     // Command driving and turning SPARKS MAX towards their respective setpoints.
     // m_drivingKraken.setControl(optimizedDesiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-    // m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond * (1/ModuleConstants.kDrivingEncoderVelocityFactor)));
-    m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
+    //convert m/s to rev/s
+
+    //v=rw
+    // formula is (m/s / radius of wheel) * gear_ratio = rev/s
+    //pid uses rev/s
+
+
+    m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond *ModuleConstants.kWheelCircumferenceMeters * 0.5 * (1/ModuleConstants.kDrivingMotorReduction)).withEnableFOC(true));
+    // m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
     // m_drivingKraken.setControl(m_velocityPIDFOC.withVelocity(optimizedDesiredState.speedMetersPerSecond * ModuleConstants.kDrivingEncoderVelocityFactor));
     m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
 

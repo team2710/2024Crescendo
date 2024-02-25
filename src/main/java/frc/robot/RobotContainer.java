@@ -27,6 +27,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.EndEffector.FlywheelState;
 import frc.robot.subsystems.EndEffector.IntakeState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -64,6 +65,10 @@ public class RobotContainer {
   Command stopIntake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.OFF), endEffector);
   Command intakeOn = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.On), endEffector);
   Command outtake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Outtake));
+
+
+  Command shooterOn = new InstantCommand(() -> endEffector.setShooterState(FlywheelState.On), endEffector);
+  Command shooterOff = new InstantCommand(() -> endEffector.setShooterState(FlywheelState.On), endEffector);
 
   // Pivot Arm
   Pivot pivot = new Pivot();
@@ -154,10 +159,11 @@ public class RobotContainer {
 
     // trigger and state machine (prob better implemenetation)
     // uncomment to test
-    auxR1.onTrue(endEffector.toggleFlywheelCommand()).onFalse(stopIntake);
+    auxR1.onTrue(shooterOn).onFalse(stopIntake).onFalse(shooterOff);
     auxTriangle.onTrue(intakeOn).onFalse(stopIntake);
     auxL1.onTrue(feed).onFalse(stopIntake);
     auxSquare.onTrue(outtake).onFalse(stopIntake);
+
     auxR2.onTrue(new InstantCommand(() -> {
       pivot.setPosition(0);
     }));

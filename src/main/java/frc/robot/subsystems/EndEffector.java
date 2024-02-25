@@ -47,7 +47,14 @@ public class EndEffector extends SubsystemBase {
     Feed,
   };
 
+    public enum FlywheelState {
+    OFF,
+    On,
+  };
+
   public static IntakeState m_intakeState = IntakeState.OFF;
+  public static FlywheelState m_shootState = FlywheelState.OFF;
+
 
   public EndEffector() {
     pidController = flywheelMotorTop.getPIDController();
@@ -243,6 +250,29 @@ public class EndEffector extends SubsystemBase {
 
   }
 
+public void ShootSetter() {
+    switch (m_shootState) {
+      case OFF:
+        stopFlywheel();
+        break;
+
+      case On: 
+        if(isNote) {
+          stopIntake();
+          m_intakeState = IntakeState.OFF;
+        }
+        else {
+          intake();
+          isNote = currentDetectIntake();
+        }
+        break;
+    default:
+    m_shootState = FlywheelState.OFF;
+    break;
+    }
+
+  }
+
   public void feed() {
     intakeMotor.set(1);
   }
@@ -306,6 +336,10 @@ public class EndEffector extends SubsystemBase {
     m_intakeState = intakeState;
   }
 
+  public void setShooterState(FlywheelState shootState) {
+    m_shootState = shootState;
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Note Detect", isNote);
@@ -325,6 +359,7 @@ public class EndEffector extends SubsystemBase {
     // EndEffectorConstants.kFlywheelMaxOutput)
     
     IntakeSetter();
+    ShootSetter();
 
     // if (p != pidController.getP()) pidController.setP(p);
     // if (i != pidController.getI()) pidController.setI(i);
