@@ -99,7 +99,9 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Commands for Pathplanner
-    // NamedCommands.registerCommand("Shoot", shoot);
+    NamedCommands.registerCommand("Shoot", shooterOn);
+    NamedCommands.registerCommand("Feed", feed);
+    NamedCommands.registerCommand("Shooter Off", shooterOff);  
     NamedCommands.registerCommand("Stop Intake", stopIntake);
     NamedCommands.registerCommand("Intake On", intakeOn);
     NamedCommands.registerCommand("Pivot Speaker", pivotSpeaker);
