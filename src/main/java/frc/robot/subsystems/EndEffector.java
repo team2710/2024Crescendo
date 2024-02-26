@@ -8,11 +8,13 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.EndEffectorConstants;
 import com.revrobotics.SparkPIDController;
@@ -40,7 +42,7 @@ public class EndEffector extends SubsystemBase {
   private boolean isNote = false;
   private double setpoint = 2000;
 
-  private Debouncer intakDebouncer = new Debouncer(0.2, DebounceType.kRising);
+  private Debouncer intakDebouncer = new Debouncer(0.08, DebounceType.kRising);
 
   public enum IntakeState {
     OFF,
@@ -56,11 +58,16 @@ public class EndEffector extends SubsystemBase {
 
   public static IntakeState m_intakeState = IntakeState.OFF;
   public static FlywheelState m_shootState = FlywheelState.OFF;
+  LinearFilter m_currenFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
 
   public EndEffector() {
     pidController = flywheelMotorTop.getPIDController();
     flywheelMotorBottom.follow(flywheelMotorTop, true);
+
+    // intakeMotor.setSmartCurrentLimit(120);
+    // flywheelMotorBottom.setSmartCurrentLimit(40);
+    // flywheelMotorTop.setSmartCurrentLimit(40);
 
     encoderTop = flywheelMotorTop.getEncoder();
     encoderBottom = flywheelMotorBottom.getEncoder();
@@ -123,6 +130,10 @@ public class EndEffector extends SubsystemBase {
     return new InstantCommand(() -> {
       stopIntake();
     }, this);
+  }
+
+  public double getFilterCurrent(){
+    return m_currenFilter.calculate(intakeMotor.getOutputCurrent());
   }
 
   public void intake() {
@@ -215,7 +226,7 @@ public class EndEffector extends SubsystemBase {
       case OFF:
         stopIntake();
         break;
-        
+
       case On: 
         if(isNote) {
           stopIntake();
@@ -253,7 +264,7 @@ public void ShootSetter() {
         }
         else {
           intake();
-          isNote = currentDetectIntake();
+          // isNote = currentDetectIntake();
         }
         break;
     default:
@@ -333,6 +344,16 @@ public void ShootSetter() {
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Note Detect", isNote);
+
+    // if (intakDebouncer.calculate(getFilterCurrent() > 65) && isIntaking) {
+    //   isNote = true;
+    //   // stopIntake();
+    // } else if (isNote)
+    // {
+    //   isNote = false;
+    //   stopIntake();
+    // }
+
     // double p = SmartDashboard.getNumber("Flywheel P Gain",
     // EndEffectorConstants.kFlywheelP);
     // double i = SmartDashboard.getNumber("Flywheel I Gain",
@@ -348,8 +369,8 @@ public void ShootSetter() {
     // double max = SmartDashboard.getNumber("FLywheel Max Output",
     // EndEffectorConstants.kFlywheelMaxOutput)
     
-    IntakeSetter();
-    ShootSetter();
+    // IntakeSetter();
+    // ShootSetter();
 
     // if (p != pidController.getP()) pidController.setP(p);
     // if (i != pidController.getI()) pidController.setI(i);
@@ -363,7 +384,7 @@ public void ShootSetter() {
 
     SmartDashboard.putNumber("Flywheel Top RPM", encoderTop.getVelocity());
     SmartDashboard.putNumber("Flywheel Bottom RPM", encoderBottom.getVelocity());
-    SmartDashboard.putNumber("Intake Current", intakeMotor.getOutputCurrent());
+    SmartDashboard.putNumber("Intake Current", getFilterCurrent());
   }
 
 }

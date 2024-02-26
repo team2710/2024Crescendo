@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
@@ -29,12 +30,12 @@ public class Pivot extends SubsystemBase {
 
     public Pivot() {
         relativeEncoder = pivotMotorRight.getEncoder();
-        pidController = pivotMotorLeft.getPIDController();
+        pidController = pivotMotorRight.getPIDController();
         absoluteEncoder = pivotMotorLeft.getAbsoluteEncoder(Type.kDutyCycle);
-        pidController.setFeedbackDevice(absoluteEncoder);
+        // pidController.setFeedbackDevice(absoluteEncoder);
         // absoluteEncoder.setPositionConversionFactor(PivotConstants.kPivotGearRatio);
         //make into constnat later need test
-        relativeEncoder.setPositionConversionFactor(1/((62/18) * 4 * 4 * 3));
+        // relativeEncoder.setPositionConversionFactor(1/((62/18)));
 
         pivotMotorLeft.setSmartCurrentLimit(40);
         pivotMotorRight.setSmartCurrentLimit(40);
@@ -45,31 +46,47 @@ public class Pivot extends SubsystemBase {
         pidController.setIZone(PivotConstants.kPivotIz);
         pidController.setFF(PivotConstants.kPivotFF);
         pidController.setOutputRange(PivotConstants.kPivotMinOutput, PivotConstants.kPivotMaxOutput);
-        pivotMotorRight.follow(pivotMotorRight, true);
+       
+        pivotMotorLeft.follow(pivotMotorRight, true);
 
-        ArmAbstoRelativeSetter();
+        pivotMotorLeft.setIdleMode(IdleMode.kBrake);
+        pivotMotorRight.setIdleMode(IdleMode.kBrake);
+        pivotMotorLeft.burnFlash();
+        pivotMotorRight.burnFlash();
 
-        
+        // ArmAbstoRelativeSetter();
+        relativeEncoder.setPosition(0);
+    }
+
+    public double angleToEncoder(double angle) {
+        // y = -0.592594095866x
+        return -0.592594095866 * angle;
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Pivot Position", pivotMotorRight.getEncoder().getPosition());
+        SmartDashboard.putNumber("30 degrees", angleToEncoder(30));
+        // SmartDashboard.putNumber("Absolute as Relative", absToRelative());
+    }
+
+    public double absToRelative() {
+        double offset = 0; //might need use offset depending how arm is zero in the abs encoer
+        double abs_position = absoluteEncoder.getPosition();
+        double position_rel = (abs_position * 1/(4 * 4 * 3));
+        return position_rel  - offset; 
     }
 
     //will clean up later
-    public void ArmAbstoRelativeSetter(){
-        double offset = 0; //might need use offset depending how arm is zero in the abs encoer
-        double abs_position = absoluteEncoder.getPosition();
-        double position_rel = (abs_position * 1/(62/18) * 165);
-        relativeEncoder.setPosition(position_rel-offset);
+    public void ArmAbstoRelativeSetter() {
+        relativeEncoder.setPosition(absToRelative());
 
     }
 
     public void PivotStateSetter(PivotState state){
         switch (state) {
             case OFF:
-                pivotMotorLeft.set(0);
+                pivotMotorRight.set(0);
                 break;
             case Speaker:
                 setAngleDegree(45);
@@ -78,20 +95,29 @@ public class Pivot extends SubsystemBase {
                 setAngleDegree(90);
                 break;
         default:
-            pivotMotorLeft.set(0);
+            pivotMotorRight.set(0);
             state = PivotState.OFF;
             break;
         }
     }
 
+    public double getAngle() {
+        return relativeEncoder.getPosition();
+    }
+
     //remove one of the later
     public void setPosition(double position) {
+        SmartDashboard.putNumber("Set Position", position);
         pidController.setReference(position, ControlType.kPosition);
+    }
+
+    public void setOutput(double output) {
+        pivotMotorRight.set(output);
     }
 
     public void setAngleDegree(double position) {
         // pidController.setReference(position, ControlType.kPosition);
-        int ur_dad = 1;
+        setPosition(angleToEncoder(position));
 
     }
 

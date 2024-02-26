@@ -17,24 +17,27 @@ public class Climb extends SubsystemBase {
     public Climb() {
         climber.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pidController = climber.getPIDController();
-        // climber.setSoftLimit(SoftLimitDirection.kReverse, 0);
-        // climber.setSoftLimit(SoftLimitDirection.kForward, 600);
+        // climber.setSoftLimit(SoftLimitDirection.kReverse, (float) ClimberConstants.kMinPosition);
+        // climber.setSoftLimit(SoftLimitDirection.kForward, (float) ClimberConstants.kMaxPosition);
 
         climber.setSmartCurrentLimit(40);
 
-        pidController.setP(0.2);
-        pidController.setI(0);
+        pidController.setP(0);
+        pidController.setI(0.0);
         pidController.setD(0);
         pidController.setIZone(0);
+
+        //config this if going wrong direction
+        climber.setInverted(false);
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Climber Position", getClimberPosition());
 
-        if (getClimberPosition() >= ClimberConstants.kMaxPosition || getClimberPosition() <= ClimberConstants.kMinPosition) {
-            climber.set(0);
-        }
+        // if (getClimberPosition() >= ClimberConstants.kMaxPosition || getClimberPosition() <= ClimberConstants.kMinPosition) {
+        //     climber.set(0);
+        // }
     }
 
     public void stow() {
@@ -42,7 +45,12 @@ public class Climb extends SubsystemBase {
     }
 
     public void stopClimb() {
-        pidController.setReference(getClimberPosition(), ControlType.kPosition);
+        // pidController.setReference(getClimberPosition(), ControlType.kPosition);
+
+        //this number from SVR
+        // double m = 0.0002;
+        // climber.set(0 - (getClimberPosition() *  m ));
+        climber.set(0);
     }
 
     public double getClimberPosition() {
@@ -50,16 +58,10 @@ public class Climb extends SubsystemBase {
     }
 
     public void climbUP() {
-        if (getClimberPosition() >= ClimberConstants.kMaxPosition) {
-            return;
-        }
         climber.set(ClimberConstants.kUpSpeed);
     }
 
     public void climbDown() {
-        if (getClimberPosition() <= ClimberConstants.kMinPosition) {
-            return;
-        }
         climber.set(ClimberConstants.kDownSpeed);
     }
 

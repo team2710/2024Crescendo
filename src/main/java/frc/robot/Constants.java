@@ -34,7 +34,7 @@ public final class Constants {
     public static final int kFlywheelMotorTopID = 42;
     public static final int kFlywheelMotorBottomID = 43;
 
-    public static final double kIntakeSpeed = 0.75;
+    public static final double kIntakeSpeed = 1;
     public static final double kFlywheelMotorSpeed = 3000;
     
     public static final double kFlywheelP = 0.002;
@@ -51,13 +51,13 @@ public final class Constants {
     public static final int kPivotMotorRightID = 20;
 
     public static final double kPivotGearRatio = 18.0/62.0;
-    public static final double kPivotP = 0.2;
+    public static final double kPivotP = 0.25;
     public static final double kPivotI = 0;
-    public static final double kPivotD = 0;
+    public static final double kPivotD = 0.01;
     public static final double kPivotIz = 0;
     public static final double kPivotFF = 0;
-    public static final double kPivotMinOutput = -0.1;
-    public static final double kPivotMaxOutput = 0.1;
+    public static final double kPivotMinOutput = -0.5;
+    public static final double kPivotMaxOutput = 0.5;
 
     public static final double kPivotStartPosition = 0;
   }
@@ -66,14 +66,15 @@ public final class Constants {
     public static final int kClimberMotorID = 30;
     public static final double kMaxPosition = 1;
     public static final double kMinPosition = 0;
-    public static final double kUpSpeed = 0.2;
-    public static final double kDownSpeed = -0.2;
+    public static final double kUpSpeed = 0.25;
+    public static final double kDownSpeed = -0.25;
   }
 
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 6.1;
+    public static final double kMaxSpeedMetersPerSecond = 6.1
+    ;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 1.2; // radians per second
@@ -147,7 +148,7 @@ public final class Constants {
     public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
     public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-    public static final double kDrivingP = 0.04;
+    public static final double kDrivingP = 0.001;
     public static final double kDrivingI = 0;
     public static final double kDrivingD = 0;
     public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;

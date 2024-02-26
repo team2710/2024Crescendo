@@ -136,6 +136,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("vx", getRobotDiscreteSpeeds().vxMetersPerSecond);
+    SmartDashboard.putNumber("vy", getRobotDiscreteSpeeds().vyMetersPerSecond);
+
+
     SmartDashboard.putNumber("Gyro", getHeading());
 
     // Advantage Kit Swerve Logging

@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.PivotConstants;
+import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.Pivot;
@@ -42,6 +44,10 @@ import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -72,9 +78,10 @@ public class RobotContainer {
 
   // Pivot Arm
   Pivot pivot = new Pivot();
-  Command pivotSpeaker = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.Speaker), pivot);
-  Command pivotAMP = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.AMP), pivot);
-  Command pivotOff = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.OFF), pivot);
+  Climb climber = new Climb();
+  // Command pivotSpeaker = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.Speaker), pivot);
+  // Command pivotAMP = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.AMP), pivot);
+  // Command pivotOff = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.OFF), pivot);
 
 
   final Trigger driverL1 = m_driverControllerCommand.L1();
@@ -87,6 +94,8 @@ public class RobotContainer {
   final Trigger auxTriangle = m_auxController.triangle();
   final Trigger auxR2 = m_auxController.R2();
   final Trigger auxL2 = m_auxController.L2();
+  final Trigger auxDPADUP = m_auxController.povUp();
+  final Trigger auxDPADDOWN = m_auxController.povDown();
 
   final Trigger auxSquare = m_auxController.square();
 
@@ -104,9 +113,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shooter Off", shooterOff);  
     NamedCommands.registerCommand("Stop Intake", stopIntake);
     NamedCommands.registerCommand("Intake On", intakeOn);
-    NamedCommands.registerCommand("Pivot Speaker", pivotSpeaker);
-    NamedCommands.registerCommand("Pivot AMP", pivotAMP);
-    NamedCommands.registerCommand("Pivot Off", pivotOff);
+    // NamedCommands.registerCommand("Pivot Speaker", pivotSpeaker);
+    // NamedCommands.registerCommand("Pivot AMP", pivotAMP);
+    // NamedCommands.registerCommand("Pivot Off", pivotOff);
 
     // kbShooter = new KitBotShooter();
 
@@ -154,23 +163,44 @@ public class RobotContainer {
    * Associates each button with its corresponding command or action.
    */
   private void configureButtonBindings() {
-    // auxR1.onTrue(endEffector.toggleFlywheelCommand());
-    // auxL1.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
-    // auxTriangle.onTrue(endEffector.toggleIntakeCommand());
-    // auxCross.onTrue(endEffector.toggleOuttakeCommand());
+    auxR1.onTrue(endEffector.toggleFlywheelCommand());
+    auxL1.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
+    auxTriangle.onTrue(new InstantCommand(() -> {endEffector.intake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
+    auxCross.onTrue(new InstantCommand(() -> {endEffector.outtake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
+
+    auxDPADUP.onTrue(new InstantCommand(() -> {
+      climber.climbUP();
+    })).onFalse( new InstantCommand(() -> {
+      climber.stopClimb();
+    }));
+
+    auxDPADDOWN.onTrue(new InstantCommand(() -> {
+      climber.climbDown();
+    })).onFalse( new InstantCommand(() -> {
+      climber.stopClimb();
+    }));
 
     // trigger and state machine (prob better implemenetation)
     // uncomment to test
-    auxR1.onTrue(shooterOn).onFalse(stopIntake).onFalse(shooterOff);
-    auxTriangle.onTrue(intakeOn).onFalse(stopIntake);
-    auxL1.onTrue(feed).onFalse(stopIntake);
-    auxSquare.onTrue(outtake).onFalse(stopIntake);
+    // auxR1.onTrue(shooterOn).onFalse(shooterOff);
+    // auxTriangle.onTrue(intakeOn).onFalse(stopIntake);
+    // auxL1.onTrue(feed).onFalse(stopIntake);
+    // auxSquare.onTrue(outtake).onFalse(stopIntake);
 
     auxR2.onTrue(new InstantCommand(() -> {
-      pivot.setPosition(0);
+      pivot.setAngleDegree(
+        0
+      );
     }));
     auxL2.onTrue(new InstantCommand(() -> {
-      pivot.setPosition(0);
+      pivot.setAngleDegree(15);
+    }));
+    auxSquare.onTrue(new InstantCommand(() -> {
+      pivot.setAngleDegree(80);
+    }));
+
+    driverCross.onTrue(new InstantCommand(() -> {
+      m_robotDrive.zeroHeading();
     }));
 
   }
