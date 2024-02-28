@@ -66,6 +66,20 @@ public class Pivot extends SubsystemBase {
         return -0.592594095866 * angle;
     }
 
+    public double distanceToAngle(double distance){
+        //use desmos to find
+        //x = distance
+        //y = angle (the angle where note enter the speaker at that distance)
+        double m = 0;
+        double b = 0;
+        return m * distance + b;
+    }
+
+    public void AutoAim(double distance) {
+        double angle = distanceToAngle(distance);
+        setAngleDegree(angle);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Pivot Position", pivotMotorRight.getEncoder().getPosition());
