@@ -109,7 +109,7 @@ public class Pivot extends SubsystemBase {
     }
 
     public void setAngleFeedFoward(double setAngle, double setAngleRate, double setAngleAccel) {
-        feedforward.calculate(setAngle, setAngleRate, setAngleAccel);
+        pivotMotorLeft.setVoltage(feedforward.calculate(setAngle, setAngleRate, setAngleAccel));
     }
 
     //remove one of the later

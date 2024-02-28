@@ -15,6 +15,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
@@ -44,6 +46,7 @@ import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -82,6 +85,26 @@ public class RobotContainer {
   // Command pivotSpeaker = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.Speaker), pivot);
   // Command pivotAMP = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.AMP), pivot);
   // Command pivotOff = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.OFF), pivot);
+
+  Command PathfindToPickupBlue = AutoBuilder.pathfindToPose(
+      new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)), 
+      new PathConstraints(
+        4.0, 4.0, 
+        Units.degreesToRadians(360), Units.degreesToRadians(540)
+      ), 
+      0, 
+      2.0
+    );
+
+  Command PathfindToPickupRed = AutoBuilder.pathfindToPose(
+      new Pose2d(0.956, 1.763, Rotation2d.fromDegrees(180)), 
+      new PathConstraints(
+        4.0, 4.0, 
+        Units.degreesToRadians(360), Units.degreesToRadians(540)
+      ), 
+      0, 
+      2.0
+    );
 
 
   final Trigger driverL1 = m_driverControllerCommand.L1();
@@ -163,6 +186,18 @@ public class RobotContainer {
    * Associates each button with its corresponding command or action.
    */
   private void configureButtonBindings() {
+    boolean isRed = false;
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+       isRed = (alliance.get() == DriverStation.Alliance.Red);
+    }
+    if(isRed == false) {
+      SmartDashboard.putData(PathfindToPickupBlue);
+    } else {
+      SmartDashboard.putData(PathfindToPickupRed);
+    }
+
+
     auxR1.onTrue(endEffector.toggleFlywheelCommand());
     auxL1.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
     auxTriangle.onTrue(new InstantCommand(() -> {endEffector.intake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
