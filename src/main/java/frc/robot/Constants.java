@@ -47,8 +47,17 @@ public final class Constants {
   }
 
   public static final class PivotConstants {
+
     public static final int kPivotMotorLeftID = 21;
     public static final int kPivotMotorRightID = 20;
+    
+    
+    public static final double kS = 0.01;
+    public static final double kG = 0.39;
+    public static final double kV = 0.06;
+    public static final double kA = 0;
+    //calulcations
+    //https://www.reca.lc/arm?armMass=%7B%22s%22%3A14%2C%22u%22%3A%22lbs%22%7D&comLength=%7B%22s%22%3A27.784294%2C%22u%22%3A%22in%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=80&endAngle=%7B%22s%22%3A90%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A2%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A165.333333%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A0%2C%22u%22%3A%22deg%22%7D
 
     public static final double kPivotGearRatio = 18.0/62.0;
     public static final double kPivotP = 0.25;
@@ -140,7 +149,7 @@ public final class Constants {
     public static final double kDrivingEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
         / kDrivingMotorReduction; // meters
     public static final double kDrivingEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
-        / kDrivingMotorReduction) / 60.0; // meters per second
+        / kDrivingMotorReduction); // meters per second
 
     public static final double kTurningEncoderPositionFactor = (2 * Math.PI); // radians
     public static final double kTurningEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second

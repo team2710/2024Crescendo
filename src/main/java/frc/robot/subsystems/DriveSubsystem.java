@@ -13,14 +13,17 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C.Port;
@@ -195,6 +198,20 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         },
         pose);
+  }
+
+  public double autoAim(double vx, double vy, Pose2d robot_pose, double shooter_velocity, Translation2d target_pose){
+    Vector<N2> addedVelocity = VecBuilder.fill(vx , vy);
+    // Vector<N2> y_velocity = VecBuilder.fill(target_pose.getX(), target_pose.getY() - vy);
+    Vector<N2> robotToTarget = VecBuilder.fill(target_pose.getX() - robot_pose.getX()  , target_pose.getY() - robot_pose.getY());
+    Vector<N2> shooterVelocity = robotToTarget.times((robotToTarget.norm() / (shooter_velocity)));
+    Vector<N2> correctVector = shooterVelocity.minus(addedVelocity);
+    double correctAngle = Math.acos((robotToTarget.dot(correctVector))/ (robotToTarget.norm() * correctVector.norm()));  
+
+    return correctAngle;
+
+
+
   }
 
   // For balance auto
