@@ -8,6 +8,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -35,7 +36,7 @@ public final class Constants {
     public static final int kFlywheelMotorBottomID = 43;
 
     public static final double kIntakeSpeed = 1;
-    public static final double kFlywheelMotorSpeed = 3000;
+    public static final double kFlywheelMotorSpeed = 6300;
     
     public static final double kFlywheelP = 0.002;
     public static final double kFlywheelI = 0;
@@ -80,6 +81,8 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
+    public static final Translation2d blueSpeaker = new Translation2d(0.225, 5.55);
+    public static final Translation2d redSpeaker = new Translation2d(16.317, 5.55);
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 6.1

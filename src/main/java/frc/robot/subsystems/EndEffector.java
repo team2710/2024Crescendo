@@ -40,7 +40,7 @@ public class EndEffector extends SubsystemBase {
   private boolean isIntaking = false;
   private boolean isOuttaking = false;
   private boolean isNote = false;
-  private double setpoint = 2000;
+  private double setpoint = 6000;
 
   private Debouncer intakDebouncer = new Debouncer(0.08, DebounceType.kRising);
 
@@ -88,6 +88,10 @@ public class EndEffector extends SubsystemBase {
     pidController.setFF(EndEffectorConstants.kFlywheelFF);
     pidController.setIZone(EndEffectorConstants.kFlywheelIz);
     pidController.setOutputRange(EndEffectorConstants.kFlywheelMinOutput, EndEffectorConstants.kFlywheelMaxOutput);
+
+    pidController.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kSCurve, 0);
+    pidController.setSmartMotionAllowedClosedLoopError(5, 0);
+    pidController.setSmartMotionMaxVelocity(EndEffectorConstants.kFlywheelMotorSpeed, 0);
   }
 
   public Command toggleIntakeCommand() {
@@ -313,8 +317,9 @@ public void ShootSetter() {
 
   public void spinupFlywheel() {
     isFlywheelRunning = true;
-    // pidController.setReference(flywheelSpeed, ControlType.kVelocity);
-    // pidControllerBottom.setReference(-2000, ControlType.kVelocity);\
+
+    //uncomment for smart pid control and for auto aim to work properly and accurately
+    // pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
     flywheelMotorTop.set(-1);
     // flywheelMotorBottom.set(-1);
   }
