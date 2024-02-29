@@ -320,7 +320,7 @@ public void ShootSetter() {
 
     //uncomment for smart pid control and for auto aim to work properly and accurately
     // pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
-    flywheelMotorTop.set(-1);
+    flywheelMotorTop.set(-0.6);
     // flywheelMotorBottom.set(-1);
   }
 

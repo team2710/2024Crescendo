@@ -179,7 +179,7 @@ public class RobotContainer {
     auxR1.onTrue(endEffector.toggleFlywheelCommand());
     auxL1.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
     auxTriangle.onTrue(new InstantCommand(() -> {endEffector.intake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
-    auxCross.onTrue(new InstantCommand(() -> {endEffector.outtake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
+    auxSquare.onTrue(new InstantCommand(() -> {endEffector.outtake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
 
     auxDPADUP.onTrue(new InstantCommand(() -> {
       climber.climbUP();
@@ -200,6 +200,7 @@ public class RobotContainer {
     // auxL1.onTrue(feed).onFalse(stopIntake);
     // auxSquare.onTrue(outtake).onFalse(stopIntake);
 
+    /* 
     auxR2.onTrue(new InstantCommand(() -> {
       pivot.setAngleDegree(
         0
@@ -208,13 +209,14 @@ public class RobotContainer {
     auxL2.onTrue(new InstantCommand(() -> {
       pivot.setAngleDegree(15);
     }));
-    auxSquare.onTrue(new InstantCommand(() -> {
+    auxCross.onTrue(new InstantCommand(() -> {
       pivot.setAngleDegree(80);
     }));
 
     driverCross.onTrue(new InstantCommand(() -> {
       m_robotDrive.zeroHeading();
     }));
+    */
 
   }
 
