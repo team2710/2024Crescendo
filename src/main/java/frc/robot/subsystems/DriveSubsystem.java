@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.google.flatbuffers.Constants;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -14,6 +15,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,12 +28,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.LimelightHelpers;
 import frc.utils.SwerveUtils;
 
@@ -67,10 +71,15 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_currentRotation = 0.0;
   private double m_currentTranslationDir = 0.0;
   private double m_currentTranslationMag = 0.0;
+  boolean isRed = false;
 
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
+
+  public Translation2d target_pose = DriveConstants.blueSpeaker;
+
+  public PIDController m_botAnglePID = new PIDController(ModuleConstants.kDrivingP, ModuleConstants.kDrivingI, ModuleConstants.kDrivingD);
 
   // Instead of using odometry class, we use a pose esimator to allow fusing multiple inputs
   SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
@@ -89,7 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     SmartDashboard.putData("Field", m_field);
-
+    
     m_gyro.reset();
 
     AutoBuilder.configureHolonomic(
@@ -107,9 +116,24 @@ public class DriveSubsystem extends SubsystemBase {
         }
         return false;
       }, this);
+
+      if(DriverStation.getAlliance().isPresent()){
+        isRed = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+      }
+      else{
+        isRed = false;
+      }
+
+      if(isRed){
+        target_pose = DriveConstants.redSpeaker;
+      }
   }
 
+
+
   // PATHPLANNER STUFF
+
+
 
   ChassisSpeeds getRobotRelativeSpeeds() {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
@@ -160,14 +184,14 @@ public class DriveSubsystem extends SubsystemBase {
 
     
     //uncomment for bruh
-    // LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-    // if(limelightMeasurement.tagCount >= 2)
-    // {
-    //   m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-    //   m_poseEstimator.addVisionMeasurement(
-    //       limelightMeasurement.pose,
-    //       limelightMeasurement.timestampSeconds);
-    // }
+    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    if(limelightMeasurement.tagCount >= 2)
+    {
+      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      m_poseEstimator.addVisionMeasurement(
+          limelightMeasurement.pose,
+          limelightMeasurement.timestampSeconds);
+    }
   }
 
   /**
@@ -202,15 +226,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double autoAim(double vx, double vy, Pose2d robot_pose, double shooter_velocity, Translation2d target_pose){
     Vector<N2> addedVelocity = VecBuilder.fill(vx , vy);
-    // Vector<N2> y_velocity = VecBuilder.fill(target_pose.getX(), target_pose.getY() - vy);
+    SmartDashboard.putNumber("added velocity", addedVelocity.norm());
     Vector<N2> robotToTarget = VecBuilder.fill(target_pose.getX() - robot_pose.getX()  , target_pose.getY() - robot_pose.getY());
-    Vector<N2> shooterVelocity = robotToTarget.times((robotToTarget.norm() / (shooter_velocity)));
-    Vector<N2> correctVector = shooterVelocity.minus(addedVelocity);
-    double correctAngle = Math.acos((robotToTarget.dot(correctVector))/ (robotToTarget.norm() * correctVector.norm()));  
+    Vector<N2> scaledRobotToTarget = robotToTarget.times(shooter_velocity/robotToTarget.norm());
+    Vector<N2> correctVector = scaledRobotToTarget.minus(addedVelocity);
+    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0));
 
     return correctAngle;
-
-
 
   }
 
@@ -235,6 +257,17 @@ public class DriveSubsystem extends SubsystemBase {
    *                      field.
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
+  public void DriverDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit, PS4Controller controller)
+  {
+    if(controller.getSquareButton()){
+      double angle = autoAim(getRobotDiscreteSpeeds().vxMetersPerSecond, getRobotDiscreteSpeeds().vyMetersPerSecond, getPose(), 45, target_pose);
+      rot = m_botAnglePID.calculate(angle, 0);
+    }
+    drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);
+  }
+
+
+
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
     double xSpeedCommanded;
     double ySpeedCommanded;
@@ -279,9 +312,7 @@ public class DriveSubsystem extends SubsystemBase {
       ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
       m_currentRotation = m_rotLimiter.calculate(rot);
 
-    
-      
-    
+
     } else {
       xSpeedCommanded = xSpeed;
       ySpeedCommanded = ySpeed;
@@ -292,15 +323,7 @@ public class DriveSubsystem extends SubsystemBase {
     double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
-
-
     
-    // var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-    //     fieldRelative
-    //         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(getHeading()))
-    //         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
-    // SwerveDriveKinematics.desaturateWheelSpeeds(
-    //     swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     var swerveModuleStates =
     DriveConstants.kDriveKinematics.toSwerveModuleStates(
         ChassisSpeeds.discretize(
