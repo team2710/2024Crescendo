@@ -79,7 +79,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Translation2d target_pose = DriveConstants.blueSpeaker;
 
-  public PIDController m_botAnglePID = new PIDController(ModuleConstants.kDrivingP, ModuleConstants.kDrivingI, ModuleConstants.kDrivingD);
+  public PIDController m_botAnglePID = new PIDController(ModuleConstants.kTurningP, ModuleConstants.kTurningI, ModuleConstants.kTurningD);
+
+  LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
   // Instead of using odometry class, we use a pose esimator to allow fusing multiple inputs
   SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
@@ -91,7 +93,7 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
       },
-      vision.getBotPose2d());
+      limelightMeasurement.pose);
 
   private Field2d m_field = new Field2d();
 
@@ -184,14 +186,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     
     //uncomment for bruh
-    LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-    if(limelightMeasurement.tagCount >= 2)
+    limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    SmartDashboard.putNumber("Limelight tag count", limelightMeasurement.tagCount);
+    if(vision.hasValidTargets())
     {
       m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
       m_poseEstimator.addVisionMeasurement(
           limelightMeasurement.pose,
           limelightMeasurement.timestampSeconds);
     }
+
+    m_field.setRobotPose(getPose());
   }
 
   /**
@@ -261,7 +266,7 @@ public class DriveSubsystem extends SubsystemBase {
   {
     if(controller.getSquareButton()){
       double angle = autoAim(getRobotDiscreteSpeeds().vxMetersPerSecond, getRobotDiscreteSpeeds().vyMetersPerSecond, getPose(), 45, target_pose);
-      rot = m_botAnglePID.calculate(angle, 0);
+      rot = m_botAnglePID.calculate(getPose().getRotation().getRadians(), angle);
       SmartDashboard.putNumber("Auto Aim Rotation", rot);
     }
     drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);

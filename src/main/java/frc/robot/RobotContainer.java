@@ -44,6 +44,8 @@ import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -77,7 +79,7 @@ public class RobotContainer {
   Command shooterOff = new InstantCommand(() -> endEffector.setShooterState(FlywheelState.On), endEffector);
 
   // Pivot Arm
-  Pivot pivot = new Pivot();
+  Pivot pivot = new Pivot(m_robotDrive);
   Climb climber = new Climb();
   // Command pivotSpeaker = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.Speaker), pivot);
   // Command pivotAMP = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.AMP), pivot);
@@ -91,6 +93,7 @@ public class RobotContainer {
   final Trigger auxL1 = m_auxController.L1();
   final Trigger auxR1 = m_auxController.R1();
   final Trigger auxCross = m_auxController.cross();
+  final Trigger auxCircle = m_auxController.circle();
   final Trigger auxTriangle = m_auxController.triangle();
   final Trigger auxR2 = m_auxController.R2();
   final Trigger auxL2 = m_auxController.L2();
@@ -177,9 +180,13 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     auxR1.onTrue(endEffector.toggleFlywheelCommand());
-    auxL1.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
     auxTriangle.onTrue(new InstantCommand(() -> {endEffector.intake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
     auxSquare.onTrue(new InstantCommand(() -> {endEffector.outtake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
+    auxCircle.whileTrue(new RunCommand(() -> {
+      pivot.autoAimPivot();
+    })).onFalse(new InstantCommand(() -> {
+      pivot.setAngleDegree(0);
+    }));
 
     auxDPADUP.onTrue(new InstantCommand(() -> {
       climber.climbUP();
@@ -200,23 +207,21 @@ public class RobotContainer {
     // auxL1.onTrue(feed).onFalse(stopIntake);
     // auxSquare.onTrue(outtake).onFalse(stopIntake);
 
-    /* 
+    
     auxR2.onTrue(new InstantCommand(() -> {
-      pivot.setAngleDegree(
-        0
-      );
+      pivot.setAngleDegree(0);
     }));
     auxL2.onTrue(new InstantCommand(() -> {
-      pivot.setAngleDegree(15);
-    }));
-    auxCross.onTrue(new InstantCommand(() -> {
       pivot.setAngleDegree(80);
     }));
+
+    // auxCross.onTrue(new InstantCommand(() -> {
+    //   pivot.setAngleDegree(80);
+    // }));
 
     driverCross.onTrue(new InstantCommand(() -> {
       m_robotDrive.zeroHeading();
     }));
-    */
 
   }
 
@@ -226,6 +231,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return Commands.none();
+    PathPlannerPath path = PathPlannerPath.fromPathFile("Test");
+    return AutoBuilder.followPath(path);
   }
 }

@@ -66,8 +66,8 @@ public final class Constants {
     public static final double kPivotD = 0.01;
     public static final double kPivotIz = 0;
     public static final double kPivotFF = 0;
-    public static final double kPivotMinOutput = -0.5;
-    public static final double kPivotMaxOutput = 0.5;
+    public static final double kPivotMinOutput = -0.2;
+    public static final double kPivotMaxOutput = 0.2;
 
     public static final double kPivotStartPosition = 0;
   }
