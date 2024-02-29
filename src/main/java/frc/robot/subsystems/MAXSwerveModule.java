@@ -175,7 +175,7 @@ public class MAXSwerveModule {
     //pid uses rev/s
 
     m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
-    // m_drivingKraken.setControl(m_velocityPIDFOC.withVelocity(optimizedDesiredState.speedMetersPerSecond * ModuleConstants.kDrivingEncoderVelocityFactor));
+    // m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond * ModuleConstants.kDrivingEncoderVelocityFactor));
     m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
 
     m_desiredState = desiredState;
