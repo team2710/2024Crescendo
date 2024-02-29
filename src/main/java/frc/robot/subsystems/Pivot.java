@@ -122,8 +122,8 @@ public class Pivot extends SubsystemBase {
         return relativeEncoder.getPosition();
     }
 
-    public void setAngleFeedFoward(double setAngle, double setAngleRate, double setAngleAccel) {
-        pivotMotorLeft.setVoltage(feedforward.calculate(setAngle, setAngleRate, setAngleAccel));
+    public void setAngleFeedFowardDegree(double setAngle, double setAngleRate, double setAngleAccel) {
+        pivotMotorLeft.setVoltage(feedforward.calculate(setAngle * Math.PI/180, setAngleRate * Math.PI/180, setAngleAccel * Math.PI/180));
     }
 
     //remove one of the later
