@@ -261,7 +261,7 @@ public class DriveSubsystem extends SubsystemBase {
   {
     if(controller.getSquareButton()){
       double angle = autoAim(getRobotDiscreteSpeeds().vxMetersPerSecond, getRobotDiscreteSpeeds().vyMetersPerSecond, getPose(), 45, target_pose);
-      rot = m_botAnglePID.calculate(angle, 0);
+      rot = m_botAnglePID.calculate(getPose().getRotation().getRadians(), angle);
     }
     drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);
   }

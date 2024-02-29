@@ -134,7 +134,7 @@ public class MAXSwerveModule {
   public SwerveModuleState getState() {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
-    return new SwerveModuleState(m_drivingKraken.getVelocity().getValueAsDouble() * ModuleConstants.kWheelCircumferenceMeters * 0.5 * (1/ModuleConstants.kDrivingMotorReduction),
+    return new SwerveModuleState(m_drivingKraken.getVelocity().getValueAsDouble() * ModuleConstants.kDrivingEncoderVelocityFactor,
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
   }
 
@@ -174,10 +174,6 @@ public class MAXSwerveModule {
     // formula is (m/s / radius of wheel) * gear_ratio = rev/s
     //pid uses rev/s
 
-
-    // m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond *ModuleConstants.kWheelCircumferenceMeters * 0.5 * (1/ModuleConstants.kDrivingMotorReduction)));
-    // m_drivingKraken.set();
-    //  m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
     m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
     // m_drivingKraken.setControl(m_velocityPIDFOC.withVelocity(optimizedDesiredState.speedMetersPerSecond * ModuleConstants.kDrivingEncoderVelocityFactor));
     m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
