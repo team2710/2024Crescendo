@@ -15,6 +15,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
@@ -44,6 +46,7 @@ import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.revrobotics.CANSparkBase;
@@ -85,6 +88,46 @@ public class RobotContainer {
   // Command pivotAMP = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.AMP), pivot);
   // Command pivotOff = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.OFF), pivot);
 
+  Command PathfindToPickupBlue = AutoBuilder.pathfindToPose(
+    new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)), 
+    new PathConstraints(
+      4.0, 4.0, 
+      Units.degreesToRadians(360), Units.degreesToRadians(540)
+    ), 
+    0, 
+    2.0
+  );
+
+  Command PathfindToPickupRed = AutoBuilder.pathfindToPose(
+    new Pose2d(0.956, 1.763, Rotation2d.fromDegrees(180)), 
+    new PathConstraints(
+      4.0, 4.0, 
+      Units.degreesToRadians(360), Units.degreesToRadians(540)
+    ), 
+    0, 
+    2.0
+  );
+
+  Command PathfindToScoringBlue = AutoBuilder.pathfindToPose(
+    new Pose2d(2.15, 5.5, Rotation2d.fromDegrees(180)), 
+    new PathConstraints(
+      4.0, 4.0, 
+      Units.degreesToRadians(360), Units.degreesToRadians(540)
+    ), 
+    0, 
+    0
+  );
+
+  Command PathfindToScoringRed = AutoBuilder.pathfindToPose(
+    new Pose2d(13.0, 5.5, Rotation2d.fromDegrees(0)), 
+    new PathConstraints(
+      4.0, 4.0, 
+      Units.degreesToRadians(360), Units.degreesToRadians(540)
+    ), 
+    0, 
+    0
+  );
+
 
   final Trigger driverL1 = m_driverControllerCommand.L1();
   final Trigger driverR1 = m_driverControllerCommand.R1();
@@ -121,6 +164,20 @@ public class RobotContainer {
     // NamedCommands.registerCommand("Pivot Off", pivotOff);
 
     // kbShooter = new KitBotShooter();
+
+    boolean isRed = false;
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+       isRed = (alliance.get() == DriverStation.Alliance.Red);
+    }
+    if(isRed == false) {
+      SmartDashboard.putData("pickup",PathfindToPickupBlue);
+      SmartDashboard.putData("scoring",PathfindToScoringBlue);
+    } else {
+      SmartDashboard.putData("pickup",PathfindToPickupRed);
+      SmartDashboard.putData("score",PathfindToScoringRed);
+    }
+
 
     CameraServer.addCamera(camera);
     Shuffleboard.getTab("Limelight").add(camera);
