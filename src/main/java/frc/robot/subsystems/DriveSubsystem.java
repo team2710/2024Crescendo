@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 import com.google.flatbuffers.Constants;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.GeometryUtil;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -23,12 +24,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -94,6 +97,13 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       },
       limelightMeasurement.pose);
+  // SwerveDriveOdometry m_poseEstimator = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(getHeading()), 
+  //   new SwerveModulePosition[] {
+  //     m_frontLeft.getPosition(),
+  //     m_frontRight.getPosition(),
+  //     m_rearLeft.getPosition(),
+  //     m_rearRight.getPosition()
+  //   });
 
   private Field2d m_field = new Field2d();
 
@@ -101,7 +111,7 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     SmartDashboard.putData("Field", m_field);
     
-    m_gyro.reset();
+    zeroHeading();
 
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
@@ -188,13 +198,13 @@ public class DriveSubsystem extends SubsystemBase {
     //uncomment for bruh
     limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
     SmartDashboard.putNumber("Limelight tag count", limelightMeasurement.tagCount);
-    if(vision.hasValidTargets())
-    {
-      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-      m_poseEstimator.addVisionMeasurement(
-          limelightMeasurement.pose,
-          limelightMeasurement.timestampSeconds);
-    }
+    // if(vision.hasValidTargets() && false)
+    // {
+    //   m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+    //   m_poseEstimator.addVisionMeasurement(
+    //       limelightMeasurement.pose,
+    //       limelightMeasurement.timestampSeconds);
+    // }
 
     m_field.setRobotPose(getPose());
   }
@@ -210,6 +220,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   public AHRS getGyro() {
     return m_gyro;
+  }
+
+  public void resetOdometryWithAlliance(Pose2d pose) {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+      resetOdometry(GeometryUtil.flipFieldPose(pose));
+    } else {
+      resetOdometry(pose);
+    }
   }
 
   /**
@@ -362,8 +381,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @param desiredStates The desired SwerveModule states.
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    // SwerveDriveKinematics.desaturateWheelSpeeds(
+    //     desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);

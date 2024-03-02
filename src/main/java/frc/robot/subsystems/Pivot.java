@@ -20,6 +20,8 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PivotConstants;
@@ -67,6 +69,8 @@ public class Pivot extends SubsystemBase {
         pidController.setOutputRange(PivotConstants.kPivotMinOutput, PivotConstants.kPivotMaxOutput);
        
         pivotMotorLeft.follow(pivotMotorRight, true);
+
+        SmartDashboard.putBoolean("Brake Mode", true);
 
         pivotMotorLeft.setIdleMode(IdleMode.kBrake);
         pivotMotorRight.setIdleMode(IdleMode.kBrake);
@@ -116,6 +120,10 @@ public class Pivot extends SubsystemBase {
         return -0.592594095866 * angle;
     }
 
+    public double encoderToAngle(double encoder) {
+        return -1.6874957192 * encoder;
+    }
+
     public double distanceToAngle(double distance){
         //use desmos to find
         //x = distance
@@ -132,12 +140,17 @@ public class Pivot extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Pivot Position", pivotMotorRight.getEncoder().getPosition());
-        SmartDashboard.putNumber("30 degrees", angleToEncoder(30));
+        SmartDashboard.putNumber("Pivot Angle", getAngle());
+        SmartDashboard.putNumber("Distance to speaker", distToSpeaker(driveSubsystem.getPose()));
 
-        SmartDashboard.putNumber("Encoder", getAngle());
-        SmartDashboard.putNumber("Distance to blue speaker", distToSpeaker(driveSubsystem.getPose()));
-        // SmartDashboard.putNumber("Absolute as Relative", absToRelative());
+        boolean brakeMode = SmartDashboard.getBoolean("Brake Mode", true);
+        if (brakeMode && pivotMotorLeft.getIdleMode() == IdleMode.kCoast) {
+            pivotMotorLeft.setIdleMode(IdleMode.kBrake);
+            pivotMotorRight.setIdleMode(IdleMode.kBrake);
+        } else if (!brakeMode && pivotMotorLeft.getIdleMode() == IdleMode.kBrake) {
+            pivotMotorLeft.setIdleMode(IdleMode.kCoast);
+            pivotMotorRight.setIdleMode(IdleMode.kCoast);
+        }
     }
 
     public double absToRelative() {
@@ -171,8 +184,14 @@ public class Pivot extends SubsystemBase {
         }
     }
 
+    public Command pivotMoveCommand(double position) {
+        return new InstantCommand(() -> {
+            setAngleDegree(position);
+        }, this);
+    }
+
     public double getAngle() {
-        return relativeEncoder.getPosition();
+        return encoderToAngle(relativeEncoder.getPosition());
     }
 
     public void setAngleFeedFowardDegree(double setAngle, double setAngleRate, double setAngleAccel) {
@@ -181,7 +200,6 @@ public class Pivot extends SubsystemBase {
 
     //remove one of the later
     public void setPosition(double position) {
-        SmartDashboard.putNumber("Set Position", position);
         pidController.setReference(position, ControlType.kPosition);
     }
 
@@ -189,7 +207,15 @@ public class Pivot extends SubsystemBase {
         pivotMotorRight.set(output);
     }
 
+
+    // kill the pivot rip
+    public void disable() {
+        pivotMotorRight.set(0);
+    }
+
     public void setAngleDegree(double position) {
+        if (position > 80) position = 80;
+        if (position < 0) position = 0;
         // pidController.setReference(position, ControlType.kPosition);
         setPosition(angleToEncoder(position));
 

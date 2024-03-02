@@ -33,7 +33,7 @@ public class MAXSwerveModule {
   private final AbsoluteEncoder m_turningEncoder;
 
   private final SparkPIDController m_turningPIDController;
-  private VelocityDutyCycle m_velocityPID;
+  private VelocityVoltage m_velocityPID;
 
 
 
@@ -79,7 +79,7 @@ public class MAXSwerveModule {
     m_turningPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
     m_turningPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
 
-    m_velocityPID = new VelocityDutyCycle(0);
+    m_velocityPID = new VelocityVoltage(0, 9, false, 0, 0, false, false, false);
   
     // Set the PID gains for the driving motor. Note these are example gains, and you
     // may need to tune them for your own robot!
@@ -147,7 +147,7 @@ public class MAXSwerveModule {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModulePosition(
-        -m_drivingKraken.getPosition().getValueAsDouble() * ModuleConstants.kDrivingEncoderPositionFactor,
+        m_drivingKraken.getPosition().getValueAsDouble() * ModuleConstants.kDrivingEncoderPositionFactor,
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
   }
 
@@ -174,8 +174,11 @@ public class MAXSwerveModule {
     // formula is (m/s / radius of wheel) * gear_ratio = rev/s
     //pid uses rev/s
 
+    SmartDashboard.putNumber("Speed", optimizedDesiredState.speedMetersPerSecond);
+
     // m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
-    m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond * ModuleConstants.kDrivingEncoderVelocityFactor));
+    // m_drivingKraken.setControl(m_velocityPID.withVelocity((optimizedDesiredState.speedMetersPerSecond / 0.1016 / Math.PI) * 2048 * 3.56));
+    m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond / ModuleConstants.kWheelCircumferenceMeters * ModuleConstants.kDrivingMotorReduction)); 
     m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
 
     m_desiredState = desiredState;

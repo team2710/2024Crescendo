@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
@@ -92,6 +93,9 @@ public class EndEffector extends SubsystemBase {
     pidController.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kSCurve, 0);
     pidController.setSmartMotionAllowedClosedLoopError(5, 0);
     pidController.setSmartMotionMaxVelocity(EndEffectorConstants.kFlywheelMotorSpeed, 0);
+
+    flywheelMotorTop.setIdleMode(IdleMode.kBrake);
+    flywheelMotorTop.burnFlash();
   }
 
   public Command toggleIntakeCommand() {
@@ -144,6 +148,8 @@ public class EndEffector extends SubsystemBase {
     isIntaking = true;
     isOuttaking = false;
     intakeMotor.set(EndEffectorConstants.kIntakeSpeed);
+    if (!isFlywheelRunning)
+        flywheelMotorTop.set(0.05);
   }
 
   // public void currentDetectionIntake() {
@@ -293,6 +299,8 @@ public void ShootSetter() {
     isOuttaking = true;
     isIntaking = false;
     intakeMotor.set(-0.2);
+    if (!isFlywheelRunning)
+        flywheelMotorTop.set(0.05);
   }
 
   public void toggleOuttake() {
@@ -304,6 +312,8 @@ public void ShootSetter() {
 
   public void stopIntake() {
     intakeMotor.set(0);
+    if (!isFlywheelRunning)
+        flywheelMotorTop.set(0);
     isIntaking = false;
     isOuttaking = false;
   }

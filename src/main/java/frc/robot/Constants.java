@@ -51,6 +51,12 @@ public final class Constants {
 
     public static final int kPivotMotorLeftID = 21;
     public static final int kPivotMotorRightID = 20;
+
+    public static final double kPivotPodiumAngle = 20;
+    public static final double kPivotWingAngle = 25;
+    public static final double kPivotAmpAngle = 80;
+    public static final double kPivotZero = 0;
+    public static final double kPivotStow = 72;
     
     
     public static final double kS = 0.01;
@@ -66,8 +72,8 @@ public final class Constants {
     public static final double kPivotD = 0.01;
     public static final double kPivotIz = 0;
     public static final double kPivotFF = 0;
-    public static final double kPivotMinOutput = -0.2;
-    public static final double kPivotMaxOutput = 0.2;
+    public static final double kPivotMinOutput = -0.825;
+    public static final double kPivotMaxOutput = 0.75;
 
     public static final double kPivotStartPosition = 0;
   }
@@ -76,8 +82,8 @@ public final class Constants {
     public static final int kClimberMotorID = 30;
     public static final double kMaxPosition = 1;
     public static final double kMinPosition = 0;
-    public static final double kUpSpeed = 0.25;
-    public static final double kDownSpeed = -0.25;
+    public static final double kUpSpeed = 0.75;
+    public static final double kDownSpeed = -0.75;
   }
 
   public static final class DriveConstants {
@@ -85,7 +91,7 @@ public final class Constants {
     public static final Translation2d redSpeaker = new Translation2d(16.317, 5.55);
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 6.1
+    public static final double kMaxSpeedMetersPerSecond = 6.8
     ;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
@@ -149,9 +155,9 @@ public final class Constants {
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 
-    public static final double kDrivingEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
+    public static final double kDrivingEncoderPositionFactor = (kWheelCircumferenceMeters)
         / kDrivingMotorReduction; // meters
-    public static final double kDrivingEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
+    public static final double kDrivingEncoderVelocityFactor = ((kWheelCircumferenceMeters)
         / kDrivingMotorReduction); // meters per second
 
     public static final double kTurningEncoderPositionFactor = (2 * Math.PI); // radians

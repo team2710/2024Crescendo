@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3216735004898588,
+      "y": 5.546821904454621
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "pivot_subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup Note 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "toggle_intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Note 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "pivot_subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

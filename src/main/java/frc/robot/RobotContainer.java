@@ -23,8 +23,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.commands.Basic2PieceAuto;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.EndEffector;
@@ -44,6 +46,7 @@ import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.revrobotics.CANSparkBase;
@@ -64,19 +67,19 @@ public class RobotContainer {
 
   // The driver's controller
   CommandPS4Controller m_driverControllerCommand = new CommandPS4Controller(OIConstants.kDriverControllerPort);
-  PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
+  // PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
 
   // KitBotShooter kbShooter = new KitBotShooter();
   // Commands
-  Command feed = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Feed), endEffector);
+  Command intakeCommand = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Feed), endEffector);
   Command stopIntake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.OFF), endEffector);
   Command intakeOn = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.On), endEffector);
   Command outtake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Outtake));
 
 
-  Command shooterOn = new InstantCommand(() -> endEffector.setShooterState(FlywheelState.On), endEffector);
-  Command shooterOff = new InstantCommand(() -> endEffector.setShooterState(FlywheelState.On), endEffector);
+  Command spinupFlywheelCommand = new InstantCommand(() -> endEffector.spinupFlywheel(), endEffector);
+  Command stopFlywheelCommand = new InstantCommand(() -> endEffector.stopFlywheel(), endEffector);
 
   // Pivot Arm
   Pivot pivot = new Pivot(m_robotDrive);
@@ -88,7 +91,9 @@ public class RobotContainer {
 
   final Trigger driverL1 = m_driverControllerCommand.L1();
   final Trigger driverR1 = m_driverControllerCommand.R1();
+  final Trigger driverR2 = m_driverControllerCommand.R2();
   final Trigger driverCross = m_driverControllerCommand.cross();
+  final Trigger driverDPADUP = m_driverControllerCommand.povUp();
 
   final Trigger auxL1 = m_auxController.L1();
   final Trigger auxR1 = m_auxController.R1();
@@ -104,6 +109,23 @@ public class RobotContainer {
 
   HttpCamera camera = new HttpCamera("Limelight", "http://10.27.10.11:5800/stream.mjpg");
 
+  SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+  // AUTO COMMANDS
+
+  Command shootCommand = Commands.sequence(
+    endEffector.toggleFlywheelCommand(),
+    Commands.waitSeconds(1),
+    endEffector.toggleIntakeCommand(),
+    Commands.waitSeconds(0.5),
+    endEffector.toggleIntakeCommand()
+  );
+
+  Command lowerArmCommand = Commands.sequence(
+    pivot.pivotMoveCommand(0),
+    Commands.waitSeconds(0.5)
+  );
+
   // private final SendableChooser<Command> autoChooser;
 
   /**
@@ -111,14 +133,22 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // Commands for Pathplanner
-    NamedCommands.registerCommand("Shoot", shooterOn);
-    NamedCommands.registerCommand("Feed", feed);
-    NamedCommands.registerCommand("Shooter Off", shooterOff);  
-    NamedCommands.registerCommand("Stop Intake", stopIntake);
-    NamedCommands.registerCommand("Intake On", intakeOn);
-    // NamedCommands.registerCommand("Pivot Speaker", pivotSpeaker);
-    // NamedCommands.registerCommand("Pivot AMP", pivotAMP);
-    // NamedCommands.registerCommand("Pivot Off", pivotOff);
+    NamedCommands.registerCommand("pivot_subwoofer", lowerArmCommand);
+    NamedCommands.registerCommand("shoot", shootCommand);
+    NamedCommands.registerCommand("toggle_intake", endEffector.toggleIntakeCommand());
+
+    autoChooser.setDefaultOption("No Auto", Commands.none());
+    autoChooser.addOption("Basic 2 Piece", new PathPlannerAuto("2 Note Auto"));
+    autoChooser.addOption("1 Piece", Commands.sequence(
+      pivot.pivotMoveCommand(0),
+      Commands.waitSeconds(1),
+      endEffector.toggleFlywheelCommand(),
+      Commands.waitSeconds(1),
+      endEffector.toggleIntakeCommand(),
+      Commands.waitSeconds(0.5),
+      endEffector.toggleIntakeCommand()
+    ));
+    SmartDashboard.putData(autoChooser);
 
     // kbShooter = new KitBotShooter();
 
@@ -141,22 +171,24 @@ public class RobotContainer {
 
         //square button for aim assist
         //uncomment if no worky
-        new RunCommand(
-            () -> m_robotDrive.DriverDrive(
+        // new RunCommand(
+        //     () -> m_robotDrive.DriverDrive(
+        //         -MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband),
+        //         -MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband),
+        //         -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
+        //         true, true, m_driverControllerCommand),
+        //     m_robotDrive));
+
+          //this is old
+          new RunCommand(
+            () -> m_robotDrive.drive(
                 -MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
-                true, true, m_driverController),
+                true, true),
             m_robotDrive));
 
-          //this is old
-          // new RunCommand(
-          //   () -> m_robotDrive.drive(
-          //       -MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband),
-          //       -MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband),
-          //       -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
-          //       true, true),
-          //   m_robotDrive);
+      m_robotDrive.zeroHeading();
 
   }
 
@@ -179,15 +211,29 @@ public class RobotContainer {
    * Associates each button with its corresponding command or action.
    */
   private void configureButtonBindings() {
+    // AUX COMMANDS
+
+    // END EFFECTOR COMMANDS
     auxR1.onTrue(endEffector.toggleFlywheelCommand());
-    auxTriangle.onTrue(new InstantCommand(() -> {endEffector.intake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
-    auxSquare.onTrue(new InstantCommand(() -> {endEffector.outtake();})).onFalse(new InstantCommand(() -> {endEffector.stopIntake();}));
+    auxTriangle.onTrue(new InstantCommand(() -> {
+      endEffector.intake();
+    })).onFalse(new InstantCommand(() -> {
+      endEffector.stopIntake();
+    }));
+    auxSquare.onTrue(new InstantCommand(() -> {
+      endEffector.outtake();
+    })).onFalse(new InstantCommand(() -> {
+      endEffector.stopIntake();
+    }));
+    
+    // AUTO COMMANDS
     auxCircle.whileTrue(new RunCommand(() -> {
       pivot.autoAimPivot();
     })).onFalse(new InstantCommand(() -> {
       pivot.setAngleDegree(0);
     }));
 
+    // CLIMB COMMANDS
     auxDPADUP.onTrue(new InstantCommand(() -> {
       climber.climbUP();
     })).onFalse( new InstantCommand(() -> {
@@ -200,6 +246,13 @@ public class RobotContainer {
       climber.stopClimb();
     }));
 
+    // PIVOT COMMANDS
+    auxL2.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotAmpAngle));
+    auxL1.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotPodiumAngle));
+    auxR2.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotWingAngle));
+    auxCross.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotZero));
+    driverDPADUP.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotStow));
+
     // trigger and state machine (prob better implemenetation)
     // uncomment to test
     // auxR1.onTrue(shooterOn).onFalse(shooterOff);
@@ -208,19 +261,30 @@ public class RobotContainer {
     // auxSquare.onTrue(outtake).onFalse(stopIntake);
 
     
-    auxR2.onTrue(new InstantCommand(() -> {
-      pivot.setAngleDegree(0);
-    }));
-    auxL2.onTrue(new InstantCommand(() -> {
-      pivot.setAngleDegree(80);
-    }));
+    // auxR2.onTrue(new InstantCommand(() -> {
+    //   pivot.setAngleDegree(0);
+    // }));
+    // auxL2.onTrue(new InstantCommand(() -> {
+    //   pivot.setAngleDegree(80);
+    // }));
 
     // auxCross.onTrue(new InstantCommand(() -> {
     //   pivot.setAngleDegree(80);
     // }));
 
+    // DRIVER COMMANDS
     driverCross.onTrue(new InstantCommand(() -> {
       m_robotDrive.zeroHeading();
+    }, m_robotDrive));
+
+    driverL1.onTrue(new InstantCommand(() -> {
+      pivot.disable();
+    }, pivot));
+
+    driverR2.onTrue(new InstantCommand(() -> {
+      endEffector.intake();
+    })).onFalse(new InstantCommand(() -> {
+      endEffector.stopIntake();
     }));
 
   }
@@ -231,7 +295,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    PathPlannerPath path = PathPlannerPath.fromPathFile("Test");
-    return AutoBuilder.followPath(path);
+    return autoChooser.getSelected();
   }
 }

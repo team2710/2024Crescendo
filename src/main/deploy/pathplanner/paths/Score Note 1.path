@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3216735004898588,
-        "y": 5.658550745672921
+        "x": 2.917573402714373,
+        "y": 5.556066607628711
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3216735004898617,
-        "y": 5.658550745672921
+        "x": 2.4923170567061854,
+        "y": 5.556066607628711
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "pickup_note_1"
     },
     {
       "anchor": {
-        "x": 2.289197721252586,
-        "y": 5.658550745672921
+        "x": 1.2997503472484422,
+        "y": 5.556066607628711
       },
       "prevControl": {
-        "x": 1.2891977212525858,
-        "y": 5.658550745672921
-      },
-      "nextControl": {
-        "x": 3.289197721252586,
-        "y": 5.658550745672921
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.9227112739939771,
-        "y": 5.042853514278457
-      },
-      "prevControl": {
-        "x": 2.4300410029391495,
-        "y": 5.537664646757865
+        "x": 1.5493573329489,
+        "y": 5.546821904454619
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "subwoofer_start"
     }
   ],
   "rotationTargets": [],
@@ -59,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Note Paths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
