@@ -76,6 +76,10 @@ public final class Constants {
     public static final double kPivotMaxOutput = 0.75;
 
     public static final double kPivotStartPosition = 0;
+    public static double shooterAngle  = (130) * Math.PI/180;
+    public static final double armLength = 0.920; // Meters
+
+
   }
 
   public static final class ClimberConstants {
@@ -87,8 +91,8 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
-    public static final Translation2d blueSpeaker = new Translation2d(0.225, 5.55);
-    public static final Translation2d redSpeaker = new Translation2d(16.317, 5.55);
+    public static final Translation3d blueSpeaker = new Translation3d(0.225, 5.55,2.1);
+    public static final Translation3d redSpeaker = new Translation3d(16.317, 5.55,2.1);
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 6.8

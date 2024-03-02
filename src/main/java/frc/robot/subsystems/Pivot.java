@@ -3,19 +3,21 @@ package frc.robot.subsystems;
 import java.util.Optional;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -25,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.RobotContainer;
 
 public class Pivot extends SubsystemBase {
     
@@ -34,7 +37,7 @@ public class Pivot extends SubsystemBase {
     private AbsoluteEncoder absoluteEncoder;
     private RelativeEncoder relativeEncoder;
     ArmFeedforward feedforward = new ArmFeedforward(PivotConstants.kS, PivotConstants.kG, PivotConstants.kV, PivotConstants.kA);
-
+    Translation3d target = DriveConstants.blueSpeaker;
     DriveSubsystem driveSubsystem;
 
     public enum PivotState {
@@ -82,7 +85,6 @@ public class Pivot extends SubsystemBase {
     }
 
     public double distToSpeaker(Pose2d robot_pose) {
-        Translation2d target = DriveConstants.blueSpeaker;
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isEmpty()) return 0;
         switch (alliance.get()) {
@@ -101,18 +103,16 @@ public class Pivot extends SubsystemBase {
     }
 
     public void autoAimPivot() {
-        Pose2d robot_pose = driveSubsystem.getPose();
-        // Vector<N2> robotToTarget = VecBuilder.fill(target_pose.getX() - robot_pose.getX()  , target_pose.getY() - robot_pose.getY());
-        // double dist = robotToTarget.norm() - 1;
-        double dist = distToSpeaker(robot_pose)-1.2;
+        double angle = Math.atan(2.1/distToSpeaker(RobotContainer.m_robotDrive.getPose())) + PivotConstants.shooterAngle - Math.asin((Math.sin(PivotConstants.shooterAngle) * PivotConstants.armLength))/(RobotToTarget3D());
+        SmartDashboard.putNumber("Angle to Target", angle * 180 / Math.PI);
+        double clampAngle= MathUtil.clamp(180 - (angle * (180 / Math.PI)), 0, 90);
+        setAngleDegree(clampAngle);
+    }
 
-        // double vertDist = 2.1;
-        // double angle = Math.atan(vertDist/dist) * 180 / Math.PI;
-        double angle = 7.5 * dist;
+        public double RobotToTarget3D(){
+        Translation3d robot_pose = new Translation3d(RobotContainer.m_robotDrive.getPose().getX(), RobotContainer.m_robotDrive.getPose().getY(), 0);
+        return robot_pose.getDistance(target);
 
-        SmartDashboard.putNumber("angle", angle);
-
-        setAngleDegree(angle);
     }
 
     public double angleToEncoder(double angle) {

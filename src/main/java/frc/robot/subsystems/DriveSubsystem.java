@@ -22,6 +22,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -80,7 +81,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
-  public Translation2d target_pose = DriveConstants.blueSpeaker;
+  public Translation3d target_pose = DriveConstants.blueSpeaker;
 
   public PIDController m_botAnglePID = new PIDController(ModuleConstants.kTurningP, ModuleConstants.kTurningI, ModuleConstants.kTurningD);
 
@@ -284,7 +285,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void DriverDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit, PS4Controller controller)
   {
     if(controller.getSquareButton()){
-      double angle = autoAim(getRobotDiscreteSpeeds().vxMetersPerSecond, getRobotDiscreteSpeeds().vyMetersPerSecond, getPose(), 45, target_pose);
+      double angle = autoAim(getRobotDiscreteSpeeds().vxMetersPerSecond, getRobotDiscreteSpeeds().vyMetersPerSecond, getPose(), 45, target_pose.toTranslation2d());
       rot = m_botAnglePID.calculate(getPose().getRotation().getRadians(), angle);
       SmartDashboard.putNumber("Auto Aim Rotation", rot);
     }
