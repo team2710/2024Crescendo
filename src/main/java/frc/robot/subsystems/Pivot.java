@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -34,7 +36,7 @@ public class Pivot extends SubsystemBase {
     private CANSparkMax pivotMotorLeft = new CANSparkMax(PivotConstants.kPivotMotorLeftID, MotorType.kBrushless);
     private CANSparkMax pivotMotorRight = new CANSparkMax(PivotConstants.kPivotMotorRightID, MotorType.kBrushless);
     private SparkPIDController pidController;
-    private AbsoluteEncoder absoluteEncoder;
+    // private AbsoluteEncoder absoluteEncoder;
     private RelativeEncoder relativeEncoder;
     ArmFeedforward feedforward = new ArmFeedforward(PivotConstants.kS, PivotConstants.kG, PivotConstants.kV, PivotConstants.kA);
     Translation3d target = DriveConstants.blueSpeaker;
@@ -54,7 +56,7 @@ public class Pivot extends SubsystemBase {
     public Pivot(DriveSubsystem driveSubsystem) {
         relativeEncoder = pivotMotorRight.getEncoder();
         pidController = pivotMotorRight.getPIDController();
-        absoluteEncoder = pivotMotorLeft.getAbsoluteEncoder(Type.kDutyCycle);
+        // absoluteEncoder = pivotMotorLeft.getAbsoluteEncoder(Type.kDutyCycle);
         this.driveSubsystem = driveSubsystem;
         // pidController.setFeedbackDevice(absoluteEncoder);
         // absoluteEncoder.setPositionConversionFactor(PivotConstants.kPivotGearRatio);
@@ -73,10 +75,10 @@ public class Pivot extends SubsystemBase {
        
         pivotMotorLeft.follow(pivotMotorRight, true);
 
-        SmartDashboard.putBoolean("Brake Mode", true);
+        SmartDashboard.putBoolean("Brake Mode", false);
 
-        pivotMotorLeft.setIdleMode(IdleMode.kBrake);
-        pivotMotorRight.setIdleMode(IdleMode.kBrake);
+        pivotMotorLeft.setIdleMode(IdleMode.kCoast);
+        pivotMotorRight.setIdleMode(IdleMode.kCoast);
         pivotMotorLeft.burnFlash();
         pivotMotorRight.burnFlash();
 
@@ -106,10 +108,11 @@ public class Pivot extends SubsystemBase {
         double angle = Math.atan(2.1/distToSpeaker(RobotContainer.m_robotDrive.getPose())) + PivotConstants.shooterAngle - Math.asin((Math.sin(PivotConstants.shooterAngle) * PivotConstants.armLength))/(RobotToTarget3D());
         SmartDashboard.putNumber("Angle to Target", angle * 180 / Math.PI);
         double clampAngle= MathUtil.clamp(180 - (angle * (180 / Math.PI)), 0, 90);
+        SmartDashboard.putNumber("auto aim angle", clampAngle);
         setAngleDegree(clampAngle);
     }
 
-        public double RobotToTarget3D(){
+    public double RobotToTarget3D(){
         Translation3d robot_pose = new Translation3d(RobotContainer.m_robotDrive.getPose().getX(), RobotContainer.m_robotDrive.getPose().getY(), 0);
         return robot_pose.getDistance(target);
 
@@ -143,6 +146,8 @@ public class Pivot extends SubsystemBase {
         SmartDashboard.putNumber("Pivot Angle", getAngle());
         SmartDashboard.putNumber("Distance to speaker", distToSpeaker(driveSubsystem.getPose()));
 
+        Logger.recordOutput("Arm/Angle", getAngle());
+
         boolean brakeMode = SmartDashboard.getBoolean("Brake Mode", true);
         if (brakeMode && pivotMotorLeft.getIdleMode() == IdleMode.kCoast) {
             pivotMotorLeft.setIdleMode(IdleMode.kBrake);
@@ -153,18 +158,18 @@ public class Pivot extends SubsystemBase {
         }
     }
 
-    public double absToRelative() {
-        double offset = 0; //might need use offset depending how arm is zero in the abs encoer
-        double abs_position = absoluteEncoder.getPosition();
-        double position_rel = (abs_position * 1/(4 * 4 * 3));
-        return position_rel  - offset; 
-    }
+    // public double absToRelative() {
+    //     double offset = 0; //might need use offset depending how arm is zero in the abs encoer
+    //     double abs_position = absoluteEncoder.getPosition();
+    //     double position_rel = (abs_position * 1/(4 * 4 * 3));
+    //     return position_rel  - offset; 
+    // }
 
     //will clean up later
-    public void ArmAbstoRelativeSetter() {
-        relativeEncoder.setPosition(absToRelative());
+    // public void ArmAbstoRelativeSetter() {
+    //     relativeEncoder.setPosition(absToRelative());
 
-    }
+    // }
 
     public void PivotStateSetter(PivotState state){
         switch (state) {
@@ -211,6 +216,19 @@ public class Pivot extends SubsystemBase {
     // kill the pivot rip
     public void disable() {
         pivotMotorRight.set(0);
+        pivotMotorLeft.setIdleMode(IdleMode.kCoast);
+        pivotMotorRight.setIdleMode(IdleMode.kCoast);
+        
+    }
+
+    public void enable() {
+        pivotMotorLeft.setIdleMode(IdleMode.kBrake);
+        pivotMotorRight.setIdleMode(IdleMode.kBrake);
+        zeroPivot();
+    }
+
+    public void zeroPivot(){
+        relativeEncoder.setPosition(0);
     }
 
     public void setAngleDegree(double position) {

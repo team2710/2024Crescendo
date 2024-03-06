@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -21,6 +22,8 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -33,10 +36,7 @@ public class MAXSwerveModule {
   private final AbsoluteEncoder m_turningEncoder;
 
   private final SparkPIDController m_turningPIDController;
-  private VelocityVoltage m_velocityPID;
-
-
-
+  private VelocityDutyCycle m_velocityPID = new VelocityDutyCycle(0);
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -79,25 +79,39 @@ public class MAXSwerveModule {
     m_turningPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
     m_turningPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
 
-    m_velocityPID = new VelocityVoltage(0, 9, false, 0, 0, false, false, false);
+    // m_velocityPID = new VelocityDutyCycle(0);
+
+    m_drivingKraken.setInverted(false);
   
     // Set the PID gains for the driving motor. Note these are example gains, and you
     // may need to tune them for your own robot!
 
-    var slot0Configs = new Slot0Configs();
-      slot0Configs.kS = ModuleConstants.kDrivingFF; // Add 0.25 V output to overcome static friction
-      slot0Configs.kP = ModuleConstants.kDrivingP; // A position error of 2.5 rotations results in 12 V output
-      slot0Configs.kI = ModuleConstants.kDrivingI; // no output for integrated error
-      slot0Configs.kD = ModuleConstants.kDrivingD; // A velocity error of 1 rps results in 0.1 V output
+    // var slot0Configs = new Slot0Configs();
+    //   slot0Configs.kS = ModuleConstants.kDrivingFF; // Add 0.25 V output to overcome static friction
+    //   slot0Configs.kP = ModuleConstants.kDrivingP; // A position error of 2.5 rotations results in 12 V output
+    //   slot0Configs.kI = ModuleConstants.kDrivingI; // no output for integrated error
+    //   slot0Configs.kD = ModuleConstants.kDrivingD; // A velocity error of 1 rps results in 0.1 V output
 
       
 
-    var currentConfig = new CurrentLimitsConfigs();
-      currentConfig.StatorCurrentLimit = ModuleConstants.kDrivingMotorCurrentLimit;
-      currentConfig.StatorCurrentLimitEnable = true;
+    // var currentConfig = new CurrentLimitsConfigs();
+    //   currentConfig.StatorCurrentLimit = ModuleConstants.kDrivingMotorCurrentLimit;
+    //   currentConfig.StatorCurrentLimitEnable = true;
 
-    m_drivingKraken.getConfigurator().apply(slot0Configs);
-    m_drivingKraken.getConfigurator().apply(currentConfig);
+    // m_drivingKraken.getConfigurator().apply(slot0Configs);
+    // m_drivingKraken.getConfigurator().apply(currentConfig);
+
+    var talonFxConfigs = new TalonFXConfiguration();
+    talonFxConfigs.Slot0.kP = ModuleConstants.kDrivingP;
+    talonFxConfigs.Slot0.kI = ModuleConstants.kDrivingI;
+    talonFxConfigs.Slot0.kD = ModuleConstants.kDrivingD;
+    // talonFxConfigs.CurrentLimits.SupplyCurrentLimit = ModuleConstants.kDrivingMotorCurrentLimit;
+    // talonFxConfigs.MotorOutput.Inverted = false;
+    talonFxConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    talonFxConfigs.Feedback.SensorToMechanismRatio = ModuleConstants.kDrivingMotorReduction / ModuleConstants.kWheelCircumferenceMeters;
+    // talonFxConfigs.Feedback.SensorToMechanismRatio = ;
+    m_drivingKraken.getConfigurator().apply(talonFxConfigs);
+
 
     // Set the PID gains for the turning motor. Note these are example gains, and you
     // may need to tune them for your own robot!
@@ -134,7 +148,7 @@ public class MAXSwerveModule {
   public SwerveModuleState getState() {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
-    return new SwerveModuleState(m_drivingKraken.getVelocity().getValueAsDouble() * ModuleConstants.kDrivingEncoderVelocityFactor,
+    return new SwerveModuleState(m_drivingKraken.getVelocity().getValue(),
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
   }
 
@@ -147,7 +161,7 @@ public class MAXSwerveModule {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModulePosition(
-        m_drivingKraken.getPosition().getValueAsDouble() * ModuleConstants.kDrivingEncoderPositionFactor,
+        m_drivingKraken.getPosition().getValue(),
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
   }
 
@@ -174,11 +188,15 @@ public class MAXSwerveModule {
     // formula is (m/s / radius of wheel) * gear_ratio = rev/s
     //pid uses rev/s
 
-    SmartDashboard.putNumber("Speed", optimizedDesiredState.speedMetersPerSecond);
+    SmartDashboard.putNumber("Speed",  optimizedDesiredState.speedMetersPerSecond);
 
-    // m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
+    if (DriverStation.isAutonomous()) {
+      m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond));
+    } else {
+      m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
+    }
+
     // m_drivingKraken.setControl(m_velocityPID.withVelocity((optimizedDesiredState.speedMetersPerSecond / 0.1016 / Math.PI) * 2048 * 3.56));
-    m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond / ModuleConstants.kWheelCircumferenceMeters * ModuleConstants.kDrivingMotorReduction)); 
     m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
 
     m_desiredState = desiredState;

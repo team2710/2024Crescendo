@@ -8,32 +8,48 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2997503472484397,
-        "y": 5.556066607628711
+        "x": 1.3367291599448063,
+        "y": 4.890447979094157
       },
       "isLocked": false,
       "linkedName": "subwoofer_start"
     },
     {
       "anchor": {
-        "x": 3.6479049534675645,
-        "y": 5.556066607628711
+        "x": 2.0208371948275423,
+        "y": 4.113892912470511
       },
       "prevControl": {
-        "x": 2.6479049534675645,
-        "y": 5.556066607628711
+        "x": 1.595580848819355,
+        "y": 4.123137615644601
+      },
+      "nextControl": {
+        "x": 2.3167421970542974,
+        "y": 4.107460195030799
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.436848837661639,
+        "y": 4.113892912470511
+      },
+      "prevControl": {
+        "x": 2.251954774179818,
+        "y": 4.104648209296419
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "pickup_note_1"
+      "linkedName": "pickup_note_3"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake",
-      "waypointRelativePos": 0.35,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "parallel",
         "data": {
@@ -66,5 +82,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

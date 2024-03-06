@@ -3,37 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2997503472484422,
-        "y": 5.556066607628711
+        "x": 0.6803552345843429,
+        "y": 6.674675691693726
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2997503472484397,
-        "y": 5.556066607628711
+        "x": 0.7321254379735558,
+        "y": 6.96827910497288
       },
       "isLocked": false,
-      "linkedName": "subwoofer_start"
+      "linkedName": "subwoofer_start_top"
     },
     {
       "anchor": {
-        "x": 3.6479049534675645,
-        "y": 5.556066607628711
+        "x": 3.684883766163929,
+        "y": 7.007485005961003
       },
       "prevControl": {
-        "x": 2.6479049534675645,
-        "y": 5.556066607628711
+        "x": 2.684883766163929,
+        "y": 7.007485005961003
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "pickup_note_1"
+      "linkedName": "pickup_note_2"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.35,
+      "waypointRelativePos": 0.6,
       "command": {
         "type": "parallel",
         "data": {
@@ -63,7 +69,7 @@
   "reversed": false,
   "folder": "Note Paths",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 59.5344550805401,
     "velocity": 0
   },
   "useDefaultConstraints": true

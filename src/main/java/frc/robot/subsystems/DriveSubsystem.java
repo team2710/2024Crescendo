@@ -117,8 +117,8 @@ public class DriveSubsystem extends SubsystemBase {
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
       new HolonomicPathFollowerConfig(
-        new PIDConstants(5.0, 0.0, 0.0),
-        new PIDConstants(5.0, 0.0, 0.0),
+        new PIDConstants(1.0, 0.0, 0.01),
+        new PIDConstants(1.0, 0.0, 0.01),
         DriveConstants.kMaxSpeedMetersPerSecond, 
         AutoConstants.kSwerveDriveRadiusMeters, 
         new ReplanningConfig()
@@ -176,8 +176,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("vx", getRobotDiscreteSpeeds().vxMetersPerSecond);
-    SmartDashboard.putNumber("vy", getRobotDiscreteSpeeds().vyMetersPerSecond);
+    SmartDashboard.putNumber("vx", getRobotRelativeSpeeds().vxMetersPerSecond);
+    SmartDashboard.putNumber("vy", getRobotRelativeSpeeds().vyMetersPerSecond);
 
 
     SmartDashboard.putNumber("Gyro", getHeading());
@@ -199,15 +199,16 @@ public class DriveSubsystem extends SubsystemBase {
     //uncomment for bruh
     limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
     SmartDashboard.putNumber("Limelight tag count", limelightMeasurement.tagCount);
-    // if(vision.hasValidTargets() && false)
-    // {
-    //   m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-    //   m_poseEstimator.addVisionMeasurement(
-    //       limelightMeasurement.pose,
-    //       limelightMeasurement.timestampSeconds);
-    // }
+    if(vision.hasValidTargets())
+    {
+      m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      m_poseEstimator.addVisionMeasurement(
+          limelightMeasurement.pose,
+          limelightMeasurement.timestampSeconds);
+    }
 
     m_field.setRobotPose(getPose());
+    Logger.recordOutput("position", m_field.getRobotPose());
   }
 
   /**
@@ -238,6 +239,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
+    // double angle = pose.getRotation().getDegrees();
+    // m_gyro.setAngleAdjustment(angle);
     m_poseEstimator.resetPosition(
         Rotation2d.fromDegrees(getHeading()),
         new SwerveModulePosition[] {
@@ -285,7 +288,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void DriverDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit, PS4Controller controller)
   {
     if(controller.getSquareButton()){
-      double angle = autoAim(getRobotDiscreteSpeeds().vxMetersPerSecond, getRobotDiscreteSpeeds().vyMetersPerSecond, getPose(), 45, target_pose.toTranslation2d());
+      double angle = autoAim(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond, getPose(), 45, target_pose.toTranslation2d());
       rot = m_botAnglePID.calculate(getPose().getRotation().getRadians(), angle);
       SmartDashboard.putNumber("Auto Aim Rotation", rot);
     }
@@ -352,18 +355,29 @@ public class DriveSubsystem extends SubsystemBase {
     
     var swerveModuleStates =
     DriveConstants.kDriveKinematics.toSwerveModuleStates(
-        ChassisSpeeds.discretize(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
                     xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(getHeading()))
-                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered),
-            AutoConstants.kSwerveDiscreteTimestep));
+                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered)
+            );
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+
+  //   var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+  //     fieldRelative
+  //         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getAngle(IMUAxis.kZ)))
+  //         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+  // SwerveDriveKinematics.desaturateWheelSpeeds(
+  //     swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+  // m_frontLeft.setDesiredState(swerveModuleStates[0]);
+  // m_frontRight.setDesiredState(swerveModuleStates[1]);
+  // m_rearLeft.setDesiredState(swerveModuleStates[2]);
+  // m_rearRight.setDesiredState(swerveModuleStates[3]);
+  
   }
 
   /**

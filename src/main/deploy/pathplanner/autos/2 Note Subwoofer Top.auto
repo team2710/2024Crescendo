@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.6803552345843429,
+      "y": 6.674675691693726
+    },
+    "rotation": 60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "pivot_subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "score"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Subwoofer Top Pickup Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "toggle_intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Note 2 Subwoofer Top"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "pivot_subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "score"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

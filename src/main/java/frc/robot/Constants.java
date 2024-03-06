@@ -67,16 +67,16 @@ public final class Constants {
     //https://www.reca.lc/arm?armMass=%7B%22s%22%3A14%2C%22u%22%3A%22lbs%22%7D&comLength=%7B%22s%22%3A27.784294%2C%22u%22%3A%22in%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=80&endAngle=%7B%22s%22%3A90%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A2%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A165.333333%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A0%2C%22u%22%3A%22deg%22%7D
 
     public static final double kPivotGearRatio = 18.0/62.0;
-    public static final double kPivotP = 0.25;
+    public static final double kPivotP = 0.20;
     public static final double kPivotI = 0;
-    public static final double kPivotD = 0.01;
+    public static final double kPivotD = 0.011;
     public static final double kPivotIz = 0;
     public static final double kPivotFF = 0;
     public static final double kPivotMinOutput = -0.825;
     public static final double kPivotMaxOutput = 0.75;
 
     public static final double kPivotStartPosition = 0;
-    public static double shooterAngle  = (130) * Math.PI/180;
+    public static double shooterAngle  = (135) * Math.PI/180;
     public static final double armLength = 0.920; // Meters
 
 
@@ -86,8 +86,8 @@ public final class Constants {
     public static final int kClimberMotorID = 30;
     public static final double kMaxPosition = 1;
     public static final double kMinPosition = 0;
-    public static final double kUpSpeed = 0.75;
-    public static final double kDownSpeed = -0.75;
+    public static final double kUpSpeed = 1;
+    public static final double kDownSpeed = -1;
   }
 
   public static final class DriveConstants {
@@ -170,10 +170,10 @@ public final class Constants {
     public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
     public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-    public static final double kDrivingP = 0.001;
-    public static final double kDrivingI = 0;
-    public static final double kDrivingD = 0;
-    public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;
+    public static final double kDrivingP = 0.007;
+    public static final double kDrivingI = 0.341146341;
+    public static final double kDrivingD = 0.0000095;
+    public static final double kDrivingFF = 0;
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
@@ -187,7 +187,7 @@ public final class Constants {
     public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
-    public static final int kDrivingMotorCurrentLimit = 50; // amps
+    public static final int kDrivingMotorCurrentLimit = 80; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
 

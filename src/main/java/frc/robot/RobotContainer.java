@@ -15,6 +15,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
@@ -47,6 +49,7 @@ import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.revrobotics.CANSparkBase;
@@ -63,11 +66,11 @@ import com.revrobotics.SparkPIDController;
 public class RobotContainer {
   // The robot's subsystems
   public static final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  EndEffector endEffector = new EndEffector();
+  public static final EndEffector endEffector = new EndEffector();
 
   // The driver's controller
   CommandPS4Controller m_driverControllerCommand = new CommandPS4Controller(OIConstants.kDriverControllerPort);
-  // PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
+  PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
 
   // KitBotShooter kbShooter = new KitBotShooter();
@@ -84,16 +87,61 @@ public class RobotContainer {
   // Pivot Arm
   Pivot pivot = new Pivot(m_robotDrive);
   Climb climber = new Climb();
+
+ Command PathfindToPickupBlue = AutoBuilder.pathfindToPose(
+    new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)), 
+    new PathConstraints(
+      4.0, 4.0, 
+      Units.degreesToRadians(360), Units.degreesToRadians(540)
+    ), 
+    0, 
+    2.0
+  );
+
+  Command PathfindToPickupRed = AutoBuilder.pathfindToPose(
+    new Pose2d(0.956, 1.763, Rotation2d.fromDegrees(180)), 
+    new PathConstraints(
+      4.0, 4.0, 
+      Units.degreesToRadians(360), Units.degreesToRadians(540)
+    ), 
+    0, 
+    2.0
+  );
+
+  Command PathfindToScoringBlue = AutoBuilder.pathfindToPose(
+    new Pose2d(2.15, 5.5, Rotation2d.fromDegrees(180)), 
+    new PathConstraints(
+      4.0, 4.0, 
+      Units.degreesToRadians(360), Units.degreesToRadians(540)
+    ), 
+    0, 
+    0
+  );
+
+  Command PathfindToScoringRed = AutoBuilder.pathfindToPose(
+    new Pose2d(13.0, 5.5, Rotation2d.fromDegrees(0)), 
+    new PathConstraints(
+      4.0, 4.0, 
+      Units.degreesToRadians(360), Units.degreesToRadians(540)
+    ), 
+    0, 
+    0
+  );
+
   // Command pivotSpeaker = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.Speaker), pivot);
   // Command pivotAMP = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.AMP), pivot);
   // Command pivotOff = new RunCommand(() -> pivot.PivotStateSetter(Pivot.PivotState.OFF), pivot);
 
 
   final Trigger driverL1 = m_driverControllerCommand.L1();
+  final Trigger driverL2 = m_driverControllerCommand.L2();
   final Trigger driverR1 = m_driverControllerCommand.R1();
   final Trigger driverR2 = m_driverControllerCommand.R2();
   final Trigger driverCross = m_driverControllerCommand.cross();
+  final Trigger driverCircle = m_driverControllerCommand.circle();
   final Trigger driverDPADUP = m_driverControllerCommand.povUp();
+  final Trigger driverDPADDOWN = m_driverControllerCommand.povDown();
+
 
   final Trigger auxL1 = m_auxController.L1();
   final Trigger auxR1 = m_auxController.R1();
@@ -107,6 +155,8 @@ public class RobotContainer {
 
   final Trigger auxSquare = m_auxController.square();
 
+  boolean isRed = false;
+
   HttpCamera camera = new HttpCamera("Limelight", "http://10.27.10.11:5800/stream.mjpg");
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -118,7 +168,8 @@ public class RobotContainer {
     Commands.waitSeconds(1),
     endEffector.toggleIntakeCommand(),
     Commands.waitSeconds(0.5),
-    endEffector.toggleIntakeCommand()
+    endEffector.toggleIntakeCommand(),
+    endEffector.toggleFlywheelCommand()
   );
 
   Command lowerArmCommand = Commands.sequence(
@@ -139,16 +190,20 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption("No Auto", Commands.none());
     autoChooser.addOption("Basic 2 Piece", new PathPlannerAuto("2 Note Auto"));
+    autoChooser.addOption("2 Piece top", new PathPlannerAuto("2 Note Subwoofer Top"));
     autoChooser.addOption("1 Piece", Commands.sequence(
       pivot.pivotMoveCommand(0),
-      Commands.waitSeconds(1),
+      Commands.waitSeconds(3),
       endEffector.toggleFlywheelCommand(),
       Commands.waitSeconds(1),
       endEffector.toggleIntakeCommand(),
       Commands.waitSeconds(0.5),
-      endEffector.toggleIntakeCommand()
+      endEffector.toggleIntakeCommand(),
+      endEffector.toggleFlywheelCommand()
     ));
-    SmartDashboard.putData(autoChooser);
+    autoChooser.addOption("3 Piece", new PathPlannerAuto("3 Note Auto"));
+    autoChooser.addOption("4 Piece", new PathPlannerAuto("4 Note Auto"));
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // kbShooter = new KitBotShooter();
 
@@ -171,22 +226,22 @@ public class RobotContainer {
 
         //square button for aim assist
         //uncomment if no worky
-        // new RunCommand(
-        //     () -> m_robotDrive.DriverDrive(
-        //         -MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband),
-        //         -MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband),
-        //         -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
-        //         true, true, m_driverControllerCommand),
-        //     m_robotDrive));
-
-          //this is old
-          new RunCommand(
-            () -> m_robotDrive.drive(
+        new RunCommand(
+            () -> m_robotDrive.DriverDrive(
                 -MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
-                true, true),
+                true, true, m_driverController),
             m_robotDrive));
+
+          //this is old
+          // new RunCommand(
+          //   () -> m_robotDrive.drive(
+          //       -MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband),
+          //       -MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband),
+          //       -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
+          //       true, false),
+          //   m_robotDrive));
 
       m_robotDrive.zeroHeading();
 
@@ -251,7 +306,25 @@ public class RobotContainer {
     auxL1.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotPodiumAngle));
     auxR2.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotWingAngle));
     auxCross.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotZero));
-    driverDPADUP.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotStow));
+    driverL2.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotStow));
+
+    // var alliance = DriverStation.getAlliance();
+    // if (alliance.isPresent()) {
+    //    isRed = (alliance.get() == DriverStation.Alliance.Red);
+    // }
+    // if(isRed == false) {
+    //   SmartDashboard.putData("pickup",PathfindToPickupBlue);
+    //   SmartDashboard.putData("scoring",PathfindToScoringBlue);
+    //   driverDPADDOWN.whileTrue(PathfindToScoringBlue);
+    //   driverDPADUP.whileTrue(PathfindToPickupBlue);
+    // } else {
+    //   SmartDashboard.putData("pickup",PathfindToPickupRed);
+    //   SmartDashboard.putData("scoring",PathfindToScoringRed);
+    //   driverDPADDOWN.whileTrue(PathfindToScoringRed);
+    //   driverDPADUP.whileTrue(PathfindToPickupRed);
+    // }
+
+
 
     // trigger and state machine (prob better implemenetation)
     // uncomment to test
@@ -277,8 +350,14 @@ public class RobotContainer {
       m_robotDrive.zeroHeading();
     }, m_robotDrive));
 
+    driverCircle.onTrue(new InstantCommand(() -> {
+      pivot.zeroPivot();
+    }, pivot));
+
     driverL1.onTrue(new InstantCommand(() -> {
       pivot.disable();
+    }, pivot)).onFalse(new InstantCommand(() -> {
+      pivot.enable();
     }, pivot));
 
     driverR2.onTrue(new InstantCommand(() -> {

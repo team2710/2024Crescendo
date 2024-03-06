@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.6988446409325251,
+      "y": 6.6561862853455445
+    },
+    "rotation": 60.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "pivot_subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Taxi"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
