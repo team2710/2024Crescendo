@@ -29,6 +29,7 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.commands.Basic2PieceAuto;
+import frc.robot.commands.autoRotatePP;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.EndEffector;
@@ -67,6 +68,8 @@ public class RobotContainer {
   // The robot's subsystems
   public static final DriveSubsystem m_robotDrive = new DriveSubsystem();
   public static final EndEffector endEffector = new EndEffector();
+    Pivot pivot = new Pivot(m_robotDrive);
+
 
   // The driver's controller
   CommandPS4Controller m_driverControllerCommand = new CommandPS4Controller(OIConstants.kDriverControllerPort);
@@ -80,12 +83,13 @@ public class RobotContainer {
   Command intakeOn = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.On), endEffector);
   Command outtake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Outtake));
 
+  Command pivotZero = new InstantCommand(() -> pivot.zeroPivot(), pivot);
+
 
   Command spinupFlywheelCommand = new InstantCommand(() -> endEffector.spinupFlywheel(), endEffector);
   Command stopFlywheelCommand = new InstantCommand(() -> endEffector.stopFlywheel(), endEffector);
 
   // Pivot Arm
-  Pivot pivot = new Pivot(m_robotDrive);
   Climb climber = new Climb();
 
  Command PathfindToPickupBlue = AutoBuilder.pathfindToPose(
@@ -165,17 +169,30 @@ public class RobotContainer {
 
   Command shootCommand = Commands.sequence(
     endEffector.toggleFlywheelCommand(),
-    Commands.waitSeconds(1),
+    Commands.waitSeconds(0.5),
     endEffector.toggleIntakeCommand(),
     Commands.waitSeconds(0.5),
     endEffector.toggleIntakeCommand(),
     endEffector.toggleFlywheelCommand()
   );
 
+    Command shootOnMoveCommand = Commands.race(
+    new autoRotatePP(true, m_robotDrive),
+    pivot.autoAimPivotCommand().withTimeout(1.1),
+    shootCommand
+  );
+
   Command lowerArmCommand = Commands.sequence(
     pivot.pivotMoveCommand(0),
     Commands.waitSeconds(0.5)
   );
+
+  Command intakeToggleSeq = Commands.sequence(
+    new autoRotatePP(false, m_robotDrive),
+    pivotZero,
+    endEffector.toggleIntakeCommand()
+  );
+  
 
   // private final SendableChooser<Command> autoChooser;
 
@@ -187,11 +204,18 @@ public class RobotContainer {
     NamedCommands.registerCommand("pivot_subwoofer", lowerArmCommand);
     NamedCommands.registerCommand("shoot", shootCommand);
     NamedCommands.registerCommand("toggle_intake", endEffector.toggleIntakeCommand());
+    NamedCommands.registerCommand("auto_aim", shootOnMoveCommand);
+    NamedCommands.registerCommand("toggle_intake", intakeToggleSeq);
+
+
 
     autoChooser.setDefaultOption("No Auto", Commands.none());
     autoChooser.addOption("Basic 2 Piece", new PathPlannerAuto("2 Note Auto"));
     autoChooser.addOption("2 Piece top", new PathPlannerAuto("2 Note Subwoofer Top"));
-    autoChooser.addOption("1 Piece", Commands.sequence(
+    autoChooser.addOption("8 Note", new PathPlannerAuto("8 Note Auto"));
+
+
+    autoChooser.addOption("1 Piece Auto", Commands.sequence(
       pivot.pivotMoveCommand(0),
       Commands.waitSeconds(3),
       endEffector.toggleFlywheelCommand(),

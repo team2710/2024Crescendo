@@ -118,6 +118,12 @@ public class Pivot extends SubsystemBase {
 
     }
 
+    public Command autoAimPivotCommand() {
+        return new InstantCommand(() -> {
+            autoAimPivot();
+        }, this);
+    }
+
     public double angleToEncoder(double angle) {
         // y = -0.592594095866x
         return -0.592594095866 * angle;
@@ -230,6 +236,8 @@ public class Pivot extends SubsystemBase {
     public void zeroPivot(){
         relativeEncoder.setPosition(0);
     }
+
+
 
     public void setAngleDegree(double position) {
         if (position > 80) position = 80;
