@@ -177,6 +177,12 @@ public class RobotContainer {
     Commands.waitSeconds(0.5)
   );
 
+  public Command pidTuning()
+  {
+    PathPlannerPath path = PathPlannerPath.fromPathFile("Pickup Note 2");
+    return AutoBuilder.followPath(path);
+  }
+
   // private final SendableChooser<Command> autoChooser;
 
   /**
@@ -374,6 +380,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    //return autoChooser.getSelected();
+    return pidTuning();
   }
 }

@@ -228,7 +228,9 @@ public class Pivot extends SubsystemBase {
     }
 
     public void zeroPivot(){
-        relativeEncoder.setPosition(0);
+        if (getAngle() <= 30) {
+            relativeEncoder.setPosition(0);
+        }
     }
 
     public void setAngleDegree(double position) {

@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
@@ -37,6 +38,7 @@ public class MAXSwerveModule {
 
   private final SparkPIDController m_turningPIDController;
   private VelocityDutyCycle m_velocityPID = new VelocityDutyCycle(0);
+  private DutyCycleOut m_dutyCycleOut = new DutyCycleOut(0);
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -148,7 +150,8 @@ public class MAXSwerveModule {
   public SwerveModuleState getState() {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
-    return new SwerveModuleState(m_drivingKraken.getVelocity().getValue(),
+    double multiplier = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() == Alliance.Red ? -1 : 1 : 1;
+    return new SwerveModuleState(m_drivingKraken.getVelocity().getValue() * multiplier,
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
   }
 
@@ -160,8 +163,9 @@ public class MAXSwerveModule {
   public SwerveModulePosition getPosition() {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
+    double multiplier = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() == Alliance.Red ? -1 : 1 : 1;
     return new SwerveModulePosition(
-        m_drivingKraken.getPosition().getValue(),
+        m_drivingKraken.getPosition().getValue() * multiplier,
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
   }
 
@@ -193,7 +197,8 @@ public class MAXSwerveModule {
     if (DriverStation.isAutonomous()) {
       m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond));
     } else {
-      m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
+      // m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
+      m_drivingKraken.setControl(m_dutyCycleOut.withOutput(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond).withEnableFOC(true));
     }
 
     // m_drivingKraken.setControl(m_velocityPID.withVelocity((optimizedDesiredState.speedMetersPerSecond / 0.1016 / Math.PI) * 2048 * 3.56));

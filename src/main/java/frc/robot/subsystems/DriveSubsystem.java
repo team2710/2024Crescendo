@@ -117,7 +117,7 @@ public class DriveSubsystem extends SubsystemBase {
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
       new HolonomicPathFollowerConfig(
-        new PIDConstants(1.0, 0.0, 0.01),
+        new PIDConstants(0.1, 0.0, 0.01),
         new PIDConstants(1.0, 0.0, 0.01),
         DriveConstants.kMaxSpeedMetersPerSecond, 
         AutoConstants.kSwerveDriveRadiusMeters, 
