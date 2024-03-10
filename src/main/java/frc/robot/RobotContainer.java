@@ -28,7 +28,9 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.DriverProfile.mathProfiles;
 import frc.robot.commands.Basic2PieceAuto;
+import frc.robot.commands.autoIntakeToggle;
 import frc.robot.commands.autoRotatePP;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.DriveSubsystem;
@@ -82,12 +84,12 @@ public class RobotContainer {
   Command stopIntake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.OFF), endEffector);
   Command intakeOn = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.On), endEffector);
   Command outtake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Outtake));
-
   Command pivotZero = new InstantCommand(() -> pivot.zeroPivot(), pivot);
 
 
   Command spinupFlywheelCommand = new InstantCommand(() -> endEffector.spinupFlywheel(), endEffector);
   Command stopFlywheelCommand = new InstantCommand(() -> endEffector.stopFlywheel(), endEffector);
+  Command autoIntake = new autoIntakeToggle(endEffector);
 
   // Pivot Arm
   Climb climber = new Climb();
@@ -168,8 +170,11 @@ public class RobotContainer {
   // AUTO COMMANDS
 
   Command shootCommand = Commands.sequence(
+    endEffector.toggleOuttakeCommand(),
+    Commands.waitSeconds(0.25),
+    endEffector.stopIntakeCommand(),
     endEffector.toggleFlywheelCommand(),
-    Commands.waitSeconds(0.5),
+    Commands.waitSeconds(1),
     endEffector.toggleIntakeCommand(),
     Commands.waitSeconds(0.5),
     endEffector.toggleIntakeCommand(),
@@ -188,9 +193,8 @@ public class RobotContainer {
   );
 
   Command intakeToggleSeq = Commands.sequence(
-    new autoRotatePP(false, m_robotDrive),
-    pivotZero,
-    endEffector.toggleIntakeCommand()
+    // new autoRotatePP(false, m_robotDrive),
+    autoIntake.withTimeout(1)
   );
   
 
@@ -212,7 +216,7 @@ public class RobotContainer {
     autoChooser.setDefaultOption("No Auto", Commands.none());
     autoChooser.addOption("Basic 2 Piece", new PathPlannerAuto("2 Note Auto"));
     autoChooser.addOption("2 Piece top", new PathPlannerAuto("2 Note Subwoofer Top"));
-    autoChooser.addOption("8 Note", new PathPlannerAuto("8 Note Auto"));
+    //autoChooser.addOption("8 Note", new PathPlannerAuto("8 Note Auto"));
 
 
     autoChooser.addOption("1 Piece Auto", Commands.sequence(
@@ -250,13 +254,23 @@ public class RobotContainer {
 
         //square button for aim assist
         //uncomment if no worky
-        new RunCommand(
+        // new RunCommand(
+        //     () -> m_robotDrive.DriverDrive(
+        //         -MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband),
+        //         -MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband),
+        //         -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
+        //         true, true, m_driverController),
+        //     m_robotDrive));
+
+           new RunCommand(
             () -> m_robotDrive.DriverDrive(
-                -MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband),
+                -mathProfiles.exponentialDrive(MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband), 2),
+                -mathProfiles.exponentialDrive(MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband), 2),
                 -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
                 true, true, m_driverController),
             m_robotDrive));
+
+
 
           //this is old
           // new RunCommand(
@@ -313,7 +327,9 @@ public class RobotContainer {
     }));
 
     // CLIMB COMMANDS
-    auxDPADUP.onTrue(new InstantCommand(() -> {
+    auxDPADUP.onTrue(new InstantCommand((
+      
+    ) -> {
       climber.climbUP();
     })).onFalse( new InstantCommand(() -> {
       climber.stopClimb();

@@ -118,13 +118,12 @@ public class DriveSubsystem extends SubsystemBase {
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     SmartDashboard.putData("Field", m_field);
-    
     zeroHeading();
 
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
       new HolonomicPathFollowerConfig(
-        new PIDConstants(1.0, 0.0, 0.01),
+        new PIDConstants(1, 0.0, 0.01),
         new PIDConstants(1.0, 0.0, 0.01),
         DriveConstants.kMaxSpeedMetersPerSecond, 
         AutoConstants.kSwerveDriveRadiusMeters, 
@@ -268,7 +267,7 @@ public class DriveSubsystem extends SubsystemBase {
     // double angle = pose.getRotation().getDegrees();
     // m_gyro.setAngleAdjustment(angle);
     m_poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(getHeading()),
+        Rotation2d.fromDegrees(getHeading() + 180),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -442,6 +441,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void zeroHeading() {
     // m_gyro.calibrate();
     m_gyro.zeroYaw();
+    // m_gyro.setAngleAdjustment(180);
   }
 
   /**

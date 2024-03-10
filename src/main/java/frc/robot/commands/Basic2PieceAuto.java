@@ -20,8 +20,8 @@ public class Basic2PieceAuto extends SequentialCommandGroup {
 
         addCommands(
             Commands.runOnce(robotDrive::zeroHeading),
-            Commands.runOnce(() -> robotDrive.getGyro().setAngleAdjustment(startingPose.getRotation().getDegrees())),
-            Commands.runOnce(() -> robotDrive.resetOdometryWithAlliance(startingPose)),
+            // Commands.runOnce(() -> robotDrive.getGyro().setAngleAdjustment(startingPose.getRotation().getDegrees())),
+            // Commands.runOnce(() -> robotDrive.resetOdometryWithAlliance(startingPose)),
             AutoBuilder.followPath(pathGroup.get(0))
         );
     }

@@ -152,6 +152,14 @@ public class EndEffector extends SubsystemBase {
         flywheelMotorTop.set(0.05);
   }
 
+
+  public void intakeAuto() {
+    intakeMotor.set(EndEffectorConstants.kIntakeSpeed);
+    flywheelMotorTop.set(0.05);
+  }
+  
+  
+
   // public void currentDetectionIntake() {
   //   double INTAKE_STALL_DETECTION = 45;
   //   Debouncer debounce = new Debouncer(1);
@@ -330,7 +338,7 @@ public void ShootSetter() {
 
     //uncomment for smart pid control and for auto aim to work properly and accurately
     // pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
-    flywheelMotorTop.set(-0.6);
+    flywheelMotorTop.set(-0.75);
     // flywheelMotorBottom.set(-1);
   }
 

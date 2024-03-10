@@ -38,6 +38,7 @@ public class MAXSwerveModule {
   private final SparkPIDController m_turningPIDController;
   private VelocityDutyCycle m_velocityPID = new VelocityDutyCycle(0);
 
+  private DutyCycleOut m_openLoop = new DutyCycleOut(0);
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
@@ -189,11 +190,13 @@ public class MAXSwerveModule {
     //pid uses rev/s
 
     SmartDashboard.putNumber("Speed",  optimizedDesiredState.speedMetersPerSecond);
+    
 
     if (DriverStation.isAutonomous()) {
       m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond));
     } else {
-      m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
+      // m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
+      m_drivingKraken.setControl(m_openLoop.withOutput(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond).withEnableFOC(true));
     }
 
     // m_drivingKraken.setControl(m_velocityPID.withVelocity((optimizedDesiredState.speedMetersPerSecond / 0.1016 / Math.PI) * 2048 * 3.56));
