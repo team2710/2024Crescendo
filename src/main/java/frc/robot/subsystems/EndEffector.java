@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -26,6 +27,8 @@ import com.revrobotics.SparkPIDController;
  */
 public class EndEffector extends SubsystemBase {
 
+
+  public Rev2mDistanceSensor distanceSensor = new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kOnboard);
   private CANSparkFlex intakeMotor = new CANSparkFlex(EndEffectorConstants.kIntakeMotorID, MotorType.kBrushless);
   private CANSparkFlex flywheelMotorTop = new CANSparkFlex(EndEffectorConstants.kFlywheelMotorTopID,
       MotorType.kBrushless);
@@ -333,6 +336,16 @@ public void ShootSetter() {
       spinupFlywheel();
   }
 
+  public void intakeBeamBreak(){
+    if(distanceSensor.getRange() < 0.1){
+      stopIntake();
+    }
+  }
+
+  public boolean isNoteDetected(){
+    return distanceSensor.getRange() < 0.1;
+  }
+
   public void spinupFlywheel() {
     isFlywheelRunning = true;
 
@@ -408,6 +421,14 @@ public void ShootSetter() {
     SmartDashboard.putNumber("Flywheel Top RPM", encoderTop.getVelocity());
     SmartDashboard.putNumber("Flywheel Bottom RPM", encoderBottom.getVelocity());
     SmartDashboard.putNumber("Intake Current", getFilterCurrent());
+    SmartDashboard.putNumber("Distance", distanceSensor.getRange());
+    SmartDashboard.putBoolean("Intake State", isIntaking);
+    SmartDashboard.putBoolean("Flywheel State", isFlywheelRunning);
+    SmartDashboard.putBoolean("Outtake State", isOuttaking);
+    SmartDashboard.putBoolean("Note Detect", isNote);
+    SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
+    SmartDashboard.putNumber("Flywheel Setpoint", setpoint);
+    SmartDashboard.putBoolean("Note beam break", isNoteDetected()); 
   }
 
 }
