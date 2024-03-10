@@ -11,37 +11,37 @@ import frc.robot.subsystems.Pivot;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 
-public class autoIntakeToggle extends Command {
-    EndEffector m_intake;
+public class StopFlywheelAndIntake extends Command {
+    EndEffector m_end;
 
-    public autoIntakeToggle(EndEffector m_intake) {
-        this.m_intake = m_intake;
+    public StopFlywheelAndIntake(EndEffector m_end) {
+        this.m_end = m_end;
         // Use addRequirements() here to declare subsystem dependencies.
         // Configure additional PID options by calling `getController` here
-        addRequirements(m_intake);
+        addRequirements(m_end);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        m_end.stopFlywheel();
+        m_end.stopIntake();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {
-        m_intake.intake();
+    public void execute(){      
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_intake.stopIntake();
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return m_intake.isNoteDetected();
+        return true;
     }
 
 }

@@ -30,6 +30,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.DriverProfile.mathProfiles;
 import frc.robot.commands.Basic2PieceAuto;
+import frc.robot.commands.ShootIntake;
 import frc.robot.commands.autoIntakeToggle;
 import frc.robot.commands.autoRotatePP;
 import frc.robot.subsystems.Climb;
@@ -70,7 +71,7 @@ public class RobotContainer {
   // The robot's subsystems
   public static final DriveSubsystem m_robotDrive = new DriveSubsystem();
   public static final EndEffector endEffector = new EndEffector();
-    Pivot pivot = new Pivot(m_robotDrive);
+  Pivot pivot = new Pivot(m_robotDrive);
 
 
   // The driver's controller
@@ -85,7 +86,7 @@ public class RobotContainer {
   Command intakeOn = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.On), endEffector);
   Command outtake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Outtake));
   Command pivotZero = new InstantCommand(() -> pivot.zeroPivot(), pivot);
-
+  Command autoFeedAndShoot = new ShootIntake(endEffector);
 
   Command spinupFlywheelCommand = new InstantCommand(() -> endEffector.spinupFlywheel(), endEffector);
   Command stopFlywheelCommand = new InstantCommand(() -> endEffector.stopFlywheel(), endEffector);
@@ -93,6 +94,10 @@ public class RobotContainer {
 
   // Pivot Arm
   Climb climber = new Climb();
+
+ Command PathfindToPickUp = Commands.none();
+ Command PathfindToScore = Commands.none();
+
 
  Command PathfindToPickupBlue = AutoBuilder.pathfindToPose(
     new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)), 
@@ -104,7 +109,8 @@ public class RobotContainer {
     2.0
   );
 
-  Command PathfindToPickupRed = AutoBuilder.pathfindToPose(
+  Command PathfindToPickupRed = 
+  AutoBuilder.pathfindToPose(
     new Pose2d(0.956, 1.763, Rotation2d.fromDegrees(180)), 
     new PathConstraints(
       4.0, 4.0, 
@@ -169,16 +175,23 @@ public class RobotContainer {
 
   // AUTO COMMANDS
 
+  // Command shootCommand = Commands.sequence(
+  //   endEffector.toggleOuttakeCommand(),
+  //   Commands.waitSeconds(0.25),
+  //   endEffector.stopIntakeCommand(),
+  //   endEffector.toggleFlywheelCommand(),
+  //   Commands.waitSeconds(1),
+  //   endEffector.toggleIntakeCommand(),
+  //   Commands.waitSeconds(0.5),
+  //   endEffector.toggleIntakeCommand(),
+  //   endEffector.toggleFlywheelCommand()
+  // );
+
   Command shootCommand = Commands.sequence(
-    endEffector.toggleOuttakeCommand(),
-    Commands.waitSeconds(0.25),
+    autoFeedAndShoot,
     endEffector.stopIntakeCommand(),
-    endEffector.toggleFlywheelCommand(),
-    Commands.waitSeconds(1),
-    endEffector.toggleIntakeCommand(),
-    Commands.waitSeconds(0.5),
-    endEffector.toggleIntakeCommand(),
-    endEffector.toggleFlywheelCommand()
+    endEffector.stopFlywheelCommand()
+
   );
 
     Command shootOnMoveCommand = Commands.race(
@@ -193,8 +206,8 @@ public class RobotContainer {
   );
 
   Command intakeToggleSeq = Commands.sequence(
-    // new autoRotatePP(false, m_robotDrive),
-    autoIntake.withTimeout(1)
+    pivotZero,
+    autoIntake
   );
   
 
@@ -204,6 +217,39 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+       isRed = (alliance.get() == DriverStation.Alliance.Red);
+    }
+    if(isRed == false) {
+      PathfindToPickUp = PathfindToPickupBlue;
+      PathfindToScore  = PathfindToScoringBlue;
+   
+      // driverDPADDOWN.whileTrue(PathfindToScoringBlue);
+      // driverDPADUP.whileTrue(PathfindToPickupBlue);
+    } else {
+      PathfindToPickUp = PathfindToPickupRed;
+      PathfindToScore  = PathfindToScoringRed;
+      // driverDPADDOWN.whileTrue(PathfindToScoringRed);
+      // driverDPADUP.whileTrue(PathfindToPickupRed);
+    }
+
+    Command PathFindtoScoreSeq = Commands.sequence(
+      m_robotDrive.velocityControlEnabledCommand(true),
+      PathfindToScore,
+      m_robotDrive.velocityControlEnabledCommand(false)
+    );
+
+    Command PathFindtoPickupSeq = Commands.sequence(
+      m_robotDrive.velocityControlEnabledCommand(true),
+      PathfindToPickUp,
+      m_robotDrive.velocityControlEnabledCommand(false)
+    );
+
+    SmartDashboard.putData("PathFindToScore", PathFindtoScoreSeq);
+    SmartDashboard.putData("PathFindToPickUp", PathFindtoPickupSeq);
+
+
     // Commands for Pathplanner
     NamedCommands.registerCommand("pivot_subwoofer", lowerArmCommand);
     NamedCommands.registerCommand("shoot", shootCommand);
@@ -307,7 +353,10 @@ public class RobotContainer {
     // AUX COMMANDS
 
     // END EFFECTOR COMMANDS
-    auxR1.onTrue(endEffector.toggleFlywheelCommand());
+    // auxR1.onTrue(endEffector.toggleFlywheelCommand());
+
+    auxR1.onTrue(autoFeedAndShoot);
+
     auxTriangle.onTrue(new InstantCommand(() -> {
       endEffector.intake();
     })).onFalse(new InstantCommand(() -> {
@@ -348,21 +397,7 @@ public class RobotContainer {
     auxCross.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotZero));
     driverL2.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotStow));
 
-    // var alliance = DriverStation.getAlliance();
-    // if (alliance.isPresent()) {
-    //    isRed = (alliance.get() == DriverStation.Alliance.Red);
-    // }
-    // if(isRed == false) {
-    //   SmartDashboard.putData("pickup",PathfindToPickupBlue);
-    //   SmartDashboard.putData("scoring",PathfindToScoringBlue);
-    //   driverDPADDOWN.whileTrue(PathfindToScoringBlue);
-    //   driverDPADUP.whileTrue(PathfindToPickupBlue);
-    // } else {
-    //   SmartDashboard.putData("pickup",PathfindToPickupRed);
-    //   SmartDashboard.putData("scoring",PathfindToScoringRed);
-    //   driverDPADDOWN.whileTrue(PathfindToScoringRed);
-    //   driverDPADUP.whileTrue(PathfindToPickupRed);
-    // }
+
 
 
 

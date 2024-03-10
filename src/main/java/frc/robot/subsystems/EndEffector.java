@@ -346,6 +346,8 @@ public void ShootSetter() {
     return distanceSensor.getRange() < 0.1;
   }
 
+
+
   public void spinupFlywheel() {
     isFlywheelRunning = true;
 
@@ -375,6 +377,10 @@ public void ShootSetter() {
 
   public void setShooterState(FlywheelState shootState) {
     m_shootState = shootState;
+  }
+
+  public double flywheelRPM() {
+    return Math.abs(flywheelMotorBottom.getEncoder().getVelocity());
   }
 
   @Override

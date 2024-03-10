@@ -11,10 +11,10 @@ import frc.robot.subsystems.Pivot;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 
-public class autoIntakeToggle extends Command {
+public class IntakeWithBB extends Command {
     EndEffector m_intake;
 
-    public autoIntakeToggle(EndEffector m_intake) {
+    public IntakeWithBB(EndEffector m_intake) {
         this.m_intake = m_intake;
         // Use addRequirements() here to declare subsystem dependencies.
         // Configure additional PID options by calling `getController` here

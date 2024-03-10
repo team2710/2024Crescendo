@@ -115,6 +115,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private Field2d m_field = new Field2d();
 
+  
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     SmartDashboard.putData("Field", m_field);
@@ -151,8 +153,18 @@ public class DriveSubsystem extends SubsystemBase {
 
 
   // PATHPLANNER STUFF
+  public void enableVelocityControl(boolean control){
+    m_frontLeft.velocityControlEnabled(control);
+    m_frontRight.velocityControlEnabled(control);
+    m_rearLeft.velocityControlEnabled(control);
+    m_rearRight.velocityControlEnabled(control);
+  }
 
-
+  public Command velocityControlEnabledCommand(boolean state) {
+    return new InstantCommand(() -> {
+      enableVelocityControl(state);
+    });
+  }
 
   ChassisSpeeds getRobotRelativeSpeeds() {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());

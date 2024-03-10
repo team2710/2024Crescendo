@@ -25,6 +25,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
@@ -41,7 +43,7 @@ public class MAXSwerveModule {
   private DutyCycleOut m_openLoop = new DutyCycleOut(0);
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
-
+  private boolean velocityControlBoolean = false;
   /**
    * Constructs a MAXSwerveModule and configures the driving and turning motor,
    * encoder, and PID controller. This configuration is specific to the REV
@@ -204,6 +206,12 @@ public class MAXSwerveModule {
 
     m_desiredState = desiredState;
   }
+
+  public void velocityControlEnabled(boolean m_state) {
+    velocityControlBoolean = m_state;
+  }
+
+
 
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
