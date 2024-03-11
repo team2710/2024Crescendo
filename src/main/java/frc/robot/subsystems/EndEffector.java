@@ -71,7 +71,7 @@ public class EndEffector extends SubsystemBase {
   public EndEffector() {
     pidController = flywheelMotorTop.getPIDController();
     flywheelMotorBottom.follow(flywheelMotorTop, true);
-
+    distanceSensor.setEnabled(true);
     // intakeMotor.setSmartCurrentLimit(120);
     // flywheelMotorBottom.setSmartCurrentLimit(40);
     // flywheelMotorTop.setSmartCurrentLimit(40);
@@ -391,7 +391,7 @@ public void ShootSetter() {
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Note Detect", isNote);
-
+    SmartDashboard.putNumber("Distance Value", distanceSensor.getRange());
     // if (intakDebouncer.calculate(getFilterCurrent() > 65) && isIntaking) {
     //   isNote = true;
     //   // stopIntake();
