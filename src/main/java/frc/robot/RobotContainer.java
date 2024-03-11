@@ -177,15 +177,16 @@ public class RobotContainer {
 
   Command shootCommand = Commands.sequence(
     endEffector.toggleOuttakeCommand(),
-    Commands.waitSeconds(0.1),
+    Commands.waitSeconds(0.08),
     endEffector.stopIntakeCommand(),
     endEffector.toggleFlywheelCommand(),
-    Commands.waitSeconds(0.4),
-    endEffector.toggleIntakeCommand(),
     Commands.waitSeconds(0.5),
+    endEffector.toggleIntakeCommand(),
+    Commands.waitSeconds(0.3),
     endEffector.toggleIntakeCommand(),
     endEffector.toggleFlywheelCommand()
   );
+
 
   // Command shootCommand = Commands.sequence(
   //   autoFeedAndShoot,
