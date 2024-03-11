@@ -125,11 +125,13 @@ public class DriveSubsystem extends SubsystemBase {
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
       new HolonomicPathFollowerConfig(
-        new PIDConstants(1, 0.0, 0.01),
+        new PIDConstants(4, 0.001, 0.01),
         new PIDConstants(1.0, 0.0, 0.01),
         DriveConstants.kMaxSpeedMetersPerSecond, 
         AutoConstants.kSwerveDriveRadiusMeters, 
+
         new ReplanningConfig()
+
       ), () -> {
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -137,6 +139,7 @@ public class DriveSubsystem extends SubsystemBase {
         }
         return false;
       }, this);
+
 
       if(DriverStation.getAlliance().isPresent()){
         isRed = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
@@ -226,6 +229,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     m_field.setRobotPose(getPose());
+    Logger.recordOutput("botpose_blue", limelightMeasurement.pose);
     Logger.recordOutput("position", m_field.getRobotPose());
   }
 
@@ -278,8 +282,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     // double angle = pose.getRotation().getDegrees();
     // m_gyro.setAngleAdjustment(angle);
-    m_poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(getHeading() + 180),
+    m_poseEstimator.resetPosition(getGyro().getRotation2d(),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),

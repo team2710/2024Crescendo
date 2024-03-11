@@ -175,24 +175,24 @@ public class RobotContainer {
 
   // AUTO COMMANDS
 
-  // Command shootCommand = Commands.sequence(
-  //   endEffector.toggleOuttakeCommand(),
-  //   Commands.waitSeconds(0.25),
-  //   endEffector.stopIntakeCommand(),
-  //   endEffector.toggleFlywheelCommand(),
-  //   Commands.waitSeconds(1),
-  //   endEffector.toggleIntakeCommand(),
-  //   Commands.waitSeconds(0.5),
-  //   endEffector.toggleIntakeCommand(),
-  //   endEffector.toggleFlywheelCommand()
-  // );
-
   Command shootCommand = Commands.sequence(
-    autoFeedAndShoot,
+    endEffector.toggleOuttakeCommand(),
+    Commands.waitSeconds(0.1),
     endEffector.stopIntakeCommand(),
-    endEffector.stopFlywheelCommand()
-
+    endEffector.toggleFlywheelCommand(),
+    Commands.waitSeconds(0.4),
+    endEffector.toggleIntakeCommand(),
+    Commands.waitSeconds(0.5),
+    endEffector.toggleIntakeCommand(),
+    endEffector.toggleFlywheelCommand()
   );
+
+  // Command shootCommand = Commands.sequence(
+  //   autoFeedAndShoot,
+  //   endEffector.stopIntakeCommand(),
+  //   endEffector.stopFlywheelCommand()
+
+  // );
 
     Command shootOnMoveCommand = Commands.race(
     new autoRotatePP(true, m_robotDrive),
@@ -207,7 +207,7 @@ public class RobotContainer {
 
   Command intakeToggleSeq = Commands.sequence(
     pivotZero,
-    autoIntake
+    endEffector.toggleIntakeCommand()
   );
   
 
@@ -267,7 +267,7 @@ public class RobotContainer {
 
     autoChooser.addOption("1 Piece Auto", Commands.sequence(
       pivot.pivotMoveCommand(0),
-      Commands.waitSeconds(3),
+      Commands.waitSeconds(2),
       endEffector.toggleFlywheelCommand(),
       Commands.waitSeconds(1),
       endEffector.toggleIntakeCommand(),

@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,6 +46,8 @@ public class EndEffector extends SubsystemBase {
   private boolean isOuttaking = false;
   private boolean isNote = false;
   private double setpoint = 6000;
+
+
 
   private Debouncer intakDebouncer = new Debouncer(0.08, DebounceType.kRising);
 
@@ -100,6 +103,8 @@ public class EndEffector extends SubsystemBase {
     flywheelMotorTop.setIdleMode(IdleMode.kBrake);
     flywheelMotorTop.burnFlash();
   }
+
+
 
   public Command toggleIntakeCommand() {
     return new InstantCommand(() -> {
