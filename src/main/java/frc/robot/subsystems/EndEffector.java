@@ -29,7 +29,7 @@ import com.revrobotics.SparkPIDController;
 public class EndEffector extends SubsystemBase {
 
 
-  public Rev2mDistanceSensor distanceSensor = new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kOnboard);
+  public Rev2mDistanceSensor distanceSensor = new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kMXP);
   private CANSparkFlex intakeMotor = new CANSparkFlex(EndEffectorConstants.kIntakeMotorID, MotorType.kBrushless);
   private CANSparkFlex flywheelMotorTop = new CANSparkFlex(EndEffectorConstants.kFlywheelMotorTopID,
       MotorType.kBrushless);
@@ -58,7 +58,7 @@ public class EndEffector extends SubsystemBase {
     Feed,
   };
 
-    public enum FlywheelState {
+  public enum FlywheelState {
     OFF,
     On,
   };
@@ -72,6 +72,7 @@ public class EndEffector extends SubsystemBase {
     pidController = flywheelMotorTop.getPIDController();
     flywheelMotorBottom.follow(flywheelMotorTop, true);
     distanceSensor.setEnabled(true);
+    distanceSensor.setAutomaticMode(true);
     // intakeMotor.setSmartCurrentLimit(120);
     // flywheelMotorBottom.setSmartCurrentLimit(40);
     // flywheelMotorTop.setSmartCurrentLimit(40);
@@ -358,7 +359,7 @@ public void ShootSetter() {
 
     //uncomment for smart pid control and for auto aim to work properly and accurately
     // pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
-    flywheelMotorTop.set(-0.75);
+    flywheelMotorTop.set(-0.85);
     // flywheelMotorBottom.set(-1);
   }
 

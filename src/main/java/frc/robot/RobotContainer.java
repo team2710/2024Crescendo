@@ -50,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -195,11 +196,11 @@ public class RobotContainer {
 
   // );
 
-    Command shootOnMoveCommand = Commands.race(
-    new autoRotatePP(true, m_robotDrive),
-    pivot.autoAimPivotCommand().withTimeout(1.1),
-    shootCommand
-  );
+  // Command shootOnMoveCommand = Commands.race(
+  //   new autoRotatePP(true, m_robotDrive),
+  //   pivot.autoAimPivotCommand().withTimeout(1.1),
+  //   shootCommand
+  // );
 
   Command lowerArmCommand = Commands.sequence(
     pivot.pivotMoveCommand(0),
@@ -255,7 +256,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("pivot_subwoofer", lowerArmCommand);
     NamedCommands.registerCommand("shoot", shootCommand);
     NamedCommands.registerCommand("toggle_intake", endEffector.toggleIntakeCommand());
-    NamedCommands.registerCommand("auto_aim", shootOnMoveCommand);
+    // NamedCommands.registerCommand("auto_aim", shootOnMoveCommand);
+    NamedCommands.registerCommand("auto_shoot", Commands.sequence(
+      new InstantCommand(() -> pivot.autoAimPivot()),
+      Commands.waitSeconds(0.5),
+      shootCommand
+    ));
     NamedCommands.registerCommand("toggle_intake", intakeToggleSeq);
 
 
@@ -263,6 +269,7 @@ public class RobotContainer {
     autoChooser.setDefaultOption("No Auto", Commands.none());
     autoChooser.addOption("Basic 2 Piece", new PathPlannerAuto("2 Note Auto"));
     autoChooser.addOption("2 Piece top", new PathPlannerAuto("2 Note Subwoofer Top"));
+    autoChooser.addOption("2 Piece Shoot There", new PathPlannerAuto("2 Note Score There"));
     //autoChooser.addOption("8 Note", new PathPlannerAuto("8 Note Auto"));
 
 
@@ -354,9 +361,9 @@ public class RobotContainer {
     // AUX COMMANDS
 
     // END EFFECTOR COMMANDS
-    // auxR1.onTrue(endEffector.toggleFlywheelCommand());
+    auxR1.onTrue(endEffector.toggleFlywheelCommand());
 
-    auxR1.onTrue(autoFeedAndShoot);
+    // auxR1.onTrue(autoFeedAndShoot);
 
     auxTriangle.onTrue(new InstantCommand(() -> {
       endEffector.intake();
@@ -372,8 +379,6 @@ public class RobotContainer {
     // AUTO COMMANDS
     auxCircle.whileTrue(new RunCommand(() -> {
       pivot.autoAimPivot();
-    })).onFalse(new InstantCommand(() -> {
-      pivot.setAngleDegree(0);
     }));
 
     // CLIMB COMMANDS

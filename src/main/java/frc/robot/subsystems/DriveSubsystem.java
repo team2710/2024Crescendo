@@ -97,7 +97,8 @@ public class DriveSubsystem extends SubsystemBase {
   // Instead of using odometry class, we use a pose esimator to allow fusing multiple inputs
   SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(getHeading()),
+      // Rotation2d.fromDegrees(getHeading()),
+      m_gyro.getRotation2d(),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -127,7 +128,8 @@ public class DriveSubsystem extends SubsystemBase {
       new HolonomicPathFollowerConfig(
         new PIDConstants(4, 0.001, 0.01),
         new PIDConstants(1.0, 0.0, 0.01),
-        DriveConstants.kMaxSpeedMetersPerSecond, 
+        // DriveConstants.kMaxSpeedMetersPerSecond, 
+        1.5,
         AutoConstants.kSwerveDriveRadiusMeters, 
 
         new ReplanningConfig()
@@ -151,6 +153,8 @@ public class DriveSubsystem extends SubsystemBase {
       if(isRed){
         target_pose = DriveConstants.redSpeaker;
       }
+
+      // zeroHeadingLimelight();
   }
 
 
@@ -298,7 +302,7 @@ public class DriveSubsystem extends SubsystemBase {
     Vector<N2> robotToTarget = VecBuilder.fill(target_pose.getX() - robot_pose.getX()  , target_pose.getY() - robot_pose.getY());
     Vector<N2> scaledRobotToTarget = robotToTarget.times(shooter_velocity/robotToTarget.norm());
     Vector<N2> correctVector = scaledRobotToTarget.minus(addedVelocity);
-    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0));
+    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0)) + Math.PI;
 
     return correctAngle;
 
@@ -457,6 +461,11 @@ public class DriveSubsystem extends SubsystemBase {
     // m_gyro.calibrate();
     m_gyro.zeroYaw();
     // m_gyro.setAngleAdjustment(180);
+  }
+
+  public void zeroHeadingLimelight() {
+    m_gyro.zeroYaw();
+    m_gyro.setAngleAdjustment(limelightMeasurement.pose.getRotation().getDegrees());
   }
 
   /**

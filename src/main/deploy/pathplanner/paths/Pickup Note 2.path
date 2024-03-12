@@ -8,23 +8,23 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.299750347248438,
-        "y": 5.556066607628711
+        "x": 1.3367291599448063,
+        "y": 6.1292382044223555
       },
       "isLocked": false,
       "linkedName": "subwoofer_start"
     },
     {
       "anchor": {
-        "x": 2.5570299789248225,
+        "x": 1.8082090218234488,
         "y": 7.007485005961003
       },
       "prevControl": {
-        "x": 1.5570299789248225,
+        "x": 1.28126094090026,
         "y": 7.007485005961003
       },
       "nextControl": {
-        "x": 3.5570299789248225,
+        "x": 2.473827650358003,
         "y": 7.007485005961003
       },
       "isLocked": false,
@@ -32,11 +32,11 @@
     },
     {
       "anchor": {
-        "x": 3.684883766163929,
+        "x": 2.4923170567061854,
         "y": 7.007485005961003
       },
       "prevControl": {
-        "x": 3.6810474431759674,
+        "x": 2.488480733718224,
         "y": 7.002862654373957
       },
       "nextControl": null,
@@ -66,8 +66,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 6.0,
-    "maxAcceleration": 6.0,
+    "maxVelocity": 1.5,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -82,5 +82,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
