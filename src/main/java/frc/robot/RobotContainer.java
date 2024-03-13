@@ -176,7 +176,7 @@ public class RobotContainer {
 
   // AUTO COMMANDS
 
-  Command shootCommand = Commands.sequence(
+  Command shootSequenceCommand = Commands.sequence(
     endEffector.toggleOuttakeCommand(),
     Commands.waitSeconds(0.08),
     endEffector.stopIntakeCommand(),
@@ -186,6 +186,19 @@ public class RobotContainer {
     Commands.waitSeconds(0.3),
     endEffector.toggleIntakeCommand(),
     endEffector.toggleFlywheelCommand()
+  );
+
+  Command shootCommand = Commands.sequence(
+    endEffector.toggleIntakeCommand(),
+    Commands.waitSeconds(0.3),
+    endEffector.toggleIntakeCommand(),
+    endEffector.stopFlywheelCommand()
+  );
+
+  Command outtakePartialCommand = Commands.sequence(
+    endEffector.toggleOuttakeCommand(),
+    Commands.waitSeconds(0.08),
+    endEffector.stopIntakeCommand()
   );
 
 
@@ -253,14 +266,18 @@ public class RobotContainer {
 
 
     // Commands for Pathplanner
+    NamedCommands.registerCommand("spinup_flywheel", endEffector.flywheelCommand());
+    NamedCommands.registerCommand("stop_flywheel", endEffector.stopFlywheelCommand());
     NamedCommands.registerCommand("pivot_subwoofer", lowerArmCommand);
     NamedCommands.registerCommand("shoot", shootCommand);
+    NamedCommands.registerCommand("shoot_sequence", shootSequenceCommand);
     NamedCommands.registerCommand("toggle_intake", endEffector.toggleIntakeCommand());
+    NamedCommands.registerCommand("outtake_partial", outtakePartialCommand);
     // NamedCommands.registerCommand("auto_aim", shootOnMoveCommand);
     NamedCommands.registerCommand("auto_shoot", Commands.sequence(
       new InstantCommand(() -> pivot.autoAimPivot()),
       Commands.waitSeconds(0.5),
-      shootCommand
+      shootSequenceCommand
     ));
     NamedCommands.registerCommand("toggle_intake", intakeToggleSeq);
 
