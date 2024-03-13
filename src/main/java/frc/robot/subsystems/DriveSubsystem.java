@@ -90,22 +90,12 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Translation3d target_pose = DriveConstants.blueSpeaker;
 
-  public PIDController m_botAnglePID = new PIDController(ModuleConstants.kTurningP, ModuleConstants.kTurningI, ModuleConstants.kTurningD);
+  public PIDController m_botAnglePID = new PIDController(0.2, 0, 0);
 
   LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
   // Instead of using odometry class, we use a pose esimator to allow fusing multiple inputs
-  SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
-      DriveConstants.kDriveKinematics,
-      // Rotation2d.fromDegrees(getHeading()),
-      m_gyro.getRotation2d(),
-      new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_rearLeft.getPosition(),
-          m_rearRight.getPosition()
-      },
-      limelightMeasurement.pose);
+  SwerveDrivePoseEstimator m_poseEstimator;
   // SwerveDriveOdometry m_poseEstimator = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(getHeading()), 
   //   new SwerveModulePosition[] {
   //     m_frontLeft.getPosition(),
@@ -122,6 +112,18 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     SmartDashboard.putData("Field", m_field);
     zeroHeading();
+
+    m_poseEstimator = new SwerveDrivePoseEstimator(
+      DriveConstants.kDriveKinematics,
+      // Rotation2d.fromDegrees(getHeading()),
+      m_gyro.getRotation2d(),
+      new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()
+      },
+      limelightMeasurement.pose);
 
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
@@ -297,12 +299,13 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double autoAim(double vx, double vy, Pose2d robot_pose, double shooter_velocity, Translation2d target_pose){
+    // robot_pose = robot_pose.rotateBy(new Rotation2d(Math.PI));
     Vector<N2> addedVelocity = VecBuilder.fill(vx , vy);
     SmartDashboard.putNumber("added velocity", addedVelocity.norm());
     Vector<N2> robotToTarget = VecBuilder.fill(target_pose.getX() - robot_pose.getX()  , target_pose.getY() - robot_pose.getY());
     Vector<N2> scaledRobotToTarget = robotToTarget.times(shooter_velocity/robotToTarget.norm());
     Vector<N2> correctVector = scaledRobotToTarget.minus(addedVelocity);
-    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0)) + Math.PI;
+    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0));
 
     return correctAngle;
 
