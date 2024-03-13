@@ -128,8 +128,8 @@ public class DriveSubsystem extends SubsystemBase {
       new HolonomicPathFollowerConfig(
         new PIDConstants(4, 0.001, 0.01),
         new PIDConstants(1.0, 0.0, 0.01),
-        // DriveConstants.kMaxSpeedMetersPerSecond, 
-        1.5,
+        DriveConstants.kMaxSpeedMetersPerSecond, 
+        // 1.5,
         AutoConstants.kSwerveDriveRadiusMeters, 
 
         new ReplanningConfig()

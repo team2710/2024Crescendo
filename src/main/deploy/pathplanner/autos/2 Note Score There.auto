@@ -6,9 +6,21 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Pickup Note 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "toggle_intake"
           }
         },
         {
