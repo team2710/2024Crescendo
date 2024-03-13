@@ -8,6 +8,12 @@
         {
           "type": "named",
           "data": {
+            "name": "spinup_flywheel"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "pivot_subwoofer"
           }
         },
@@ -26,19 +32,25 @@
         {
           "type": "named",
           "data": {
-            "name": "toggle_intake"
+            "name": "stop_intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outtake_partial"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "spinup_flywheel"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Score Note 1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "pivot_subwoofer"
           }
         },
         {
@@ -56,19 +68,25 @@
         {
           "type": "named",
           "data": {
-            "name": "toggle_intake"
+            "name": "stop_intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outtake_partial"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "spinup_flywheel"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Score Note 2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "pivot_subwoofer"
           }
         },
         {
@@ -86,19 +104,25 @@
         {
           "type": "named",
           "data": {
-            "name": "toggle_intake"
+            "name": "stop_intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outtake_partial"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "spinup_flywheel"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Score Note 3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "pivot_subwoofer"
           }
         },
         {
