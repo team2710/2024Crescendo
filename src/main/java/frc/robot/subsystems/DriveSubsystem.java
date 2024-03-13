@@ -48,6 +48,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.LimelightHelpers;
+import frc.utils.NoteVisualizer;
 import frc.utils.SwerveUtils;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -120,6 +121,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+    NoteVisualizer.setRobotPoseSupplier(this::getPose);
+
     SmartDashboard.putData("Field", m_field);
     zeroHeading();
 
