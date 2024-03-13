@@ -61,9 +61,9 @@ public class Pivot extends SubsystemBase {
     }
 
     public Pivot(DriveSubsystem driveSubsystem) {
-        armAngle3DArray[0] = 0.234442;
+        armAngle3DArray[0] = -0.234442;
         armAngle3DArray[1] = 0;
-        armAngle3DArray[2] = 0.1905;
+        armAngle3DArray[2] = -0.1905;
         relativeEncoder = pivotMotorRight.getEncoder();
         pidController = pivotMotorRight.getPIDController();
         // absoluteEncoder = pivotMotorLeft.getAbsoluteEncoder(Type.kDutyCycle);

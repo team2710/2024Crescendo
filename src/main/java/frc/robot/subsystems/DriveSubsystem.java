@@ -302,7 +302,7 @@ public class DriveSubsystem extends SubsystemBase {
     Vector<N2> robotToTarget = VecBuilder.fill(target_pose.getX() - robot_pose.getX()  , target_pose.getY() - robot_pose.getY());
     Vector<N2> scaledRobotToTarget = robotToTarget.times(shooter_velocity/robotToTarget.norm());
     Vector<N2> correctVector = scaledRobotToTarget.minus(addedVelocity);
-    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0)) + Math.PI;
+    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0)) ;
 
     return correctAngle;
 
@@ -329,13 +329,24 @@ public class DriveSubsystem extends SubsystemBase {
    *                      field.
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
-  public void DriverDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit, PS4Controller controller)
-  {
+  public void DriverDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit, PS4Controller controller, boolean velocityControl, boolean slowAutoAim)
+  { 
+    if(velocityControl){
+      enableVelocityControl(true);
+    }
+    else{
+      enableVelocityControl(false);
+    }
     if(controller.getSquareButton()){
       double angle = autoAim(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond, getPose(), 45, target_pose.toTranslation2d());
       rot = m_botAnglePID.calculate(getPose().getRotation().getRadians(), angle);
       SmartDashboard.putNumber("Auto Aim Rotation", rot);
+      if(slowAutoAim){
+        xSpeed = xSpeed * 0.5;
+        ySpeed = ySpeed * 0.5;
+      }
     }
+
     drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);
   }
 
