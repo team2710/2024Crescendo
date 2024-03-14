@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2997503472484422,
+        "x": 1.4599904638405767,
         "y": 5.556066607628711
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3367291599448063,
-        "y": 4.890447979094157
+        "x": 1.4055808813372015,
+        "y": 3.7419176592739154
       },
       "isLocked": false,
       "linkedName": "subwoofer_start"
     },
     {
       "anchor": {
-        "x": 2.0208371948275423,
+        "x": 2.5300455864069624,
         "y": 4.113892912470511
       },
       "prevControl": {
-        "x": 1.3070140425995143,
-        "y": 4.1632860408577965
-      },
-      "nextControl": {
-        "x": 2.3161060838147254,
-        "y": 4.09346172570248
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.5677274211691286,
-        "y": 3.9873725461736647
-      },
-      "prevControl": {
-        "x": 2.3478614392249275,
-        "y": 3.9796946568991145
+        "x": 2.3101796044627614,
+        "y": 4.10621502319596
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "parallel",
         "data": {
@@ -73,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -3.0,
     "rotateFast": false
   },
   "reversed": false,

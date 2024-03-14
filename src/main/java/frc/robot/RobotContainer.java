@@ -101,7 +101,7 @@ public class RobotContainer {
 
 
  Command PathfindToPickupBlue = AutoBuilder.pathfindToPose(
-    new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)), 
+    new Pose2d(14.0, 1.2, Rotation2d.fromDegrees(0)), 
     new PathConstraints(
       4.0, 4.0, 
       Units.degreesToRadians(360), Units.degreesToRadians(540)
@@ -112,7 +112,7 @@ public class RobotContainer {
 
   Command PathfindToPickupRed = 
   AutoBuilder.pathfindToPose(
-    new Pose2d(0.956, 1.763, Rotation2d.fromDegrees(180)), 
+    new Pose2d(0.956, 1.2, Rotation2d.fromDegrees(180)), 
     new PathConstraints(
       4.0, 4.0, 
       Units.degreesToRadians(360), Units.degreesToRadians(540)
@@ -180,12 +180,12 @@ public class RobotContainer {
     endEffector.toggleOuttakeCommand(),
     Commands.waitSeconds(0.08),
     endEffector.stopIntakeCommand(),
-    // endEffector.toggleFlywheelCommand(),
-    // new WaitUntilCommand(endEffector::AtShootingSpeed),
-    endEffector.toggleIntakeCommand(),
+    endEffector.toggleFlywheelCommand(),
+    new WaitUntilCommand(endEffector::AtShootingSpeed),
+    endEffector.feedCommand(),
     Commands.waitSeconds(0.3),
-    endEffector.toggleIntakeCommand()
-    // endEffector.toggleFlywheelCommand()
+    endEffector.stopIntakeCommand(),
+    endEffector.stopFlywheelCommand()
   );
 
 
@@ -213,6 +213,12 @@ public class RobotContainer {
     autoIntake
   );
 
+  Command autoShoot = Commands.sequence(
+    new InstantCommand(() -> pivot.autoAimPivot()),
+    Commands.waitSeconds(0.1),
+    shootCommand,
+    pivotZero
+  );
   
   
 

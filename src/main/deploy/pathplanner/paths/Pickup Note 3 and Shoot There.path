@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4121581576496487,
-        "y": 6.997424345725884
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 1.875965373552368,
-        "y": 6.7755514695476995
-      },
-      "isLocked": false,
-      "linkedName": "pickup_note_2"
-    },
-    {
-      "anchor": {
         "x": 1.4599904638405767,
         "y": 5.556066607628711
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.126635490253175,
+        "y": 5.556066607628711
+      },
+      "isLocked": false,
+      "linkedName": "subwoofer_start"
+    },
+    {
+      "anchor": {
+        "x": 2.566318641409213,
+        "y": 4.249740429305421
+      },
       "prevControl": {
-        "x": 2.6802912828205923,
-        "y": 5.565311310802802
+        "x": 2.346452659465012,
+        "y": 4.2420625400308705
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "subwoofer_start"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,15 +33,15 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.75,
+      "waypointRelativePos": 0.35,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "outtake"
+                "name": "toggle_intake"
               }
             }
           ]
@@ -57,8 +57,8 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
-    "rotateFast": false
+    "rotation": -25.0,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "Note Paths",

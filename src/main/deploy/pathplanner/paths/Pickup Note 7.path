@@ -3,52 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4121581576496487,
-        "y": 6.997424345725884
+        "x": 3.1376192576946558,
+        "y": 5.473956035631369
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.875965373552368,
-        "y": 6.7755514695476995
+        "x": 4.137619257694658,
+        "y": 5.473956035631369
       },
       "isLocked": false,
-      "linkedName": "pickup_note_2"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.4599904638405767,
-        "y": 5.556066607628711
+        "x": 7.943799045492829,
+        "y": 4.032102099291918
       },
       "prevControl": {
-        "x": 2.6802912828205923,
-        "y": 5.565311310802802
+        "x": 6.4838085816522515,
+        "y": 2.5993164267030298
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "subwoofer_start"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.75,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "outtake"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 1.5,
     "maxAcceleration": 3.0,

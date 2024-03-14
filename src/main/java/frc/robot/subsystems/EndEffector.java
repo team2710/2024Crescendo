@@ -136,6 +136,8 @@ public class EndEffector extends SubsystemBase {
     }, this);
   }
 
+
+
   public Command toggleFlywheelCommand() {
     return new InstantCommand(() -> {
       toggleFlywheel();
@@ -348,6 +350,7 @@ public void ShootSetter() {
   }
 
   public void feed() {
+    isIntaking = true;
     intakeMotor.set(1);
   }
 

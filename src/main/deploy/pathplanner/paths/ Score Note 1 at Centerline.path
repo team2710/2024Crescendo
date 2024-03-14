@@ -3,52 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6751378064159637,
-        "y": 5.556066607628711
+        "x": 2.6570012789148385,
+        "y": 5.501160826883058
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.249881460407776,
-        "y": 5.556066607628711
+        "x": 3.6270012789148387,
+        "y": 5.501160826883058
       },
       "isLocked": false,
-      "linkedName": "pickup_note_1"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.4599904638405767,
-        "y": 5.556066607628711
+        "x": 1.9678132338720822,
+        "y": 5.501160826883058
       },
       "prevControl": {
-        "x": 1.7095974495410367,
-        "y": 5.546821904454619
+        "x": 0.7611888188621212,
+        "y": 5.501160826883058
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "subwoofer_start"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "Outtake",
-      "waypointRelativePos": 0.55,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "outtake"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 1.5,
     "maxAcceleration": 3.0,
@@ -57,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,

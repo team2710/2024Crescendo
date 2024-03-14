@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 1.4599904638405767,
+      "y": 5.556066607628711
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -14,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Note 1"
+            "pathName": "Pickup Note 3 and Shoot There"
           }
         },
         {
@@ -26,13 +32,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Note 2"
+            "pathName": "Pickup Note 2 to 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot at Centerline from Top Note"
+            "pathName": "Shoot at Centerline"
           }
         },
         {
@@ -44,13 +50,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Note 3"
+            "pathName": "Centerline Pickup Note 2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Score Note 3"
+            "pathName": " Centerline Note Left Shoot There"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "auto_aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup Far Left Note 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Left Far Note 2"
           }
         },
         {

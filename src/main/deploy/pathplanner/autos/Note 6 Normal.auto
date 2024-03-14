@@ -1,22 +1,16 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 1.523468310094515,
+      "y": 5.5102290906336195
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
-        {
-          "type": "named",
-          "data": {
-            "name": "auto_shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Pickup Note 1"
-          }
-        },
         {
           "type": "named",
           "data": {
@@ -44,13 +38,49 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Note 3"
+            "pathName": "Pickup Note 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Score Note 3"
+            "pathName": "Pickup Note 1 to 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup Note 3 and Shoot There"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "auto_shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup Note 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Note 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": " Pick Up Note 6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Note 6"
           }
         },
         {
