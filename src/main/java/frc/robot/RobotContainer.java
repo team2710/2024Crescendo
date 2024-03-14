@@ -101,7 +101,7 @@ public class RobotContainer {
 
 
  Command PathfindToPickupBlue = AutoBuilder.pathfindToPose(
-    new Pose2d(14.0, 1.2, Rotation2d.fromDegrees(0)), 
+    new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)), 
     new PathConstraints(
       4.0, 4.0, 
       Units.degreesToRadians(360), Units.degreesToRadians(540)
@@ -112,7 +112,7 @@ public class RobotContainer {
 
   Command PathfindToPickupRed = 
   AutoBuilder.pathfindToPose(
-    new Pose2d(0.956, 1.2, Rotation2d.fromDegrees(180)), 
+    new Pose2d(0.956, 1.763, Rotation2d.fromDegrees(180)), 
     new PathConstraints(
       4.0, 4.0, 
       Units.degreesToRadians(360), Units.degreesToRadians(540)
@@ -177,15 +177,14 @@ public class RobotContainer {
   // AUTO COMMANDS
 
   Command shootCommand = Commands.sequence(
-    endEffector.toggleOuttakeCommand(),
     Commands.waitSeconds(0.08),
     endEffector.stopIntakeCommand(),
     endEffector.toggleFlywheelCommand(),
     new WaitUntilCommand(endEffector::AtShootingSpeed),
-    endEffector.feedCommand(),
+    endEffector.toggleIntakeCommand(),
     Commands.waitSeconds(0.3),
-    endEffector.stopIntakeCommand(),
-    endEffector.stopFlywheelCommand()
+    endEffector.toggleIntakeCommand()
+    // endEffector.toggleFlywheelCommand()
   );
 
 
@@ -214,8 +213,7 @@ public class RobotContainer {
   );
 
   Command autoShoot = Commands.sequence(
-    new InstantCommand(() -> pivot.autoAimPivot()),
-    Commands.waitSeconds(0.1),
+    pivot.autoAimPivotCommand().withTimeout(1.1),
     shootCommand,
     pivotZero
   );
@@ -270,16 +268,20 @@ public class RobotContainer {
     // Commands for Pathplanner
     NamedCommands.registerCommand("pivot_subwoofer", lowerArmCommand);
     NamedCommands.registerCommand("shoot", shootCommand);
-    NamedCommands.registerCommand("toggle_intake", endEffector.toggleIntakeCommand());
-    NamedCommands.registerCommand("auto_aim", shootOnMoveCommand);
+    NamedCommands.registerCommand("auto_shoot", autoShoot);
     NamedCommands.registerCommand("toggle_intake", intakeToggleSeq);
     NamedCommands.registerCommand("outtake", outtakeCommand);
+    NamedCommands.registerCommand("auto_aim", shootOnMoveCommand);
 
 
 
     autoChooser.setDefaultOption("No Auto", Commands.none());
-    autoChooser.addOption("Basic 2 Piece", new PathPlannerAuto("2 Note Auto"));
+    autoChooser.addOption("Basic 2 Piece", new PathPlannerAuto("2 Note Score There"));
     autoChooser.addOption("2 Piece top", new PathPlannerAuto("2 Note Subwoofer Top"));
+    autoChooser.addOption("6 Note", new PathPlannerAuto("Note 6 Normal"));
+    autoChooser.addOption("5 Note Far Left", new PathPlannerAuto("5 Note Far Left"));
+    autoChooser.addOption("5 Note Right", new PathPlannerAuto("Note 5"));
+    autoChooser.addOption("6 Note through Stage", new PathPlannerAuto("Note 6 Stage"));
     //autoChooser.addOption("8 Note", new PathPlannerAuto("8 Note Auto"));
 
 

@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "auto_aim"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Pickup Note 2"
@@ -30,6 +36,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "auto_shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Pickup Note 1 to 2"
@@ -39,6 +51,12 @@
           "type": "path",
           "data": {
             "pathName": "Pickup Note 3 and Shoot There"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "auto_shoot"
           }
         },
         {
@@ -54,6 +72,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "auto_shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Pick Up Note 6 in Stage"
@@ -63,6 +87,12 @@
           "type": "path",
           "data": {
             "pathName": "Score Note 6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "auto_shoot"
           }
         }
       ]
