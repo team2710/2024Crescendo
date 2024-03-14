@@ -37,6 +37,7 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -48,7 +49,6 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.LimelightHelpers;
-import frc.utils.NoteVisualizer;
 import frc.utils.SwerveUtils;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -74,7 +74,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kBackRightChassisAngularOffset);
 
   // The gyro sensor
-  private final AHRS m_gyro = new AHRS(Port.kMXP);
+  private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
   // The vision subsystem
   private final Vision vision = new Vision("limelight");
@@ -98,7 +98,6 @@ public class DriveSubsystem extends SubsystemBase {
   // Instead of using odometry class, we use a pose esimator to allow fusing multiple inputs
   SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
-      // Rotation2d.fromDegrees(getHeading()),
       m_gyro.getRotation2d(),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
@@ -121,8 +120,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    NoteVisualizer.setRobotPoseSupplier(this::getPose);
-
     SmartDashboard.putData("Field", m_field);
     zeroHeading();
 
@@ -131,8 +128,7 @@ public class DriveSubsystem extends SubsystemBase {
       new HolonomicPathFollowerConfig(
         new PIDConstants(4, 0.001, 0.01),
         new PIDConstants(1.0, 0.0, 0.01),
-        // DriveConstants.kMaxSpeedMetersPerSecond, 
-        1.5,
+        DriveConstants.kMaxSpeedMetersPerSecond, 
         AutoConstants.kSwerveDriveRadiusMeters, 
 
         new ReplanningConfig()
@@ -156,8 +152,6 @@ public class DriveSubsystem extends SubsystemBase {
       if(isRed){
         target_pose = DriveConstants.redSpeaker;
       }
-
-      // zeroHeadingLimelight();
   }
 
 
@@ -215,7 +209,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Update the odometry in the periodic block
     m_poseEstimator.update(
-        Rotation2d.fromDegrees(getHeading()),
+        m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -305,7 +299,7 @@ public class DriveSubsystem extends SubsystemBase {
     Vector<N2> robotToTarget = VecBuilder.fill(target_pose.getX() - robot_pose.getX()  , target_pose.getY() - robot_pose.getY());
     Vector<N2> scaledRobotToTarget = robotToTarget.times(shooter_velocity/robotToTarget.norm());
     Vector<N2> correctVector = scaledRobotToTarget.minus(addedVelocity);
-    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0)) ;
+    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0));
 
     return correctAngle;
 
@@ -349,10 +343,8 @@ public class DriveSubsystem extends SubsystemBase {
         ySpeed = ySpeed * 0.5;
       }
     }
-
     drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);
   }
-
 
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit) {
@@ -475,11 +467,6 @@ public class DriveSubsystem extends SubsystemBase {
     // m_gyro.calibrate();
     m_gyro.zeroYaw();
     // m_gyro.setAngleAdjustment(180);
-  }
-
-  public void zeroHeadingLimelight() {
-    m_gyro.zeroYaw();
-    m_gyro.setAngleAdjustment(limelightMeasurement.pose.getRotation().getDegrees());
   }
 
   /**
