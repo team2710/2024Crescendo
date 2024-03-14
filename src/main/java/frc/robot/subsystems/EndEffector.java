@@ -88,19 +88,10 @@ public class EndEffector extends SubsystemBase {
 
 
   public EndEffector() {
-
-     CANdleConfiguration configAll = new CANdleConfiguration();
-        configAll.statusLedOffWhenActive = true;
-        configAll.disableWhenLOS = false;
-        configAll.stripType = LEDStripType.RGB;
-        configAll.brightnessScalar = 0.1;
-        configAll.vBatOutputMode = VBatOutputMode.Modulated;
-        led.configAllSettings(configAll, 100);
     // RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 1, 0);
     // led.animate(rainbowAnimation);
     pidController = flywheelMotorTop.getPIDController();
     flywheelMotorBottom.follow(flywheelMotorTop, true);
-    distanceSensor.setEnabled(true);
     distanceSensor.setAutomaticMode(true);
     // intakeMotor.setSmartCurrentLimit(120);
     // flywheelMotorBottom.setSmartCurrentLimit(40);
@@ -501,8 +492,8 @@ public void ShootSetter() {
     SmartDashboard.putNumber("Flywheel Setpoint", setpoint);
     SmartDashboard.putBoolean("Note beam break", isNoteDetected()); 
 
-    led.animate(new FireAnimation(2, 1.0, 15, 1.0, 1.0, false, 8));
-      // led.setLEDs(255, 0, 0);
+    // led.animate(new FireAnimation(2, 1.0, 15, 1.0, 1.0, false, 8));
+      led.setLEDs(255, 0, 0);
       //     led.setLEDs(0, 255, 0);
       // led.setLEDs(0, 0, 255);
 
