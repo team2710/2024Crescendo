@@ -30,8 +30,8 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.DriverProfile.mathProfiles;
 import frc.robot.commands.Basic2PieceAuto;
-import frc.robot.commands.ShootIntake;
-import frc.robot.commands.autoIntakeToggle;
+// import frc.robot.commands.ShootIntake;
+// import frc.robot.commands.autoIntakeToggle;
 import frc.robot.commands.autoRotatePP;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.DriveSubsystem;
@@ -87,11 +87,11 @@ public class RobotContainer {
   Command intakeOn = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.On), endEffector);
   Command outtake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Outtake));
   Command pivotZero = new InstantCommand(() -> pivot.zeroPivot(), pivot);
-  Command autoFeedAndShoot = new ShootIntake(endEffector);
+  // Command autoFeedAndShoot = new ShootIntake(endEffector);
 
   Command spinupFlywheelCommand = new InstantCommand(() -> endEffector.spinupFlywheel(), endEffector);
   Command stopFlywheelCommand = new InstantCommand(() -> endEffector.stopFlywheel(), endEffector);
-  Command autoIntake = new autoIntakeToggle(endEffector);
+  // Command autoIntake = new autoIntakeToggle(endEffector);
 
   // Pivot Arm
   Climb climber = new Climb();
@@ -177,27 +177,25 @@ public class RobotContainer {
   // AUTO COMMANDS
 
   Command shootSequenceCommand = Commands.sequence(
-    endEffector.toggleOuttakeCommand(),
+    endEffector.outtakeCommand(),
     Commands.waitSeconds(0.08),
     endEffector.stopIntakeCommand(),
-    endEffector.toggleFlywheelCommand(),
+    spinupFlywheelCommand,
     Commands.waitSeconds(0.5),
-    endEffector.toggleIntakeCommand(),
-    Commands.waitSeconds(0.3),
-    endEffector.toggleIntakeCommand(),
-    endEffector.toggleFlywheelCommand()
+    endEffector.feedCommand(),
+    endEffector.stopFlywheelCommand()
   );
 
   Command shootCommand = Commands.sequence(
-    endEffector.toggleIntakeCommand(),
+    endEffector.feedCommand(),
     Commands.waitSeconds(0.3),
-    endEffector.toggleIntakeCommand(),
+    endEffector.stopIntakeCommand(),
     endEffector.stopFlywheelCommand()
   );
 
   Command outtakePartialCommand = Commands.sequence(
     endEffector.toggleOuttakeCommand(),
-    Commands.waitSeconds(0.08),
+    Commands.waitSeconds(0.1),
     endEffector.stopIntakeCommand()
   );
 
@@ -302,6 +300,7 @@ public class RobotContainer {
     ));
     autoChooser.addOption("3 Piece", new PathPlannerAuto("3 Note Auto"));
     autoChooser.addOption("4 Piece", new PathPlannerAuto("4 Note Auto"));
+    autoChooser.addOption("4 Piece Old", new PathPlannerAuto("4 Note Auto Old"));
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // kbShooter = new KitBotShooter();

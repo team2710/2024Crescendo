@@ -16,6 +16,8 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,7 +31,7 @@ import com.revrobotics.SparkPIDController;
 public class EndEffector extends SubsystemBase {
 
 
-  public Rev2mDistanceSensor distanceSensor = new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kMXP);
+  // public Rev2mDistanceSensor distanceSensor = new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kMXP);
   private CANSparkFlex intakeMotor = new CANSparkFlex(EndEffectorConstants.kIntakeMotorID, MotorType.kBrushless);
   private CANSparkFlex flywheelMotorTop = new CANSparkFlex(EndEffectorConstants.kFlywheelMotorTopID,
       MotorType.kBrushless);
@@ -71,8 +73,8 @@ public class EndEffector extends SubsystemBase {
   public EndEffector() {
     pidController = flywheelMotorTop.getPIDController();
     flywheelMotorBottom.follow(flywheelMotorTop, true);
-    distanceSensor.setEnabled(true);
-    distanceSensor.setAutomaticMode(true);
+    // distanceSensor.setEnabled(true);
+    // distanceSensor.setAutomaticMode(true);
     // intakeMotor.setSmartCurrentLimit(120);
     // flywheelMotorBottom.setSmartCurrentLimit(40);
     // flywheelMotorTop.setSmartCurrentLimit(40);
@@ -312,6 +314,12 @@ public void ShootSetter() {
       intake();
   }
 
+  public Command outtakeCommand() {
+    return new InstantCommand(() -> {
+      outtake();
+    });
+  }
+
   public void outtake() {
     isOuttaking = true;
     isIntaking = false;
@@ -342,15 +350,15 @@ public void ShootSetter() {
       spinupFlywheel();
   }
 
-  public void intakeBeamBreak(){
-    if(distanceSensor.getRange() < 0.1){
-      stopIntake();
-    }
-  }
+  // public void intakeBeamBreak(){
+  //   if(distanceSensor.getRange() < 0.1){
+  //     stopIntake();
+  //   }
+  // }
 
-  public boolean isNoteDetected(){
-    return distanceSensor.getRange() < 0.1;
-  }
+  // public boolean isNoteDetected(){
+  //   return distanceSensor.getRange() < 0.1;
+  // }
 
 
 
@@ -392,7 +400,7 @@ public void ShootSetter() {
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Note Detect", isNote);
-    SmartDashboard.putNumber("Distance Value", distanceSensor.getRange());
+    // SmartDashboard.putNumber("Distance Value", distanceSensor.getRange());
     // if (intakDebouncer.calculate(getFilterCurrent() > 65) && isIntaking) {
     //   isNote = true;
     //   // stopIntake();
@@ -400,6 +408,23 @@ public void ShootSetter() {
     // {
     //   isNote = false;
     //   stopIntake();
+    // }
+
+    // if (distanceSensor.getRange() < EndEffectorConstants.kMinDist && distanceSensor.getRange() > 0) {
+    //   isNote = true;
+    // } else {
+    //   isNote = false;
+    // }
+
+    // if (isNote && isIntaking) {
+    //   CommandScheduler.getInstance().schedule(
+    //     Commands.sequence(
+    //       stopIntakeCommand(),
+    //       outtakeCommand(),
+    //       Commands.waitSeconds(0.2),
+    //       stopIntakeCommand()
+    //     )
+    //   );
     // }
 
     // double p = SmartDashboard.getNumber("Flywheel P Gain",
@@ -433,14 +458,14 @@ public void ShootSetter() {
     SmartDashboard.putNumber("Flywheel Top RPM", encoderTop.getVelocity());
     SmartDashboard.putNumber("Flywheel Bottom RPM", encoderBottom.getVelocity());
     SmartDashboard.putNumber("Intake Current", getFilterCurrent());
-    SmartDashboard.putNumber("Distance", distanceSensor.getRange());
+    // SmartDashboard.putNumber("Distance", distanceSensor.getRange());
     SmartDashboard.putBoolean("Intake State", isIntaking);
     SmartDashboard.putBoolean("Flywheel State", isFlywheelRunning);
     SmartDashboard.putBoolean("Outtake State", isOuttaking);
     SmartDashboard.putBoolean("Note Detect", isNote);
     SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
     SmartDashboard.putNumber("Flywheel Setpoint", setpoint);
-    SmartDashboard.putBoolean("Note beam break", isNoteDetected()); 
+    // SmartDashboard.putBoolean("Note beam break", isNoteDetected()); 
   }
 
 }

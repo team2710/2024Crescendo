@@ -35,7 +35,9 @@ public final class Constants {
     public static final int kFlywheelMotorTopID = 42;
     public static final int kFlywheelMotorBottomID = 43;
 
-    public static final double kIntakeSpeed = 1;
+    public static final double kMinDist = 10.0;
+
+    public static final double kIntakeSpeed = 0.5;
     public static final double kFlywheelMotorSpeed = 6300;
     
     public static final double kFlywheelP = 0.002;
@@ -170,7 +172,7 @@ public final class Constants {
     public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
     public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-    public static final double kDrivingP = 0.3;
+    public static final double kDrivingP = 0.25;
     public static final double kDrivingI = 0.0;
     public static final double kDrivingD = 0.0095;
     public static final double kDrivingFF = 0;
