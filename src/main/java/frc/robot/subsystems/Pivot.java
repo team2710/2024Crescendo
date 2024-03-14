@@ -63,7 +63,7 @@ public class Pivot extends SubsystemBase {
     public Pivot(DriveSubsystem driveSubsystem) {
         armAngle3DArray[0] = -0.234442;
         armAngle3DArray[1] = 0;
-        armAngle3DArray[2] = -0.1905;
+        armAngle3DArray[2] = 0.1905;
         relativeEncoder = pivotMotorRight.getEncoder();
         pidController = pivotMotorRight.getPIDController();
         // absoluteEncoder = pivotMotorLeft.getAbsoluteEncoder(Type.kDutyCycle);
@@ -97,7 +97,7 @@ public class Pivot extends SubsystemBase {
     }
 
     public void getArmAngle(){
-        armRotation3d = new Rotation3d(0, getAngle() * Math.PI/180 ,0);
+        armRotation3d = new Rotation3d(0, -getAngle() * Math.PI/180 ,0);
         // armAngle3DArray[2] = -(1-Math.cos(m_armSim.getAngleRads()))*d; //z
         // armAngle3DArray[0] = Math.sin(m_armSim.getAngleRads())*d; //X
 

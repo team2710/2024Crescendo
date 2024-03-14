@@ -67,11 +67,11 @@ public final class Constants {
     //https://www.reca.lc/arm?armMass=%7B%22s%22%3A14%2C%22u%22%3A%22lbs%22%7D&comLength=%7B%22s%22%3A27.784294%2C%22u%22%3A%22in%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=80&endAngle=%7B%22s%22%3A90%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A2%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A165.333333%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A0%2C%22u%22%3A%22deg%22%7D
 
     public static final double kPivotGearRatio = 18.0/62.0;
-    public static final double kPivotP = 0.20;
+    public static final double kPivotP = 0.27;
     public static final double kPivotI = 0;
     public static final double kPivotD = 0.02;
     public static final double kPivotIz = 0;
-    public static final double kPivotFF = 0;
+    public static final double kPivotFF = 0.005;
     public static final double kPivotMinOutput = -0.825;
     public static final double kPivotMaxOutput = 0.75;
 

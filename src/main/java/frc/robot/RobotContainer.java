@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -179,12 +180,12 @@ public class RobotContainer {
     endEffector.toggleOuttakeCommand(),
     Commands.waitSeconds(0.08),
     endEffector.stopIntakeCommand(),
-    endEffector.toggleFlywheelCommand(),
-    Commands.waitSeconds(0.5),
+    // endEffector.toggleFlywheelCommand(),
+    // new WaitUntilCommand(endEffector::AtShootingSpeed),
     endEffector.toggleIntakeCommand(),
     Commands.waitSeconds(0.3),
-    endEffector.toggleIntakeCommand(),
-    endEffector.toggleFlywheelCommand()
+    endEffector.toggleIntakeCommand()
+    // endEffector.toggleFlywheelCommand()
   );
 
 
@@ -208,8 +209,11 @@ public class RobotContainer {
 
   Command intakeToggleSeq = Commands.sequence(
     pivotZero,
-    endEffector.toggleIntakeCommand()
+    // endEffector.toggleIntakeCommand()
+    autoIntake
   );
+
+  
   
 
   // private final SendableChooser<Command> autoChooser;
@@ -235,6 +239,12 @@ public class RobotContainer {
       // driverDPADUP.whileTrue(PathfindToPickupRed);
     }
 
+    Command outtakeCommand = Commands.sequence(
+    endEffector.toggleOuttakeCommand(),
+    Commands.waitSeconds(0.08),
+    endEffector.stopIntakeCommand()
+    );
+
     Command PathFindtoScoreSeq = Commands.sequence(
       m_robotDrive.velocityControlEnabledCommand(true),
       PathfindToScore,
@@ -257,6 +267,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("toggle_intake", endEffector.toggleIntakeCommand());
     NamedCommands.registerCommand("auto_aim", shootOnMoveCommand);
     NamedCommands.registerCommand("toggle_intake", intakeToggleSeq);
+    NamedCommands.registerCommand("outtake", outtakeCommand);
 
 
 
@@ -356,7 +367,7 @@ public class RobotContainer {
     // END EFFECTOR COMMANDS
     // auxR1.onTrue(endEffector.toggleFlywheelCommand());
 
-    auxR1.onTrue(autoFeedAndShoot);
+    auxR1.onTrue(endEffector.toggleFlywheelCommand());
 
     auxTriangle.onTrue(new InstantCommand(() -> {
       endEffector.intake();

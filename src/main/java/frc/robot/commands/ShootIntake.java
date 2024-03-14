@@ -30,7 +30,7 @@ public class ShootIntake extends Command {
     @Override
     public void execute() {
         m_end.toggleFlywheel();
-        if(m_end.flywheelRPM() > 5900) {
+        if(m_end.flywheelRPM() > 5000) {
            m_end.feed();   
         }
 

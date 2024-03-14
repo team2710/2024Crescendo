@@ -21,6 +21,13 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.EndEffectorConstants;
 import com.revrobotics.SparkPIDController;
+import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
+import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.FireAnimation;
+import com.ctre.phoenix.led.RainbowAnimation; 
+
 
 /**
  * The EndEffector class represents the subsystem responsible for controlling the end effector of the robot.
@@ -46,6 +53,9 @@ public class EndEffector extends SubsystemBase {
   private boolean isOuttaking = false;
   private boolean isNote = false;
   private double setpoint = 6000;
+  CANdle led = new CANdle(45); 
+
+
 
 
 
@@ -63,12 +73,31 @@ public class EndEffector extends SubsystemBase {
     On,
   };
 
+  
+  public enum LightState {
+    HasNote,
+    Idle,
+    ReadyForNote,
+    FlyWheelOn,
+    IntakeOn
+  };
+
   public static IntakeState m_intakeState = IntakeState.OFF;
   public static FlywheelState m_shootState = FlywheelState.OFF;
   LinearFilter m_currenFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
 
   public EndEffector() {
+
+     CANdleConfiguration configAll = new CANdleConfiguration();
+        configAll.statusLedOffWhenActive = true;
+        configAll.disableWhenLOS = false;
+        configAll.stripType = LEDStripType.RGB;
+        configAll.brightnessScalar = 0.1;
+        configAll.vBatOutputMode = VBatOutputMode.Modulated;
+        led.configAllSettings(configAll, 100);
+    // RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 1, 0);
+    // led.animate(rainbowAnimation);
     pidController = flywheelMotorTop.getPIDController();
     flywheelMotorBottom.follow(flywheelMotorTop, true);
     distanceSensor.setEnabled(true);
@@ -102,6 +131,9 @@ public class EndEffector extends SubsystemBase {
     pidController.setSmartMotionMaxVelocity(EndEffectorConstants.kFlywheelMotorSpeed, 0);
 
     flywheelMotorTop.setIdleMode(IdleMode.kBrake);
+    flywheelMotorBottom.setIdleMode(IdleMode.kBrake);
+
+
     flywheelMotorTop.burnFlash();
   }
 
@@ -279,6 +311,29 @@ public class EndEffector extends SubsystemBase {
 
   }
 
+public void LightSetter(LightState m_state) {
+  switch(m_state) {
+    case Idle:
+      led.setLEDs(160, 32, 240);
+      //  led.animate(new FireAnimation(2, 1.0, 5 * 3, 1.0, 1.0, false, 8));
+      break;
+    case IntakeOn:
+      led.setLEDs(0, 0, 0);
+      break;
+    case HasNote:
+      led.setLEDs(0, 0, 0);
+      break;
+    case ReadyForNote:
+      led.setLEDs(0, 0, 0);
+      break;
+    case FlyWheelOn:
+      led.setLEDs(0, 0, 0);
+      break;
+    default:
+      m_state = LightState.Idle;
+  } 
+}
+
 public void ShootSetter() {
     switch (m_shootState) {
       case OFF:
@@ -349,7 +404,7 @@ public void ShootSetter() {
   }
 
   public boolean isNoteDetected(){
-    return distanceSensor.getRange() < 0.1;
+    return distanceSensor.getRange() < 8;
   }
 
 
@@ -387,6 +442,10 @@ public void ShootSetter() {
 
   public double flywheelRPM() {
     return Math.abs(flywheelMotorBottom.getEncoder().getVelocity());
+  }
+
+  public boolean AtShootingSpeed(){
+    return 4500 < flywheelRPM();
   }
 
   @Override
@@ -441,6 +500,23 @@ public void ShootSetter() {
     SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
     SmartDashboard.putNumber("Flywheel Setpoint", setpoint);
     SmartDashboard.putBoolean("Note beam break", isNoteDetected()); 
-  }
 
+    led.animate(new FireAnimation(2, 1.0, 15, 1.0, 1.0, false, 8));
+      // led.setLEDs(255, 0, 0);
+      //     led.setLEDs(0, 255, 0);
+      // led.setLEDs(0, 0, 255);
+
+
+
+  //   if(isNoteDetected()) {
+  //     LightSetter(LightState.HasNote);
+  //   } else if(isFlywheelRunning) {
+  //     LightSetter(LightState.FlyWheelOn);
+  //   } else if(isIntaking) {
+  //     LightSetter(LightState.IntakeOn);
+  //   } else {
+  //     LightSetter(LightState.Idle);
+  //   }
+  // }
+  }
 }
