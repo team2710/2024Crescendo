@@ -142,6 +142,14 @@ public class EndEffector extends SubsystemBase {
     }, this);
   }
 
+  public Command toggleFeed() {
+    return new InstantCommand(() -> {
+      feed();
+    }, this);
+  }
+
+  
+
   public Command flywheelCommand() {
     return new InstantCommand(() -> {
       spinupFlywheel();

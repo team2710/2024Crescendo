@@ -180,12 +180,12 @@ public class RobotContainer {
     endEffector.toggleOuttakeCommand(),
     Commands.waitSeconds(0.08),
     endEffector.stopIntakeCommand(),
-    // endEffector.toggleFlywheelCommand(),
-    // new WaitUntilCommand(endEffector::AtShootingSpeed),
-    endEffector.toggleIntakeCommand(),
+    endEffector.toggleFlywheelCommand(),
+    new WaitUntilCommand(endEffector::AtShootingSpeed),
+    endEffector.toggleFeed(),
     Commands.waitSeconds(0.3),
-    endEffector.toggleIntakeCommand()
-    // endEffector.toggleFlywheelCommand()
+    endEffector.toggleIntakeCommand(),
+    endEffector.toggleFlywheelCommand()
   );
 
 
