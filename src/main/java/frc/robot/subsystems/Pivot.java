@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.RobotContainer;
@@ -42,6 +44,8 @@ public class Pivot extends SubsystemBase {
     ArmFeedforward feedforward = new ArmFeedforward(PivotConstants.kS, PivotConstants.kG, PivotConstants.kV, PivotConstants.kA);
     Translation3d target = DriveConstants.blueSpeaker;
     DriveSubsystem driveSubsystem;
+
+    private double setAngle = 0;
 
     Rotation3d armRotation3d = new Rotation3d();
 
@@ -170,6 +174,10 @@ public class Pivot extends SubsystemBase {
         setAngleDegree(angle);
     }
 
+    public boolean reachedSetpoint(){
+        return MathUtil.isNear(setAngle, getAngle(), 1);
+    }
+
     @Override
     public void periodic() {
         getArmAngle();
@@ -267,6 +275,7 @@ public class Pivot extends SubsystemBase {
     public void setAngleDegree(double position) {
         if (position > 80) position = 80;
         if (position < 0) position = 0;
+        setAngle = position;
         // pidController.setReference(position, ControlType.kPosition);
         setPosition(angleToEncoder(position));
 

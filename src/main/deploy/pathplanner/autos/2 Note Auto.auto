@@ -26,25 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Note 1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "toggle_intake"
+            "pathName": "Pickup Note 1 Real"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Score Note 1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "pivot_subwoofer"
           }
         },
         {

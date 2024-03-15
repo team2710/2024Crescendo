@@ -14,11 +14,15 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.EndEffectorConstants;
 import com.revrobotics.SparkPIDController;
 import com.ctre.phoenix.led.CANdle;
@@ -55,10 +59,6 @@ public class EndEffector extends SubsystemBase {
   private double setpoint = 6000;
   CANdle led = new CANdle(45); 
 
-
-
-
-
   private Debouncer intakDebouncer = new Debouncer(0.08, DebounceType.kRising);
 
   public enum IntakeState {
@@ -87,7 +87,10 @@ public class EndEffector extends SubsystemBase {
   LinearFilter m_currenFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
 
-  public EndEffector() {
+  private PS4Controller m_driveController;
+
+  public EndEffector(PS4Controller driveController) {
+    m_driveController = driveController;
     // RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 1, 0);
     // led.animate(rainbowAnimation);
     pidController = flywheelMotorTop.getPIDController();
@@ -123,8 +126,9 @@ public class EndEffector extends SubsystemBase {
 
     flywheelMotorTop.setIdleMode(IdleMode.kBrake);
     flywheelMotorBottom.setIdleMode(IdleMode.kBrake);
+    intakeMotor.setIdleMode(IdleMode.kBrake);
 
-
+    intakeMotor.burnFlash();
     flywheelMotorTop.burnFlash();
   }
 
@@ -136,6 +140,11 @@ public class EndEffector extends SubsystemBase {
     }, this);
   }
 
+  public Command intakeCommand() {
+    return new InstantCommand(() -> {
+      intake();
+    }, this);
+  }
 
 
   public Command toggleFlywheelCommand() {
@@ -179,6 +188,7 @@ public class EndEffector extends SubsystemBase {
   }
 
   public void intake() {
+    if (isNote) return;
     isIntaking = true;
     isOuttaking = false;
     intakeMotor.set(EndEffectorConstants.kIntakeSpeed);
@@ -350,7 +360,7 @@ public void ShootSetter() {
   }
 
   public void feed() {
-    isIntaking = true;
+    isIntaking = false;
     intakeMotor.set(1);
   }
 
@@ -398,7 +408,7 @@ public void ShootSetter() {
   }
 
   public boolean isNoteDetected(){
-    return distanceSensor.getRange() < 8;
+    return distanceSensor.getRange() < 8 && distanceSensor.getRange() > 0;
   }
 
 
@@ -408,7 +418,7 @@ public void ShootSetter() {
 
     //uncomment for smart pid control and for auto aim to work properly and accurately
     // pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
-    flywheelMotorTop.set(-0.85);
+    flywheelMotorTop.set(-0.7);
     // flywheelMotorBottom.set(-1);
   }
 
@@ -438,12 +448,17 @@ public void ShootSetter() {
     return Math.abs(flywheelMotorBottom.getEncoder().getVelocity());
   }
 
-  public boolean AtShootingSpeed(){
-    return 4500 < flywheelRPM();
+  public boolean atSubwooferShootingSpeed(){
+    return 2500 < flywheelRPM();
+  }
+
+  public boolean AtShootingSpeed(double speed){
+    return speed < flywheelRPM();
   }
 
   @Override
   public void periodic() {
+    isNote = isNoteDetected();
     SmartDashboard.putBoolean("Note Detect", isNote);
     SmartDashboard.putNumber("Distance Value", distanceSensor.getRange());
     // if (intakDebouncer.calculate(getFilterCurrent() > 65) && isIntaking) {
@@ -500,7 +515,17 @@ public void ShootSetter() {
       //     led.setLEDs(0, 255, 0);
       // led.setLEDs(0, 0, 255);
 
+    // if (isNote && isIntaking) {
+    //   // CommandScheduler.getInstance().schedule(
+    //   //   Commands.sequence(
+    //   //     stopIntakeCommand()
+    //   //   )
+    //   // );
+    //   stopIntake();
+    // }
 
+
+    m_driveController.setRumble(RumbleType.kBothRumble, 0.5);
 
   //   if(isNoteDetected()) {
   //     LightSetter(LightState.HasNote);

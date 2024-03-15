@@ -8,48 +8,48 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3586523131862227,
-        "y": 6.1292382044223555
+        "x": 1.358652313186223,
+        "y": 4.890447979094157
       },
       "isLocked": false,
       "linkedName": "subwoofer_start"
     },
     {
       "anchor": {
-        "x": 1.8082090218234488,
-        "y": 7.007485005961003
+        "x": 2.0208371948275423,
+        "y": 4.113892912470511
       },
       "prevControl": {
-        "x": 1.28126094090026,
-        "y": 7.007485005961003
+        "x": 1.3070140425995143,
+        "y": 4.1632860408577965
       },
       "nextControl": {
-        "x": 2.473827650358003,
-        "y": 7.007485005961003
+        "x": 2.3161060838147254,
+        "y": 4.09346172570248
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.4121581576496487,
-        "y": 6.997424345725884
+        "x": 2.333176094923619,
+        "y": 4.113892912470511
       },
       "prevControl": {
-        "x": 2.4083218346616873,
-        "y": 6.992801994138838
+        "x": 2.113310112979418,
+        "y": 4.10621502319596
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "pickup_note_2"
+      "linkedName": "pickup_note_3"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake",
-      "waypointRelativePos": 0.45,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,7 +57,7 @@
             {
               "type": "named",
               "data": {
-                "name": "auto_intake_sequence"
+                "name": "toggle_intake"
               }
             }
           ]

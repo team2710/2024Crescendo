@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "toggle_intake"
+                "name": "auto_intake_sequence"
               }
             }
           ]
