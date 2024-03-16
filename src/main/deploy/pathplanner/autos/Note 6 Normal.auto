@@ -72,6 +72,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "auto_shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": " Pick Up Note 6"
