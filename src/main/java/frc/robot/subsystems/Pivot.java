@@ -19,6 +19,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -45,10 +46,12 @@ public class Pivot extends SubsystemBase {
     ArmFeedforward feedforward = new ArmFeedforward(PivotConstants.kS, PivotConstants.kG, PivotConstants.kV, PivotConstants.kA);
     Translation3d target = DriveConstants.blueSpeaker;
     DriveSubsystem driveSubsystem;
+    Rotation3d armRotation3d = new Rotation3d(0,0,0);
+
+    Pose3d pivotPose = new Pose3d(-0.234442,0,0.1905, armRotation3d);
 
     private double setAngle = 0;
 
-    Rotation3d armRotation3d = new Rotation3d();
 
     double[] armAngle3DArray = new double[]{0,0,0,0,0,0,0};
 
@@ -69,10 +72,6 @@ public class Pivot extends SubsystemBase {
 
     public Pivot(DriveSubsystem driveSubsystem, LEDSubsystem ledSubsystem) {
         m_ledSubsystem = ledSubsystem;
-        
-        armAngle3DArray[0] = -0.234442;
-        armAngle3DArray[1] = 0;
-        armAngle3DArray[2] = 0.1905;
         relativeEncoder = pivotMotorRight.getEncoder();
         pidController = pivotMotorRight.getPIDController();
         // absoluteEncoder = pivotMotorLeft.getAbsoluteEncoder(Type.kDutyCycle);
@@ -105,19 +104,6 @@ public class Pivot extends SubsystemBase {
         relativeEncoder.setPosition(0);
     }
 
-    public void getArmAngle(){
-        armRotation3d = new Rotation3d(0, -getAngle() * Math.PI/180 ,0);
-        // armAngle3DArray[2] = -(1-Math.cos(m_armSim.getAngleRads()))*d; //z
-        // armAngle3DArray[0] = Math.sin(m_armSim.getAngleRads())*d; //X
-
-        armAngle3DArray[3] = 0;
-        armAngle3DArray[3] = armRotation3d.getQuaternion().getW();
-        armAngle3DArray[4] = armRotation3d.getQuaternion().getX();
-        armAngle3DArray[5] = armRotation3d.getQuaternion().getY();
-        armAngle3DArray[6] = armRotation3d.getQuaternion().getZ();
-        
-    }
-
     public double distToSpeaker(Pose2d robot_pose) {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isEmpty()) return 0;
@@ -138,11 +124,20 @@ public class Pivot extends SubsystemBase {
 
     public void autoAimPivot() {
         double angle = Math.atan(2.1/distToSpeaker(RobotContainer.m_robotDrive.getPose())) + PivotConstants.shooterAngle - Math.asin((Math.sin(PivotConstants.shooterAngle) * PivotConstants.armLength))/(RobotToTarget3D());
-        SmartDashboard.putNumber("Angle to Target", angle * 180 / Math.PI);
-        double clampAngle= MathUtil.clamp(180 - (angle * (180 / Math.PI)), 0, 90);
-        SmartDashboard.putNumber("auto aim angle", clampAngle);
+        // SmartDashboard.putNumber("Angle to Target", angle * 180 / Math.PI);
+        double clampAngle= MathUtil.clamp(180 - (angle * (180 / Math.PI)), 0, 70);
+        // SmartDashboard.putNumber("auto aim angle", clampAngle);
         setAngleDegree(clampAngle);
     }
+
+    public double autoAimPivotDeg() {
+        double angle = Math.atan(2.1/distToSpeaker(RobotContainer.m_robotDrive.getPose())) + PivotConstants.shooterAngle - Math.asin((Math.sin(PivotConstants.shooterAngle) * PivotConstants.armLength))/(RobotToTarget3D());
+        // SmartDashboard.putNumber("Angle to Target", angle * 180 / Math.PI);
+        double clampAngle= MathUtil.clamp(180 - (angle * (180 / Math.PI)), 0, 70);
+        // SmartDashboard.putNumber("auto aim angle", clampAngle);
+        return clampAngle;
+    }
+
 
     public double RobotToTarget3D(){
         Translation3d robot_pose = new Translation3d(RobotContainer.m_robotDrive.getPose().getX(), RobotContainer.m_robotDrive.getPose().getY(), 0);
@@ -165,31 +160,20 @@ public class Pivot extends SubsystemBase {
         return -1.6874957192 * encoder;
     }
 
-    public double distanceToAngle(double distance){
-        //use desmos to find
-        //x = distance
-        //y = angle (the angle where note enter the speaker at that distance)
-        double m = 0;
-        double b = 0;
-        return m * distance + b;
-    }
-
-    public void AutoAim(double distance) {
-        double angle = distanceToAngle(distance);
-        setAngleDegree(angle);
-    }
 
     public boolean reachedSetpoint(){
-        return MathUtil.isNear(setAngle, getAngle(), 1);
+        return MathUtil.isNear(autoAimPivotDeg(), getAngle(), 3);
     }
 
     @Override
     public void periodic() {
-        getArmAngle();
+        armRotation3d = new Rotation3d(0, -getAngle() * Math.PI/180 ,0);
+
         SmartDashboard.putNumberArray("arm 3d", armAngle3DArray);
         SmartDashboard.putNumber("Pivot Angle", getAngle());
         SmartDashboard.putNumber("Distance to speaker", distToSpeaker(driveSubsystem.getPose()));
 
+        Logger.recordOutput("MyPose3d", pivotPose);
         Logger.recordOutput("Arm/Angle", getAngle());
 
         boolean brakeMode = SmartDashboard.getBoolean("Brake Mode", true);

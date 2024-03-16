@@ -27,6 +27,9 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.subsystems.LEDSubsystem.LEDState;
 
 import com.revrobotics.SparkPIDController;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
@@ -266,6 +269,10 @@ public class EndEffector extends SubsystemBase {
     return 2500 < flywheelRPM();
   }
 
+    public boolean atShootingSpeed(){
+    return 4500 < flywheelRPM();
+  }
+
   public boolean AtShootingSpeed(double speed){
     return speed < flywheelRPM();
   }
@@ -273,20 +280,30 @@ public class EndEffector extends SubsystemBase {
   @Override
   public void periodic() {
     isNote = isNoteDetected();
-    SmartDashboard.putBoolean("Note Detect", isNote);
-    SmartDashboard.putNumber("Distance Value", distanceSensor.getRange());
+    // SmartDashboard.putBoolean("Note Detect", isNote);
+    // SmartDashboard.putNumber("Distance Value", distanceSensor.getRange());
 
-    SmartDashboard.putNumber("Flywheel Top RPM", encoderTop.getVelocity());
-    SmartDashboard.putNumber("Flywheel Bottom RPM", encoderBottom.getVelocity());
-    SmartDashboard.putNumber("Intake Current", getFilterCurrent());
-    SmartDashboard.putNumber("Distance", distanceSensor.getRange());
-    SmartDashboard.putBoolean("Intake State", isIntaking);
-    SmartDashboard.putBoolean("Flywheel State", isFlywheelRunning);
-    SmartDashboard.putBoolean("Outtake State", isOuttaking);
-    SmartDashboard.putBoolean("Note Detect", isNote);
+    // SmartDashboard.putNumber("Flywheel Top RPM", encoderTop.getVelocity());
+    // SmartDashboard.putNumber("Flywheel Bottom RPM", encoderBottom.getVelocity());
+    // SmartDashboard.putNumber("Intake Current", getFilterCurrent());
+    // SmartDashboard.putNumber("Distance", distanceSensor.getRange());
+    // SmartDashboard.putBoolean("Intake State", isIntaking);
+    // SmartDashboard.putBoolean("Flywheel State", isFlywheelRunning);
+    // SmartDashboard.putBoolean("Outtake State", isOuttaking);
+    // SmartDashboard.putBoolean("Note Detect", isNote);
     SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
     SmartDashboard.putNumber("Flywheel Setpoint", setpoint);
-    SmartDashboard.putBoolean("Note beam break", isNoteDetected());
+    SmartDashboard.putBoolean("Note Detected", isNoteDetected());
+
+    Logger.recordOutput("IntakeCurrent", getFilterCurrent());
+    Logger.recordOutput("FlywheelTopRPM", encoderTop.getVelocity());
+    Logger.recordOutput("FlywheelBottomRPM", encoderBottom.getVelocity());
+    Logger.recordOutput("Distance", distanceSensor.getRange());
+    Logger.recordOutput("IntakeState", isIntaking);
+    Logger.recordOutput("FlywheelState", isFlywheelRunning);
+    Logger.recordOutput("OuttakeState", isOuttaking);
+    Logger.recordOutput("NoteBeamBreak", isNoteDetected());
+
 
     if (isIntaking) {
       m_LedSubsystem.setState(LEDState.INTAKING);

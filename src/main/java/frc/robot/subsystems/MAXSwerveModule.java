@@ -194,7 +194,7 @@ public class MAXSwerveModule {
     SmartDashboard.putNumber("Speed",  optimizedDesiredState.speedMetersPerSecond);
     
 
-    if (DriverStation.isAutonomous()) {
+    if (DriverStation.isAutonomous() || velocityControlBoolean) {
       m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond));
     } else {
       // m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);

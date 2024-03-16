@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
@@ -36,7 +38,8 @@ public class Climb extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Climber Position", getClimberPosition());
+        // SmartDashboard.putNumber("Climber Position", getClimberPosition());
+        Logger.recordOutput("Climber height", getClimberPosition());
 
         // if (getClimberPosition() >= ClimberConstants.kMaxPosition || getClimberPosition() <= ClimberConstants.kMinPosition) {
         //     climber.set(0);

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
@@ -23,7 +25,7 @@ public class LEDSubsystem extends SubsystemBase {
     ARM_IS_ZERO
   };
 
-  private LEDState m_LEDState = LEDState.PURPLE;
+  public LEDState m_LEDState = LEDState.PURPLE;
 
   public LEDSubsystem() { }
 
@@ -60,6 +62,7 @@ public class LEDSubsystem extends SubsystemBase {
         break;
     }
     
+    Logger.recordOutput("LEDState", m_LEDState);
   }
 
 }

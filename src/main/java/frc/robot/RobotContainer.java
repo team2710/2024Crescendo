@@ -51,6 +51,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -172,8 +174,8 @@ public class RobotContainer {
   // AUTO COMMANDS
 
   Command shootCommand = Commands.sequence(
-    // endEffector.toggleOuttakeCommand(),
-    // Commands.waitSeconds(0.04),
+    endEffector.toggleOuttakeCommand(),
+    Commands.waitSeconds(0.04),
     endEffector.stopIntakeCommand(),
     endEffector.flywheelCommand(),
     Commands.race(
@@ -185,6 +187,21 @@ public class RobotContainer {
     endEffector.stopIntakeCommand(),
     endEffector.stopFlywheelCommand()
   );
+
+
+  // Command shootCommand = Commands.sequence(
+  //   endEffector.toggleOuttakeCommand(),
+  //   Commands.waitSeconds(0.04),
+  //   endEffector.stopIntakeCommand(),
+  //   endEffector.flywheelCommand(),
+  //   new WaitUntilCommand(endEffector::atShootingSpeed),
+  //   endEffector.feedCommand(),
+  //   Commands.waitSeconds(0.2),
+  //   endEffector.stopIntakeCommand(),
+  //   endEffector.stopFlywheelCommand()
+  // );
+  
+
 
 
 
@@ -222,6 +239,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     var alliance = DriverStation.getAlliance();
+    Logger.recordOutput("Alliance: ", alliance.get());
 
     if (alliance.isPresent()) {
        isRed = (alliance.get() == DriverStation.Alliance.Red);
