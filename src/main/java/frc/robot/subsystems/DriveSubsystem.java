@@ -336,7 +336,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     if(controller.getSquareButton()){
       double angle = autoAim(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond, getPose(), 45, target_pose.toTranslation2d());
-      rot = m_botAnglePID.calculate(getPose().getRotation().getRadians(), angle);
+      rot = m_botAnglePID.calculate(getPose().getRotation().rotateBy(new Rotation2d(Math.PI)).getRadians(), angle);
       SmartDashboard.putNumber("Auto Aim Rotation", rot);
       if(slowAutoAim){
         xSpeed = xSpeed * 0.5;

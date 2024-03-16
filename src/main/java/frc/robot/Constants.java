@@ -26,6 +26,11 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final class LEDConstants {
+    public static final int kCANdleID = 45;
+    public static final int kNumLEDs = 100;
+  }
+
   public static final class VisionConstants {
     public static final double kLimelightLatency = 0;
   }

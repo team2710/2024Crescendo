@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 1.3216735004898588,
+      "y": 5.556066607628711
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -32,12 +38,6 @@
         {
           "type": "named",
           "data": {
-            "name": "pivot_subwoofer"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "shoot"
           }
         },
@@ -56,12 +56,6 @@
         {
           "type": "named",
           "data": {
-            "name": "pivot_subwoofer"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "shoot"
           }
         },
@@ -75,12 +69,6 @@
           "type": "path",
           "data": {
             "pathName": "Score Note 3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "pivot_subwoofer"
           }
         },
         {

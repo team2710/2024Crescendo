@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Outtake",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "sequential",
         "data": {

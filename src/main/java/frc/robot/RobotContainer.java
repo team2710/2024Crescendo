@@ -37,9 +37,8 @@ import frc.robot.commands.autoRotatePP;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.Pivot;
-import frc.robot.subsystems.EndEffector.FlywheelState;
-import frc.robot.subsystems.EndEffector.IntakeState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -72,7 +71,6 @@ import com.revrobotics.SparkPIDController;
 public class RobotContainer {
   // The robot's subsystems
   public static final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  Pivot pivot = new Pivot(m_robotDrive);
 
 
   // The driver's controller
@@ -80,7 +78,9 @@ public class RobotContainer {
   PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
   
-  EndEffector endEffector = new EndEffector(m_driverController);
+  LEDSubsystem ledSubsystem = new LEDSubsystem();
+  EndEffector endEffector = new EndEffector(m_driverController, ledSubsystem);
+  Pivot pivot = new Pivot(m_robotDrive, ledSubsystem);
 
   Command spinupFlywheelCommand = new InstantCommand(() -> endEffector.spinupFlywheel(), endEffector);
   Command stopFlywheelCommand = new InstantCommand(() -> endEffector.stopFlywheel(), endEffector);
@@ -240,9 +240,9 @@ public class RobotContainer {
     }
 
     Command outtakeCommand = Commands.sequence(
-    endEffector.toggleOuttakeCommand(),
-    Commands.waitSeconds(0.08),
-    endEffector.stopIntakeCommand()
+      endEffector.toggleOuttakeCommand(),
+      Commands.waitSeconds(0.2),
+      endEffector.stopIntakeCommand()
     );
 
     Command PathFindtoScoreSeq = Commands.sequence(
@@ -265,7 +265,15 @@ public class RobotContainer {
     NamedCommands.registerCommand("pivot_subwoofer", lowerArmCommand);
     NamedCommands.registerCommand("shoot", shootCommand);
     NamedCommands.registerCommand("auto_shoot", autoShoot);
-    NamedCommands.registerCommand("auto_intake_sequence", autoIntakeSeq);
+    // NamedCommands.registerCommand("auto_intake_sequence", Commands.race(new AutoIntake(endEffector), Commands.waitSeconds(3
+    // )));
+    NamedCommands.registerCommand("auto_intake_sequence", 
+      Commands.sequence(
+        endEffector.intakeCommand(),
+        Commands.waitSeconds(1),
+        endEffector.stopIntakeCommand()
+      )
+    );
     NamedCommands.registerCommand("toggle_intake", endEffector.toggleIntakeCommand());
     NamedCommands.registerCommand("outtake", outtakeCommand);
 
@@ -336,7 +344,6 @@ public class RobotContainer {
     // AUX COMMANDS
 
     // END EFFECTOR COMMANDS
-    // auxR1.onTrue(endEffector.toggleFlywheelCommand());
 
     auxR1.onTrue(endEffector.toggleFlywheelCommand());
 
@@ -345,9 +352,9 @@ public class RobotContainer {
     // })).onFalse(new InstantCommand(() -> {
     //   endEffector.stopIntake();
     // }));
-    auxTriangle.onTrue(autoIntake).onFalse(new InstantCommand(() -> {
+    auxTriangle.onTrue(new AutoIntake(endEffector)).onFalse(new InstantCommand(() -> {
       endEffector.stopIntake();
-    }));
+    }, endEffector));
     auxSquare.onTrue(new InstantCommand(() -> {
       endEffector.outtake();
     })).onFalse(new InstantCommand(() -> {

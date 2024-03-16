@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.subsystems.LEDSubsystem.LEDState;
+
 import com.revrobotics.SparkPIDController;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
@@ -55,41 +57,18 @@ public class EndEffector extends SubsystemBase {
   private boolean isFlywheelRunning = false;
   private boolean isIntaking = false;
   private boolean isOuttaking = false;
+  private boolean isFeeding = false;
   private boolean isNote = false;
   private double setpoint = 6000;
-  CANdle led = new CANdle(45); 
 
-  private Debouncer intakDebouncer = new Debouncer(0.08, DebounceType.kRising);
-
-  public enum IntakeState {
-    OFF,
-    On,
-    Outtake,
-    Feed,
-  };
-
-  public enum FlywheelState {
-    OFF,
-    On,
-  };
-
-  
-  public enum LightState {
-    HasNote,
-    Idle,
-    ReadyForNote,
-    FlyWheelOn,
-    IntakeOn
-  };
-
-  public static IntakeState m_intakeState = IntakeState.OFF;
-  public static FlywheelState m_shootState = FlywheelState.OFF;
   LinearFilter m_currenFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
 
 
   private PS4Controller m_driveController;
+  private LEDSubsystem m_LedSubsystem;
 
-  public EndEffector(PS4Controller driveController) {
+  public EndEffector(PS4Controller driveController, LEDSubsystem ledSubsystem) {
+    m_LedSubsystem = ledSubsystem;
     m_driveController = driveController;
     // RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 1, 0);
     // led.animate(rainbowAnimation);
@@ -201,166 +180,10 @@ public class EndEffector extends SubsystemBase {
     intakeMotor.set(EndEffectorConstants.kIntakeSpeed);
     flywheelMotorTop.set(0.05);
   }
-  
-  
-
-  // public void currentDetectionIntake() {
-  //   double INTAKE_STALL_DETECTION = 45;
-  //   Debouncer debounce = new Debouncer(1);
-  //   intake();
-  //   if (getIsFlywheelRunning()) {
-  //     isNote = false;
-  //   }
-  //   if (isIntaking || isNote) {
-  //     if (debounce.calculate(intakeMotor.getOutputCurrent() > INTAKE_STALL_DETECTION)) {
-  //       isNote = true;
-  //       stopIntake();
-  //     }
-  //   }
-  // }
-
-  public boolean currentDetectIntake() {
-    double INTAKE_STALL_DETECTION = 50;
-    if (intakDebouncer.calculate(intakeMotor.getOutputCurrent() < INTAKE_STALL_DETECTION)) {
-      return true;
-    }
-    return false;
-  }
-
-  // /**
-  //  * Sets the intake state based on the controller input.
-  //  * 
-  //  * @param controller the PS4 controller object used for input
-  //  */
-  // public void IntakeSetter(PS4Controller controller) {
-  //   Debouncer delay = new Debouncer(0.5);
-    
-  //   switch (m_intakeState) {
-  //     case OFF:
-  //       stopIntake();
-  //       if(controller.getTriangleButton()) {
-  //         m_intakeState = IntakeState.On;
-  //       }
-  //       else if(controller.getR1Button()) {
-  //         m_intakeState = IntakeState.Shoot;
-  //       } else {
-  //         stopFlywheel();
-  //       }
-  //       break;
-
-  //     case On: 
-  //       if(isNote) {
-  //         stopIntake();
-  //         m_intakeState = IntakeState.OFF;
-  //       }
-  //       else {
-  //         intake();
-  //         isNote = currentDetectIntake();
-  //       }
-  //       break;
-        
-  //     case Shoot:
-  //     spinupFlywheel();
-  //     if(MathUtil.isNear(setpoint, encoderTop.getVelocity() + encoderBottom.getVelocity() * 0.5, 50.0)) {
-  //       intake();
-  //       isNote = false;
-  //       if(delay.calculate(!isNote)) {
-  //         m_intakeState = IntakeState.OFF;
-  //       }
-  //     }
-
-  //     break;
-  //   default:
-  //   // should never be reached, as liftState should never be null
-  //   m_intakeState = IntakeState.OFF;
-  //   break;
-  //   }
-
-  // }
-
-  /**
-   * Sets the intake state of the end effector.
-   * 
-   * @param m_IntakeState the desired intake state
-   */
-  public void IntakeSetter() {
-    switch (m_intakeState) {
-      case OFF:
-        stopIntake();
-        break;
-
-      case On: 
-        if(isNote) {
-          stopIntake();
-          m_intakeState = IntakeState.OFF;
-        }
-        else {
-          intake();
-          isNote = currentDetectIntake();
-        }
-        break;
-
-      case Outtake:
-        outtake();
-        break;
-      case Feed:
-        feed();
-        isNote = false;
-        break;
-    default:
-      m_intakeState = IntakeState.OFF;
-      break;
-    }
-
-  }
-
-public void LightSetter(LightState m_state) {
-  switch(m_state) {
-    case Idle:
-      led.setLEDs(160, 32, 240);
-      //  led.animate(new FireAnimation(2, 1.0, 5 * 3, 1.0, 1.0, false, 8));
-      break;
-    case IntakeOn:
-      led.setLEDs(0, 0, 0);
-      break;
-    case HasNote:
-      led.setLEDs(0, 0, 0);
-      break;
-    case ReadyForNote:
-      led.setLEDs(0, 0, 0);
-      break;
-    case FlyWheelOn:
-      led.setLEDs(0, 0, 0);
-      break;
-    default:
-      m_state = LightState.Idle;
-  } 
-}
-
-public void ShootSetter() {
-    switch (m_shootState) {
-      case OFF:
-        stopFlywheel();
-        break;
-      case On: 
-        if(isNote) {
-          stopIntake();
-          m_intakeState = IntakeState.OFF;
-        }
-        else {
-          intake();
-          // isNote = currentDetectIntake();
-        }
-        break;
-    default:
-      m_shootState = FlywheelState.OFF;
-      break;
-    }
-
-  }
 
   public void feed() {
     isIntaking = false;
+    isFeeding = true;
     intakeMotor.set(1);
   }
 
@@ -392,6 +215,7 @@ public void ShootSetter() {
         flywheelMotorTop.set(0);
     isIntaking = false;
     isOuttaking = false;
+    isFeeding = false;
   }
 
   public void toggleFlywheel() {
@@ -411,14 +235,12 @@ public void ShootSetter() {
     return distanceSensor.getRange() < 8 && distanceSensor.getRange() > 0;
   }
 
-
-
   public void spinupFlywheel() {
     isFlywheelRunning = true;
 
     //uncomment for smart pid control and for auto aim to work properly and accurately
     // pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
-    flywheelMotorTop.set(-0.7);
+    flywheelMotorTop.set(-0.6);
     // flywheelMotorBottom.set(-1);
   }
 
@@ -434,14 +256,6 @@ public void ShootSetter() {
 
   public boolean getIsFlywheelRunning() {
     return isFlywheelRunning;
-  }
-
-  public void setIntakeState(IntakeState intakeState) {
-    m_intakeState = intakeState;
-  }
-
-  public void setShooterState(FlywheelState shootState) {
-    m_shootState = shootState;
   }
 
   public double flywheelRPM() {
@@ -461,42 +275,6 @@ public void ShootSetter() {
     isNote = isNoteDetected();
     SmartDashboard.putBoolean("Note Detect", isNote);
     SmartDashboard.putNumber("Distance Value", distanceSensor.getRange());
-    // if (intakDebouncer.calculate(getFilterCurrent() > 65) && isIntaking) {
-    //   isNote = true;
-    //   // stopIntake();
-    // } else if (isNote)
-    // {
-    //   isNote = false;
-    //   stopIntake();
-    // }
-
-    // double p = SmartDashboard.getNumber("Flywheel P Gain",
-    // EndEffectorConstants.kFlywheelP);
-    // double i = SmartDashboard.getNumber("Flywheel I Gain",
-    // EndEffectorConstants.kFlywheelI);
-    // double d = SmartDashboard.getNumber("Flywheel D Gain",
-    // EndEffectorConstants.kFlywheelD);
-    // double ff = SmartDashboard.getNumber("Flywheel Feed Forward",
-    // EndEffectorConstants.kFlywheelFF);
-    // double iz = SmartDashboard.getNumber("Flywheel I Zone",
-    // EndEffectorConstants.kFlywheelIz);
-    // double min = SmartDashboard.getNumber("Flywheel Min Output",
-    // EndEffectorConstants.kFlywheelMinOutput);
-    // double max = SmartDashboard.getNumber("FLywheel Max Output",
-    // EndEffectorConstants.kFlywheelMaxOutput)
-    
-    // IntakeSetter();
-    // ShootSetter();
-
-    // if (p != pidController.getP()) pidController.setP(p);
-    // if (i != pidController.getI()) pidController.setI(i);
-    // if (d != pidController.getD()) pidController.setD(d);
-    // if (ff != pidController.getFF()) pidController.setFF(ff);
-    // if (iz != pidController.getIZone()) pidController.setIZone(iz);
-    // if (min != pidController.getOutputMin() || max !=
-    // pidController.getOutputMax()) pidController.setOutputRange(min, max);
-
-    // flywheelSpeed = SmartDashboard.getNumber("Flywheel Speed", flywheelSpeed);
 
     SmartDashboard.putNumber("Flywheel Top RPM", encoderTop.getVelocity());
     SmartDashboard.putNumber("Flywheel Bottom RPM", encoderBottom.getVelocity());
@@ -508,34 +286,24 @@ public void ShootSetter() {
     SmartDashboard.putBoolean("Note Detect", isNote);
     SmartDashboard.putNumber("Flywheel Speed", flywheelSpeed);
     SmartDashboard.putNumber("Flywheel Setpoint", setpoint);
-    SmartDashboard.putBoolean("Note beam break", isNoteDetected()); 
+    SmartDashboard.putBoolean("Note beam break", isNoteDetected());
 
-    // led.animate(new FireAnimation(2, 1.0, 15, 1.0, 1.0, false, 8));
-      led.setLEDs(255, 0, 0);
-      //     led.setLEDs(0, 255, 0);
-      // led.setLEDs(0, 0, 255);
+    if (isIntaking) {
+      m_LedSubsystem.setState(LEDState.INTAKING);
+    }
+    else if (isNote) {
+      m_LedSubsystem.setState(LEDState.NOTE_DETECTED);
+    }
+    else if (isFlywheelRunning) {
+      m_LedSubsystem.setState(LEDState.FLYWHEELS_ON);
+    }
+    else if (isFeeding) {
+      m_LedSubsystem.setState(LEDState.SCORE);
+    }
+    else {
+      m_LedSubsystem.setState(LEDState.PURPLE);
+    }
 
-    // if (isNote && isIntaking) {
-    //   // CommandScheduler.getInstance().schedule(
-    //   //   Commands.sequence(
-    //   //     stopIntakeCommand()
-    //   //   )
-    //   // );
-    //   stopIntake();
-    // }
-
-
-    m_driveController.setRumble(RumbleType.kBothRumble, 0.5);
-
-  //   if(isNoteDetected()) {
-  //     LightSetter(LightState.HasNote);
-  //   } else if(isFlywheelRunning) {
-  //     LightSetter(LightState.FlyWheelOn);
-  //   } else if(isIntaking) {
-  //     LightSetter(LightState.IntakeOn);
-  //   } else {
-  //     LightSetter(LightState.Idle);
-  //   }
-  // }
+    // m_driveController.setRumble(RumbleType.kBothRumble, 0.5);
   }
 }

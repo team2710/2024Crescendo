@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.subsystems.LEDSubsystem.LEDState;
 import frc.robot.RobotContainer;
 
 public class Pivot extends SubsystemBase {
@@ -64,7 +65,11 @@ public class Pivot extends SubsystemBase {
         BLUE, RED
     }
 
-    public Pivot(DriveSubsystem driveSubsystem) {
+    private LEDSubsystem m_ledSubsystem;
+
+    public Pivot(DriveSubsystem driveSubsystem, LEDSubsystem ledSubsystem) {
+        m_ledSubsystem = ledSubsystem;
+        
         armAngle3DArray[0] = -0.234442;
         armAngle3DArray[1] = 0;
         armAngle3DArray[2] = 0.1905;
@@ -188,12 +193,20 @@ public class Pivot extends SubsystemBase {
         Logger.recordOutput("Arm/Angle", getAngle());
 
         boolean brakeMode = SmartDashboard.getBoolean("Brake Mode", true);
+        if (MathUtil.isNear(PivotConstants.kPivotStow, getAngle(), 5) && !brakeMode) {
+            brakeMode = true;
+            SmartDashboard.putBoolean("Brake Mode", brakeMode);
+        }
         if (brakeMode && pivotMotorLeft.getIdleMode() == IdleMode.kCoast) {
             pivotMotorLeft.setIdleMode(IdleMode.kBrake);
             pivotMotorRight.setIdleMode(IdleMode.kBrake);
         } else if (!brakeMode && pivotMotorLeft.getIdleMode() == IdleMode.kBrake) {
             pivotMotorLeft.setIdleMode(IdleMode.kCoast);
             pivotMotorRight.setIdleMode(IdleMode.kCoast);
+        }
+
+        if (MathUtil.isNear(0, getAngle(), 5) && DriverStation.isDisabled()) {
+            m_ledSubsystem.setState(LEDState.ARM_IS_ZERO);
         }
     }
 
