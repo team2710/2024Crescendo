@@ -172,8 +172,8 @@ public class RobotContainer {
   // AUTO COMMANDS
 
   Command shootCommand = Commands.sequence(
-    // endEffector.toggleOuttakeCommand(),
-    // Commands.waitSeconds(0.04),
+    endEffector.outtakeCommand(),
+    Commands.waitSeconds(0.2),
     endEffector.stopIntakeCommand(),
     endEffector.flywheelCommand(),
     Commands.race(
@@ -270,7 +270,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("auto_intake_sequence", 
       Commands.sequence(
         endEffector.intakeCommand(),
-        Commands.waitSeconds(1),
+        Commands.waitSeconds(1.5),
         endEffector.stopIntakeCommand()
       )
     );

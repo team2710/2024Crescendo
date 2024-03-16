@@ -150,6 +150,12 @@ public class EndEffector extends SubsystemBase {
     }, this);
   }
 
+  public Command outtakeCommand() {
+    return new InstantCommand(() -> {
+      outtake();
+    });
+  }
+
   public Command feedCommand() {
     return new InstantCommand(() -> {
       feed();
