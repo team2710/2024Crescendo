@@ -220,9 +220,9 @@ public class EndEffector extends SubsystemBase {
   public void outtake() {
     isOuttaking = true;
     isIntaking = false;
-    intakeMotor.set(-0.2);
+    intakeMotor.set(-0.22);
     if (!isFlywheelRunning)
-        flywheelMotorTop.set(0.05);
+        flywheelMotorTop.set(0.07);
   }
 
   public void toggleOuttake() {

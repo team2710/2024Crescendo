@@ -177,7 +177,7 @@ public class RobotContainer {
   Command shootCommand = Commands.sequence(
     endEffector.stopIntakeCommand(),
     endEffector.toggleOuttakeCommand(),
-    Commands.waitSeconds(0.1),
+    Commands.waitSeconds(0.11),
     endEffector.stopIntakeCommand(),
     endEffector.flywheelAutoCommand(),
     Commands.race(
@@ -234,7 +234,8 @@ public class RobotContainer {
   //   new ParallelCommandGroup(
   //     new SequentialCommandGroup(pivot.autoAimPivotCommand(), new WaitUntilCommand(pivot::reachedSetpoint)),
   //     shootCommand
-  //   )
+  //   ),
+  //   lowerArmCommand
   // );
 
 
