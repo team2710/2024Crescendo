@@ -42,6 +42,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "auto_shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Pickup Note 1 to 2"
@@ -69,6 +75,12 @@
           "type": "path",
           "data": {
             "pathName": "Score Note 5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "auto_shoot"
           }
         },
         {

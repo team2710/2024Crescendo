@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "auto_shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Pickup Note 2"

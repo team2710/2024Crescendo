@@ -19,6 +19,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -51,6 +52,8 @@ public class Pivot extends SubsystemBase {
     Rotation3d armRotation3d = new Rotation3d();
 
     double[] armAngle3DArray = new double[]{0,0,0,0,0,0,0};
+
+    Pose3d pivotPose = new Pose3d(-0.234442,0,0.1905, armRotation3d);
 
 
 
@@ -179,17 +182,31 @@ public class Pivot extends SubsystemBase {
         setAngleDegree(angle);
     }
 
+    public double autoAimPivotDeg() {
+        double angle = Math.atan(2.1/distToSpeaker(RobotContainer.m_robotDrive.getPose())) + PivotConstants.shooterAngle - Math.asin((Math.sin(PivotConstants.shooterAngle) * PivotConstants.armLength))/(RobotToTarget3D());
+        // SmartDashboard.putNumber("Angle to Target", angle * 180 / Math.PI);
+        double clampAngle= MathUtil.clamp(180 - (angle * (180 / Math.PI)), 0, 70);
+        // SmartDashboard.putNumber("auto aim angle", clampAngle);
+        return clampAngle;
+    }
+
+
     public boolean reachedSetpoint(){
-        return MathUtil.isNear(setAngle, getAngle(), 1);
+        return MathUtil.isNear(autoAimPivotDeg(), getAngle(), 1.5);
     }
 
     @Override
     public void periodic() {
+        armRotation3d = new Rotation3d(0, -getAngle() * Math.PI/180 ,0);
+
+
+
         getArmAngle();
         SmartDashboard.putNumberArray("arm 3d", armAngle3DArray);
         SmartDashboard.putNumber("Pivot Angle", getAngle());
         SmartDashboard.putNumber("Distance to speaker", distToSpeaker(driveSubsystem.getPose()));
 
+        Logger.recordOutput("MyPose3d", pivotPose);
         Logger.recordOutput("Arm/Angle", getAngle());
 
         boolean brakeMode = SmartDashboard.getBoolean("Brake Mode", true);

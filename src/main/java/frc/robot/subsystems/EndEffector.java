@@ -27,6 +27,9 @@ import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.subsystems.LEDSubsystem.LEDState;
 
 import com.revrobotics.SparkPIDController;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
@@ -65,11 +68,13 @@ public class EndEffector extends SubsystemBase {
 
 
   private PS4Controller m_driveController;
+  private Climb m_Climb;
   private LEDSubsystem m_LedSubsystem;
 
-  public EndEffector(PS4Controller driveController, LEDSubsystem ledSubsystem) {
+  public EndEffector(PS4Controller driveController, LEDSubsystem ledSubsystem, Climb climb) {
     m_LedSubsystem = ledSubsystem;
     m_driveController = driveController;
+    m_Climb = climb;
     // RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 1, 0);
     // led.animate(rainbowAnimation);
     pidController = flywheelMotorTop.getPIDController();
@@ -104,11 +109,16 @@ public class EndEffector extends SubsystemBase {
     pidController.setSmartMotionMaxVelocity(EndEffectorConstants.kFlywheelMotorSpeed, 0);
 
     flywheelMotorTop.setIdleMode(IdleMode.kBrake);
-    flywheelMotorBottom.setIdleMode(IdleMode.kBrake);
+    flywheelMotorBottom.setIdleMode(IdleMode.kCoast);
     intakeMotor.setIdleMode(IdleMode.kBrake);
 
     intakeMotor.burnFlash();
     flywheelMotorTop.burnFlash();
+  }
+
+  public void ampFlywheel(){
+    feed();
+    flywheelMotorTop.set(-0.3);
   }
 
 
@@ -246,7 +256,7 @@ public class EndEffector extends SubsystemBase {
 
     //uncomment for smart pid control and for auto aim to work properly and accurately
     // pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
-    flywheelMotorTop.set(-0.6);
+    flywheelMotorTop.set(-0.83);
     // flywheelMotorBottom.set(-1);
   }
 
@@ -271,6 +281,10 @@ public class EndEffector extends SubsystemBase {
   public boolean atSubwooferShootingSpeed(){
     return 2500 < flywheelRPM();
   }
+  
+  public boolean atShootingSpeed(){
+    return 4500 < flywheelRPM();
+  }
 
   public boolean AtShootingSpeed(double speed){
     return speed < flywheelRPM();
@@ -294,6 +308,15 @@ public class EndEffector extends SubsystemBase {
     SmartDashboard.putNumber("Flywheel Setpoint", setpoint);
     SmartDashboard.putBoolean("Note beam break", isNoteDetected());
 
+    Logger.recordOutput("IntakeCurrent", getFilterCurrent());
+    Logger.recordOutput("FlywheelTopRPM", encoderTop.getVelocity());
+    Logger.recordOutput("FlywheelBottomRPM", encoderBottom.getVelocity());
+    Logger.recordOutput("Distance", distanceSensor.getRange());
+    Logger.recordOutput("IntakeState", isIntaking);
+    Logger.recordOutput("FlywheelState", isFlywheelRunning);
+    Logger.recordOutput("OuttakeState", isOuttaking);
+    Logger.recordOutput("NoteBeamBreak", isNoteDetected());
+
     if (isIntaking) {
       m_LedSubsystem.setState(LEDState.INTAKING);
     }
@@ -305,9 +328,11 @@ public class EndEffector extends SubsystemBase {
     }
     else if (isFeeding) {
       m_LedSubsystem.setState(LEDState.SCORE);
+    } else if (m_Climb.isClimbing) {
+      m_LedSubsystem.setState(LEDState.CLIMB);
     }
     else {
-      m_LedSubsystem.setState(LEDState.PURPLE);
+      m_LedSubsystem.setState(LEDState.FIRE_EFFECT);
     }
 
     // m_driveController.setRumble(RumbleType.kBothRumble, 0.5);

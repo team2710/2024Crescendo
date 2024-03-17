@@ -84,6 +84,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_currentTranslationDir = 0.0;
   private double m_currentTranslationMag = 0.0;
   boolean isRed = false;
+  double invertAutoAim = 0;
 
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
@@ -91,7 +92,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Translation3d target_pose = DriveConstants.blueSpeaker;
 
-  public PIDController m_botAnglePID = new PIDController(ModuleConstants.kTurningP, ModuleConstants.kTurningI, ModuleConstants.kTurningD);
+  public PIDController m_botAnglePID = new PIDController(0.7, 0.0001, 0.001);
 
   LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
@@ -151,6 +152,7 @@ public class DriveSubsystem extends SubsystemBase {
 
       if(isRed){
         target_pose = DriveConstants.redSpeaker;
+        invertAutoAim = Math.PI;
       }
   }
 
@@ -336,7 +338,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     if(controller.getSquareButton()){
       double angle = autoAim(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond, getPose(), 45, target_pose.toTranslation2d());
-      rot = m_botAnglePID.calculate(getPose().getRotation().rotateBy(new Rotation2d(Math.PI)).getRadians(), angle);
+      rot = m_botAnglePID.calculate(getPose().getRotation().rotateBy(new Rotation2d(invertAutoAim)).getRadians(), angle);
       SmartDashboard.putNumber("Auto Aim Rotation", rot);
       if(slowAutoAim){
         xSpeed = xSpeed * 0.5;

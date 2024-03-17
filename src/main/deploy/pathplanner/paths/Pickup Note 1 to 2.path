@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.48,
-        "y": 4.186262583051482
+        "x": 2.421132842265685,
+        "y": 4.280561703980552
       },
       "prevControl": {
-        "x": 1.43,
-        "y": 4.186262583051482
+        "x": 1.0138248847926272,
+        "y": 4.1632860408577965
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": -20.0,
     "rotateFast": false
   },
   "reversed": false,

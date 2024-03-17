@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -77,9 +78,9 @@ public class RobotContainer {
   CommandPS4Controller m_driverControllerCommand = new CommandPS4Controller(OIConstants.kDriverControllerPort);
   PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
-  
+  Climb climber = new Climb();
   LEDSubsystem ledSubsystem = new LEDSubsystem();
-  EndEffector endEffector = new EndEffector(m_driverController, ledSubsystem);
+  EndEffector endEffector = new EndEffector(m_driverController, ledSubsystem, climber);
   Pivot pivot = new Pivot(m_robotDrive, ledSubsystem);
 
   Command spinupFlywheelCommand = new InstantCommand(() -> endEffector.spinupFlywheel(), endEffector);
@@ -87,7 +88,7 @@ public class RobotContainer {
   Command autoIntake = new AutoIntake(endEffector);
 
   // Pivot Arm
-  Climb climber = new Climb();
+
 
   Command PathfindToPickUp = Commands.none();
   Command PathfindToScore = Commands.none();
@@ -172,12 +173,13 @@ public class RobotContainer {
   // AUTO COMMANDS
 
   Command shootCommand = Commands.sequence(
-    endEffector.outtakeCommand(),
-    Commands.waitSeconds(0.2),
+    endEffector.stopIntakeCommand(),
+    endEffector.toggleOuttakeCommand(),
+    Commands.waitSeconds(0.1),
     endEffector.stopIntakeCommand(),
     endEffector.flywheelCommand(),
     Commands.race(
-      new WaitUntilCommand(endEffector::atSubwooferShootingSpeed),
+      new WaitUntilCommand(endEffector::atShootingSpeed),
       Commands.waitSeconds(3)
     ),
     endEffector.feedCommand(),
@@ -185,6 +187,17 @@ public class RobotContainer {
     endEffector.stopIntakeCommand(),
     endEffector.stopFlywheelCommand()
   );
+
+  // Command shootWithoutFlyWheel = Commands.parallel(
+  //   endEffector.stopIntakeCommand(),  
+  //   endEffector.toggleOuttakeCommand(),
+  //   Commands.waitSeconds(0.12),
+  //   endEffector.stopIntakeCommand(),
+  //   endEffector.feedCommand(),
+  //   Commands.waitSeconds(0.15),
+  //   endEffector.stopIntakeCommand(),
+  //   endEffector.stopFlywheelCommand()
+  // );
 
 
 
@@ -203,7 +216,9 @@ public class RobotContainer {
   Command autoIntakeSeq = Commands.sequence(
     // lowerArmCommand,
     // endEffector.toggleIntakeCommand()
-    autoIntake
+    autoIntake,
+    new WaitCommand(3),
+    endEffector.stopIntakeCommand()
   );
 
   Command autoShoot = Commands.sequence(
@@ -212,6 +227,16 @@ public class RobotContainer {
     shootCommand,
     lowerArmCommand
   );
+
+
+
+  
+  
+    Command outtakeCommand = Commands.sequence(
+      endEffector.outtakeCommand(),
+      Commands.waitSeconds(0.12),
+      endEffector.stopIntakeCommand()
+    );
   
   
 
@@ -239,16 +264,12 @@ public class RobotContainer {
       // driverDPADUP.whileTrue(PathfindToPickupRed);
     }
 
-    Command outtakeCommand = Commands.sequence(
-      endEffector.toggleOuttakeCommand(),
-      Commands.waitSeconds(0.2),
-      endEffector.stopIntakeCommand()
-    );
 
     Command PathFindtoScoreSeq = Commands.sequence(
       m_robotDrive.velocityControlEnabledCommand(true),
       PathfindToScore,
-      m_robotDrive.velocityControlEnabledCommand(false)
+      m_robotDrive.velocityControlEnabledCommand(false),
+      autoShoot
     );
 
     Command PathFindtoPickupSeq = Commands.sequence(
@@ -264,6 +285,7 @@ public class RobotContainer {
     // Commands for Pathplanner
     NamedCommands.registerCommand("pivot_subwoofer", lowerArmCommand);
     NamedCommands.registerCommand("shoot", shootCommand);
+    NamedCommands.registerCommand("outtake", outtakeCommand);
     NamedCommands.registerCommand("auto_shoot", autoShoot);
     // NamedCommands.registerCommand("auto_intake_sequence", Commands.race(new AutoIntake(endEffector), Commands.waitSeconds(3
     // )));
@@ -298,6 +320,7 @@ public class RobotContainer {
     autoChooser.addOption("3 Piece", new PathPlannerAuto("3 Note Auto"));
     autoChooser.addOption("4 Piece", new PathPlannerAuto("4 Note Auto"));
     autoChooser.addOption("4 Piece Real", new PathPlannerAuto("4 Note Auto Real"));
+    autoChooser.addOption("Bottom to White Centerline Auto", new PathPlannerAuto("Bottom to White Centerline Auto"));
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // kbShooter = new KitBotShooter();
@@ -381,6 +404,13 @@ public class RobotContainer {
       climber.stopClimb();
     }));
 
+    auxL2.onTrue(new InstantCommand(() -> {
+      endEffector.ampFlywheel();
+    }, endEffector)).onFalse(new InstantCommand(() -> {
+      endEffector.stopFlywheel();
+      endEffector.stopIntake();
+    }));
+
     // PIVOT COMMANDS
     // auxL2.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotAmpAngle));
     // auxCross.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotZero));
@@ -399,7 +429,9 @@ public class RobotContainer {
     driverR2.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand());
     driverL2.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotStow));
     driverL1.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotAmpAngle));
-    driverSquare.whileTrue(pivot.autoAimPivotCommand()).onFalse(pivot.pivotMoveCommand(PivotConstants.kPivotZero));
+    driverSquare.whileTrue(new RunCommand(() -> {
+      pivot.autoAimPivot();
+    }, pivot)).onFalse(pivot.pivotMoveCommand(PivotConstants.kPivotZero));
 
     // Shouldnt be used
     driverTriangle.onTrue(new InstantCommand(() -> {

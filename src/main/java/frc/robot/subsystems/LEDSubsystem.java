@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
@@ -20,7 +22,8 @@ public class LEDSubsystem extends SubsystemBase {
     FIRE_EFFECT,
     FLYWHEELS_ON,
     SCORE,
-    ARM_IS_ZERO
+    ARM_IS_ZERO,
+    CLIMB
   };
 
   private LEDState m_LEDState = LEDState.PURPLE;
@@ -46,7 +49,7 @@ public class LEDSubsystem extends SubsystemBase {
         m_ledController.animate(new StrobeAnimation(255, 0, 0, 0, 0.5, LEDConstants.kNumLEDs));
         break;
       case FIRE_EFFECT:
-        m_ledController.animate(new FireAnimation(1, 1, LEDConstants.kNumLEDs*3, 1, 1, false, 8  ));
+        m_ledController.animate(new FireAnimation(1, 0.8, LEDConstants.kNumLEDs, 1, 1, false, 8  ));
         break;
       case FLYWHEELS_ON:
         m_ledController.animate(new StrobeAnimation(255, 0, 255, 0, 0.5, LEDConstants.kNumLEDs));
@@ -58,7 +61,12 @@ public class LEDSubsystem extends SubsystemBase {
       case ARM_IS_ZERO:
         m_ledController.animate(new RainbowAnimation(1, 0.35, LEDConstants.kNumLEDs));
         break;
+      case CLIMB:
+        m_ledController.animate(new RainbowAnimation(1, 0.6, LEDConstants.kNumLEDs));
     }
+
+    Logger.recordOutput("LEDState", m_LEDState);
+
     
   }
 
