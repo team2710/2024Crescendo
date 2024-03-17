@@ -42,7 +42,9 @@ import frc.robot.subsystems.Pivot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -228,6 +230,12 @@ public class RobotContainer {
     lowerArmCommand
   );
 
+  Command autoShoot2 = new SequentialCommandGroup(
+    new ParallelCommandGroup(
+      new SequentialCommandGroup(pivot.autoAimPivotCommand(), new WaitUntilCommand(pivot::reachedSetpoint)),
+      shootCommand
+    )
+  );
 
 
   
@@ -292,7 +300,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("auto_intake_sequence", 
       Commands.sequence(
         endEffector.intakeCommand(),
-        Commands.waitSeconds(1.5),
+        Commands.waitSeconds(2),
         endEffector.stopIntakeCommand()
       )
     );
@@ -320,7 +328,8 @@ public class RobotContainer {
     autoChooser.addOption("3 Piece", new PathPlannerAuto("3 Note Auto"));
     autoChooser.addOption("4 Piece", new PathPlannerAuto("4 Note Auto"));
     autoChooser.addOption("4 Piece Real", new PathPlannerAuto("4 Note Auto Real"));
-    autoChooser.addOption("Bottom to White Centerline Auto", new PathPlannerAuto("Bottom to White Centerline Auto"));
+    autoChooser.addOption("Two Piece Bottom to White Centerlin", new PathPlannerAuto("Bottom to White Centerline Auto"));
+
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // kbShooter = new KitBotShooter();
