@@ -148,6 +148,13 @@ public class EndEffector extends SubsystemBase {
     }, this);
   }
 
+ public Command flywheelAutoCommand() {
+    return new InstantCommand(() -> {
+      spinupFlywheelAuto();
+    }, this);
+  }
+
+
   public Command stopFlywheelCommand() {
     return new InstantCommand(() -> {
       stopFlywheel();
@@ -260,6 +267,14 @@ public class EndEffector extends SubsystemBase {
     // flywheelMotorBottom.set(-1);
   }
 
+  public void spinupFlywheelAuto() {
+    isFlywheelRunning = true;
+
+
+    flywheelMotorTop.set(-0.9);
+    // flywheelMotorBottom.set(-1);
+  }
+
   public void stopFlywheel() {
     isFlywheelRunning = false;
     flywheelMotorTop.set(0);
@@ -283,7 +298,7 @@ public class EndEffector extends SubsystemBase {
   }
   
   public boolean atShootingSpeed(){
-    return 4500 < flywheelRPM();
+    return 4000 < flywheelRPM();
   }
 
   public boolean AtShootingSpeed(double speed){

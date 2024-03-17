@@ -179,7 +179,7 @@ public class RobotContainer {
     endEffector.toggleOuttakeCommand(),
     Commands.waitSeconds(0.1),
     endEffector.stopIntakeCommand(),
-    endEffector.flywheelCommand(),
+    endEffector.flywheelAutoCommand(),
     Commands.race(
       new WaitUntilCommand(endEffector::atShootingSpeed),
       Commands.waitSeconds(3)
@@ -230,12 +230,12 @@ public class RobotContainer {
     lowerArmCommand
   );
 
-  Command autoShoot2 = new SequentialCommandGroup(
-    new ParallelCommandGroup(
-      new SequentialCommandGroup(pivot.autoAimPivotCommand(), new WaitUntilCommand(pivot::reachedSetpoint)),
-      shootCommand
-    )
-  );
+  // Command autoShoot2 = new SequentialCommandGroup(
+  //   new ParallelCommandGroup(
+  //     new SequentialCommandGroup(pivot.autoAimPivotCommand(), new WaitUntilCommand(pivot::reachedSetpoint)),
+  //     shootCommand
+  //   )
+  // );
 
 
   
