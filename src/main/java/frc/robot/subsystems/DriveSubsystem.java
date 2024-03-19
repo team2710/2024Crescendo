@@ -91,7 +91,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Translation3d target_pose = DriveConstants.blueSpeaker;
 
-  public PIDController m_botAnglePID = new PIDController(ModuleConstants.kTurningP, ModuleConstants.kTurningI, ModuleConstants.kTurningD);
+  public PIDController m_botAnglePID = new PIDController(0.7, 0.0001, 0.001);
 
   LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
