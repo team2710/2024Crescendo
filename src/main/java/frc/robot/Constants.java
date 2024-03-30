@@ -81,7 +81,7 @@ public final class Constants {
     public static final double kPivotMaxOutput = 0.75;
 
     public static final double kPivotStartPosition = 0;
-    public static double shooterAngle  = (135) * Math.PI/180; //formula is 180 - arm angle // 180-45 = 135 
+    public static double shooterAngle  = (133) * Math.PI/180; //formula is 180 - arm angle // 180-45 = 135 
     public static final double armLength = 0.920; // Meters
 
 

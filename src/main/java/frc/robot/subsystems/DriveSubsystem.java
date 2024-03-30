@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.music.Orchestra;
 import com.google.flatbuffers.Constants;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -73,6 +75,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
 
+
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
@@ -125,10 +128,11 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putData("Field", m_field);
     zeroHeading();
 
+
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
       new HolonomicPathFollowerConfig(
-        new PIDConstants(4, 0.001, 0.01),
+        new PIDConstants(4, 0.005, 0.01),
         new PIDConstants(1.0, 0.0, 0.01),
         DriveConstants.kMaxSpeedMetersPerSecond, 
         AutoConstants.kSwerveDriveRadiusMeters, 
@@ -153,8 +157,10 @@ public class DriveSubsystem extends SubsystemBase {
 
       if(isRed){
         target_pose = DriveConstants.redSpeaker;
-        autoAimInvert = -Math.PI;
+        autoAimInvert = 0;
       }
+
+      // playMusic("mario.chrp");
   }
 
 
@@ -165,6 +171,13 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.velocityControlEnabled(control);
     m_rearLeft.velocityControlEnabled(control);
     m_rearRight.velocityControlEnabled(control);
+  }
+
+  public void playMusic(String pathname){
+    m_frontLeft.playSong(pathname);
+    m_frontRight.playSong(pathname);
+    m_rearLeft.playSong(pathname);
+    m_rearRight.playSong(pathname);
   }
 
   public Command velocityControlEnabledCommand(boolean state) {
@@ -339,7 +352,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     if(controller.getSquareButton()){
       double angle = autoAim(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond, getPose(), 45, target_pose.toTranslation2d());
-      rot = m_botAnglePID.calculate(getPose().getRotation().rotateBy(new Rotation2d(autoAimInvert)).getRadians(), angle);
+      rot = m_botAnglePID.calculate(getPose().getRotation().rotateBy(new Rotation2d(-Math.PI)).getRadians(), angle);
       SmartDashboard.putNumber("Auto Aim Rotation", rot);
       if(slowAutoAim){
         xSpeed = xSpeed * 0.5;

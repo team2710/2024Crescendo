@@ -118,7 +118,7 @@ public class EndEffector extends SubsystemBase {
 
   public void ampFlywheel(){
     feed();
-    flywheelMotorTop.set(-0.3);
+    flywheelMotorTop.set(-0.5);
   }
 
 
@@ -298,7 +298,7 @@ public class EndEffector extends SubsystemBase {
   }
   
   public boolean atShootingSpeed(){
-    return 4000 < flywheelRPM();
+    return 4500 < flywheelRPM();
   }
 
   public boolean AtShootingSpeed(double speed){
@@ -332,18 +332,19 @@ public class EndEffector extends SubsystemBase {
     Logger.recordOutput("OuttakeState", isOuttaking);
     Logger.recordOutput("NoteBeamBreak", isNoteDetected());
 
-    if (isIntaking) {
-      m_LedSubsystem.setState(LEDState.INTAKING);
+    if (isFlywheelRunning) {
+      m_LedSubsystem.setState(LEDState.FLYWHEELS_ON);
     }
     else if (isNote) {
       m_LedSubsystem.setState(LEDState.NOTE_DETECTED);
     }
-    else if (isFlywheelRunning) {
-      m_LedSubsystem.setState(LEDState.FLYWHEELS_ON);
+    else if (isIntaking) {
+      m_LedSubsystem.setState(LEDState.INTAKING);
     }
     else if (isFeeding) {
       m_LedSubsystem.setState(LEDState.SCORE);
-    } else if (m_Climb.isClimbing) {
+    }
+    else if (m_Climb.isClimbing) {
       m_LedSubsystem.setState(LEDState.CLIMB);
     }
     else {

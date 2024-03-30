@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -39,7 +40,7 @@ public class MAXSwerveModule {
 
   private final SparkPIDController m_turningPIDController;
   private VelocityDutyCycle m_velocityPID = new VelocityDutyCycle(0);
-
+  public  Orchestra  m_music = new Orchestra(); 
   private DutyCycleOut m_openLoop = new DutyCycleOut(0);
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -53,6 +54,7 @@ public class MAXSwerveModule {
   public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset) {
     m_drivingKraken = new TalonFX(drivingCANId, "rio");
     m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
+
 
     // Factory reset, so we get the SPARKS MAX to a known state before configuring
     // them. This is useful in case a SPARK MAX is swapped out.
@@ -136,11 +138,21 @@ public class MAXSwerveModule {
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingKraken.setPosition(0);
     m_drivingKraken.setNeutralMode(NeutralModeValue.Brake);
+
+    m_music.addInstrument(m_drivingKraken);
+
+
   }
 
   public void periodic() {
     // Update the state of the PID controller.
     SmartDashboard.putNumber("velocity", m_drivingKraken.getVelocity().getValueAsDouble());
+  }
+
+  public void playSong(String pathname){
+    m_music.loadMusic(pathname);
+    m_music.play();
+
   }
 
   /**

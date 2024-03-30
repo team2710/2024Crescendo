@@ -243,7 +243,7 @@ public class RobotContainer {
   
     Command outtakeCommand = Commands.sequence(
       endEffector.outtakeCommand(),
-      Commands.waitSeconds(0.12),
+      Commands.waitSeconds(0.03),
       endEffector.stopIntakeCommand()
     );
   
@@ -329,7 +329,7 @@ public class RobotContainer {
     autoChooser.addOption("3 Piece", new PathPlannerAuto("3 Note Auto"));
     autoChooser.addOption("4 Piece", new PathPlannerAuto("4 Note Auto"));
     autoChooser.addOption("4 Piece Real", new PathPlannerAuto("4 Note Auto Real"));
-    autoChooser.addOption("Two Piece Bottom to White Centerlin", new PathPlannerAuto("Bottom to White Centerline Auto"));
+    autoChooser.addOption("Two Piece Bottom to White Centerline", new PathPlannerAuto("Bottom Centerline Auto"));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -385,9 +385,10 @@ public class RobotContainer {
     // })).onFalse(new InstantCommand(() -> {
     //   endEffector.stopIntake();
     // }));
-    auxTriangle.onTrue(new AutoIntake(endEffector)).onFalse(new InstantCommand(() -> {
-      endEffector.stopIntake();
-    }, endEffector));
+    auxTriangle.whileTrue(new AutoIntake(endEffector));
+    // auxTriangle.onTrue(new AutoIntake(endEffector)).onFalse(new InstantCommand(() -> {
+    //   endEffector.stopIntake();
+    // }, endEffector));
     auxSquare.onTrue(new InstantCommand(() -> {
       endEffector.outtake();
     })).onFalse(new InstantCommand(() -> {
