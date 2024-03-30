@@ -47,7 +47,7 @@ public class LEDSubsystem extends SubsystemBase {
         m_ledController.setLEDs(255, 0, 0);
         break;
       case NOTE_DETECTED:
-        m_ledController.animate(new StrobeAnimation(255, 165, 0, 0, 0.5, LEDConstants.kNumLEDs));
+        m_ledController.animate(new StrobeAnimation(0, 255, 0, 0, 0.6, LEDConstants.kNumLEDs));
         break;
       case FIRE_EFFECT:
         m_ledController.animate(new FireAnimation(0.8, 1, LEDConstants.kNumLEDs, 1, 1, false, 8));
@@ -57,7 +57,7 @@ public class LEDSubsystem extends SubsystemBase {
         break;
       case SCORE:
         m_ledController.clearAnimation(0);
-        m_ledController.setLEDs(0, 255, 0);
+        m_ledController.animate(new StrobeAnimation(255, 255, 255, 255, 0.85, LEDConstants.kNumLEDs));
         break;
       case ARM_IS_ZERO:
         m_ledController.animate(new RainbowAnimation(1, 0.35, LEDConstants.kNumLEDs));
