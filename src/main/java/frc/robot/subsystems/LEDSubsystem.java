@@ -50,20 +50,20 @@ public class LEDSubsystem extends SubsystemBase {
         m_ledController.animate(new StrobeAnimation(0, 255, 0, 0, 0.6, LEDConstants.kNumLEDs));
         break;
       case FIRE_EFFECT:
-        m_ledController.animate(new FireAnimation(0.8, 1, LEDConstants.kNumLEDs, 1, 1, false, 8));
+        m_ledController.animate(new FireAnimation(1, 0.7, LEDConstants.kNumLEDs, 1, 1, false, 8));
         break;
       case FLYWHEELS_ON:
         m_ledController.animate(new StrobeAnimation(255, 0, 255, 0, 0.5, LEDConstants.kNumLEDs));
         break;
       case SCORE:
-        m_ledController.clearAnimation(0);
-        m_ledController.animate(new StrobeAnimation(255, 255, 255, 255, 0.85, LEDConstants.kNumLEDs));
+        //m_ledController.clearAnimation(0);
+        m_ledController.animate(new StrobeAnimation(255, 255, 255, 0, 0.6, LEDConstants.kNumLEDs));
         break;
       case ARM_IS_ZERO:
         m_ledController.animate(new RainbowAnimation(1, 0.35, LEDConstants.kNumLEDs));
         break;
       case CLIMB:
-        m_ledController.animate(new RainbowAnimation(1, 0.84, LEDConstants.kNumLEDs));
+        m_ledController.animate(new RainbowAnimation(1, 0.95, LEDConstants.kNumLEDs));
       // case LOCK_IN:
       //   m_ledController.animate(new StrobeAnimation(0, 191, 255, 0, 0.8, LEDConstants.kNumLEDs))
     }
