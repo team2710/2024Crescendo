@@ -208,15 +208,9 @@ public class RobotContainer {
     Commands.waitSeconds(0.5)
   );
 
-  Command intakeToggleSeq = Commands.deadline(
+  Command intakeToggleSeq = Commands.sequence(
     // endEffector.toggleIntakeCommand()
-    Commands.deadline(
-    autoIntake,
-    Commands.sequence(
-      new WaitCommand(2),
-      stopIntake
-    )
-    )
+    autoIntake
   );
 
   

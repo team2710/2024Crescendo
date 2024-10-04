@@ -10,12 +10,17 @@ import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.Pivot;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.wpilibj.Timer;
 
 public class autoIntakeToggle extends Command {
     EndEffector m_intake;
+    private double m_timeout;
+    private Timer m_timer;
 
     public autoIntakeToggle(EndEffector m_intake) {
         this.m_intake = m_intake;
+ 
+
         // Use addRequirements() here to declare subsystem dependencies.
         // Configure additional PID options by calling `getController` here
         addRequirements(m_intake);
@@ -24,6 +29,7 @@ public class autoIntakeToggle extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+
     }
 
     // Called every time the scheduler runs while the command is scheduled.
