@@ -9,8 +9,6 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.music.Orchestra;
 import com.google.flatbuffers.Constants;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -75,7 +73,6 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
 
-
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
@@ -87,14 +84,12 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_currentTranslationDir = 0.0;
   private double m_currentTranslationMag = 0.0;
   boolean isRed = false;
-  double autoAimInvert = 0;
 
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   public Translation3d target_pose = DriveConstants.blueSpeaker;
-  
 
   public PIDController m_botAnglePID = new PIDController(ModuleConstants.kTurningP, ModuleConstants.kTurningI, ModuleConstants.kTurningD);
 
@@ -128,11 +123,10 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putData("Field", m_field);
     zeroHeading();
 
-
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
       new HolonomicPathFollowerConfig(
-        new PIDConstants(4, 0.005, 0.01),
+        new PIDConstants(4, 0.001, 0.01),
         new PIDConstants(1.0, 0.0, 0.01),
         DriveConstants.kMaxSpeedMetersPerSecond, 
         AutoConstants.kSwerveDriveRadiusMeters, 
@@ -157,10 +151,7 @@ public class DriveSubsystem extends SubsystemBase {
 
       if(isRed){
         target_pose = DriveConstants.redSpeaker;
-        autoAimInvert = 0;
       }
-
-      // playMusic("mario.chrp");
   }
 
 
@@ -171,13 +162,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.velocityControlEnabled(control);
     m_rearLeft.velocityControlEnabled(control);
     m_rearRight.velocityControlEnabled(control);
-  }
-
-  public void playMusic(String pathname){
-    m_frontLeft.playSong(pathname);
-    m_frontRight.playSong(pathname);
-    m_rearLeft.playSong(pathname);
-    m_rearRight.playSong(pathname);
   }
 
   public Command velocityControlEnabledCommand(boolean state) {
@@ -352,7 +336,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     if(controller.getSquareButton()){
       double angle = autoAim(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond, getPose(), 45, target_pose.toTranslation2d());
-      rot = m_botAnglePID.calculate(getPose().getRotation().rotateBy(new Rotation2d(-Math.PI)).getRadians(), angle);
+      rot = m_botAnglePID.calculate(getPose().getRotation().rotateBy(new Rotation2d(Math.PI)).getRadians(), angle);
       SmartDashboard.putNumber("Auto Aim Rotation", rot);
       if(slowAutoAim){
         xSpeed = xSpeed * 0.5;
@@ -420,21 +404,12 @@ public class DriveSubsystem extends SubsystemBase {
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
     
     var swerveModuleStates =
-    // DriveConstants.kDriveKinematics.toSwerveModuleStates(
-    //         fieldRelative
-    //             ? ChassisSpeeds.fromFieldRelativeSpeeds(
-    //                 xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(getHeading()))
-    //             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered)
-    //         );
     DriveConstants.kDriveKinematics.toSwerveModuleStates(
-      ChassisSpeeds.discretize(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(getHeading()))
-            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered),
-        AutoConstants.kSwerveDiscreteTimestep
-      )
-    );
+            fieldRelative
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                    xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(getHeading()))
+                : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered)
+            );
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);

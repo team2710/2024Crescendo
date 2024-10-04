@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -209,7 +210,9 @@ public class RobotContainer {
 
   Command intakeToggleSeq = Commands.sequence(
     // endEffector.toggleIntakeCommand()
-    autoIntake
+    autoIntake,
+    new WaitCommand(3),
+    endEffector.stopIntakeCommand()
   );
 
   
