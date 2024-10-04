@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -39,7 +40,7 @@ public class MAXSwerveModule {
 
   private final SparkPIDController m_turningPIDController;
   private VelocityDutyCycle m_velocityPID = new VelocityDutyCycle(0);
-
+  public  Orchestra  m_music = new Orchestra(); 
   private DutyCycleOut m_openLoop = new DutyCycleOut(0);
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -53,6 +54,7 @@ public class MAXSwerveModule {
   public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset) {
     m_drivingKraken = new TalonFX(drivingCANId, "rio");
     m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
+
 
     // Factory reset, so we get the SPARKS MAX to a known state before configuring
     // them. This is useful in case a SPARK MAX is swapped out.
@@ -136,11 +138,21 @@ public class MAXSwerveModule {
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingKraken.setPosition(0);
     m_drivingKraken.setNeutralMode(NeutralModeValue.Brake);
+
+    m_music.addInstrument(m_drivingKraken);
+
+
   }
 
   public void periodic() {
     // Update the state of the PID controller.
     SmartDashboard.putNumber("velocity", m_drivingKraken.getVelocity().getValueAsDouble());
+  }
+
+  public void playSong(String pathname){
+    m_music.loadMusic(pathname);
+    m_music.play();
+
   }
 
   /**
@@ -153,6 +165,10 @@ public class MAXSwerveModule {
     // relative to the chassis.
     return new SwerveModuleState(m_drivingKraken.getVelocity().getValue(),
         new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
+  }
+
+  public double cosineScale(Rotation2d currentAngle, Rotation2d desiredAngle) {
+    return desiredAngle.minus(currentAngle).getCos();
   }
 
   /**
@@ -183,23 +199,10 @@ public class MAXSwerveModule {
     SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
         new Rotation2d(m_turningEncoder.getPosition()));
 
-    // Command driving and turning SPARKS MAX towards their respective setpoints.
-    // m_drivingKraken.setControl(optimizedDesiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-    //convert m/s to rev/s
-
-    //v=rw
-    // formula is (m/s / radius of wheel) * gear_ratio = rev/s
-    //pid uses rev/s
-
     SmartDashboard.putNumber("Speed",  optimizedDesiredState.speedMetersPerSecond);
     
-
-    if (DriverStation.isAutonomous()) {
-      m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond));
-    } else {
-      // m_drivingKraken.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
-      m_drivingKraken.setControl(m_openLoop.withOutput(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond).withEnableFOC(true));
-    }
+  
+    m_drivingKraken.setControl(m_velocityPID.withVelocity(optimizedDesiredState.speedMetersPerSecond * cosineScale(Rotation2d.fromRadians(m_turningEncoder.getPosition()), correctedDesiredState.angle)));
 
     // m_drivingKraken.setControl(m_velocityPID.withVelocity((optimizedDesiredState.speedMetersPerSecond / 0.1016 / Math.PI) * 2048 * 3.56));
     m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);

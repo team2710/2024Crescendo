@@ -324,7 +324,7 @@ public class RobotContainer {
                 -mathProfiles.exponentialDrive(MathUtil.applyDeadband(m_driverControllerCommand.getLeftY(), OIConstants.kDriveDeadband), 2),
                 -mathProfiles.exponentialDrive(MathUtil.applyDeadband(m_driverControllerCommand.getLeftX(), OIConstants.kDriveDeadband), 2),
                 -MathUtil.applyDeadband(m_driverControllerCommand.getRightX(), OIConstants.kDriveDeadband),
-                true, true, m_driverController, false, false),
+                true, false, m_driverController, false, false),
             m_robotDrive));
 
 
