@@ -208,7 +208,6 @@ public class RobotContainer {
   );
 
   Command intakeToggleSeq = Commands.sequence(
-    pivotZero,
     // endEffector.toggleIntakeCommand()
     autoIntake
   );
@@ -264,7 +263,7 @@ public class RobotContainer {
     // Commands for Pathplanner
     NamedCommands.registerCommand("pivot_subwoofer", lowerArmCommand);
     NamedCommands.registerCommand("shoot", shootCommand);
-    NamedCommands.registerCommand("toggle_intake", endEffector.toggleIntakeCommand());
+    // NamedCommands.registerCommand("toggle_intake", endEffector.toggleIntakeCommand());
     NamedCommands.registerCommand("auto_aim", shootOnMoveCommand);
     NamedCommands.registerCommand("toggle_intake", intakeToggleSeq);
     NamedCommands.registerCommand("outtake", outtakeCommand);
