@@ -15,6 +15,7 @@ public class Climb extends SubsystemBase {
     
     private CANSparkMax climber = new CANSparkMax(ClimberConstants.kClimberMotorID, MotorType.kBrushless);
 
+    public boolean isClimbing = false;
 
     private SparkPIDController pidController;
     public Climb() {
@@ -61,10 +62,12 @@ public class Climb extends SubsystemBase {
     }
 
     public void climbUP() {
+        isClimbing = true;
         climber.set(ClimberConstants.kUpSpeed);
     }
 
     public void climbDown() {
+        isClimbing = true;
         climber.set(ClimberConstants.kDownSpeed);
     }
 

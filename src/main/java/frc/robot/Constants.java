@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.DriveConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -54,7 +55,7 @@ public final class Constants {
 
     public static final double kPivotPodiumAngle = 20;
     public static final double kPivotWingAngle = 25;
-    public static final double kPivotAmpAngle = 80;
+    public static final double kPivotAmpAngle = 91;
     public static final double kPivotZero = 0;
     public static final double kPivotStow = 72;
     
@@ -67,7 +68,7 @@ public final class Constants {
     //https://www.reca.lc/arm?armMass=%7B%22s%22%3A14%2C%22u%22%3A%22lbs%22%7D&comLength=%7B%22s%22%3A27.784294%2C%22u%22%3A%22in%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=80&endAngle=%7B%22s%22%3A90%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A2%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A165.333333%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A0%2C%22u%22%3A%22deg%22%7D
 
     public static final double kPivotGearRatio = 18.0/62.0;
-    public static final double kPivotP = 0.27;
+    public static final double kPivotP = 0.28;
     public static final double kPivotI = 0;
     public static final double kPivotD = 0.02;
     public static final double kPivotIz = 0;
@@ -75,7 +76,7 @@ public final class Constants {
     public static final double kPivotMinOutput = -0.825;
     public static final double kPivotMaxOutput = 0.75;
 
-    public static final double kPivotStartPosition = 0;
+    public static final double kPivotStartPosition = 0.01;
     public static double shooterAngle  = (132) * Math.PI/180; //formula is 180 - arm angle // 180-45 = 135 
     public static final double armLength = 0.920; // Meters
 
@@ -170,16 +171,16 @@ public final class Constants {
     public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
     public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-    public static final double kDrivingP = 0.3;
+    public static final double kDrivingP = 0.35;
     public static final double kDrivingI = 0.0;
-    public static final double kDrivingD = 0.0095;
+    public static final double kDrivingD = 0.01;
     public static final double kDrivingFF = 0;
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 1;
+    public static final double kTurningP = 0.5;
     public static final double kTurningI = 0;
-    public static final double kTurningD = 0;
+    public static final double kTurningD = 0.001;
     public static final double kTurningFF = 0;
     public static final double kTurningMinOutput = -1;
     public static final double kTurningMaxOutput = 1;
@@ -189,6 +190,11 @@ public final class Constants {
 
     public static final int kDrivingMotorCurrentLimit = 80; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
+  }
+
+  public static final class LEDConstants {
+    public static final int kCANdleID = 45;
+    public static final int kNumLEDs = 100;
   }
 
   public static final class OIConstants {

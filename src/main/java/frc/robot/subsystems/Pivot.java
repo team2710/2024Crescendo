@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -18,6 +19,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -28,8 +30,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.subsystems.LEDSubsystem.LEDState;
 import frc.robot.RobotContainer;
 
 public class Pivot extends SubsystemBase {
@@ -43,9 +47,13 @@ public class Pivot extends SubsystemBase {
     Translation3d target = DriveConstants.blueSpeaker;
     DriveSubsystem driveSubsystem;
 
+    private double setAngle = 0;
+
     Rotation3d armRotation3d = new Rotation3d();
 
     double[] armAngle3DArray = new double[]{0,0,0,0,0,0,0};
+
+    Pose3d pivotPose = new Pose3d(-0.234442,0,0.1905, armRotation3d);
 
 
 
@@ -60,7 +68,11 @@ public class Pivot extends SubsystemBase {
         BLUE, RED
     }
 
-    public Pivot(DriveSubsystem driveSubsystem) {
+    private LEDSubsystem m_ledSubsystem;
+
+    public Pivot(DriveSubsystem driveSubsystem, LEDSubsystem ledSubsystem) {
+        m_ledSubsystem = ledSubsystem;
+        
         armAngle3DArray[0] = -0.234442;
         armAngle3DArray[1] = 0;
         armAngle3DArray[2] = 0.1905;
@@ -170,22 +182,48 @@ public class Pivot extends SubsystemBase {
         setAngleDegree(angle);
     }
 
+    public double autoAimPivotDeg() {
+        double angle = Math.atan(2.1/distToSpeaker(RobotContainer.m_robotDrive.getPose())) + PivotConstants.shooterAngle - Math.asin((Math.sin(PivotConstants.shooterAngle) * PivotConstants.armLength))/(RobotToTarget3D());
+        // SmartDashboard.putNumber("Angle to Target", angle * 180 / Math.PI);
+        double clampAngle= MathUtil.clamp(180 - (angle * (180 / Math.PI)), 0, 70);
+        // SmartDashboard.putNumber("auto aim angle", clampAngle);
+        return clampAngle;
+    }
+
+
+    public boolean reachedSetpoint(){
+        return MathUtil.isNear(autoAimPivotDeg(), getAngle(), 1.5);
+    }
+
     @Override
     public void periodic() {
+        armRotation3d = new Rotation3d(0, -getAngle() * Math.PI/180 ,0);
+
+
+
         getArmAngle();
         SmartDashboard.putNumberArray("arm 3d", armAngle3DArray);
         SmartDashboard.putNumber("Pivot Angle", getAngle());
         SmartDashboard.putNumber("Distance to speaker", distToSpeaker(driveSubsystem.getPose()));
 
+        Logger.recordOutput("MyPose3d", pivotPose);
         Logger.recordOutput("Arm/Angle", getAngle());
 
         boolean brakeMode = SmartDashboard.getBoolean("Brake Mode", true);
+        if (MathUtil.isNear(PivotConstants.kPivotStow, getAngle(), 5) && !brakeMode) {
+            brakeMode = true;
+            SmartDashboard.putBoolean("Brake Mode", brakeMode);
+        }
         if (brakeMode && pivotMotorLeft.getIdleMode() == IdleMode.kCoast) {
             pivotMotorLeft.setIdleMode(IdleMode.kBrake);
             pivotMotorRight.setIdleMode(IdleMode.kBrake);
         } else if (!brakeMode && pivotMotorLeft.getIdleMode() == IdleMode.kBrake) {
             pivotMotorLeft.setIdleMode(IdleMode.kCoast);
             pivotMotorRight.setIdleMode(IdleMode.kCoast);
+        }
+
+        if (MathUtil.isNear(0, getAngle(), 5) && DriverStation.isDisabled()) {
+            m_ledSubsystem.setState(LEDState.ARM_IS_ZERO);
         }
     }
 
@@ -267,6 +305,7 @@ public class Pivot extends SubsystemBase {
     public void setAngleDegree(double position) {
         if (position > 80) position = 80;
         if (position < 0) position = 0;
+        setAngle = position;
         // pidController.setReference(position, ControlType.kPosition);
         setPosition(angleToEncoder(position));
 

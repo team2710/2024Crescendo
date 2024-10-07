@@ -30,6 +30,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.DriverProfile.mathProfiles;
 import frc.robot.commands.Basic2PieceAuto;
+import frc.robot.commands.IntakeWithBB;
 import frc.robot.commands.ShootIntake;
 import frc.robot.commands.autoIntakeToggle;
 import frc.robot.commands.autoRotatePP;
@@ -37,8 +38,7 @@ import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.Pivot;
-import frc.robot.subsystems.EndEffector.FlywheelState;
-import frc.robot.subsystems.EndEffector.IntakeState;
+import frc.robot.subsystems.LEDSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -70,23 +70,24 @@ import com.revrobotics.SparkPIDController;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems
-  public static final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  public static final EndEffector endEffector = new EndEffector();
-  Pivot pivot = new Pivot(m_robotDrive);
-
-
   // The driver's controller
   CommandPS4Controller m_driverControllerCommand = new CommandPS4Controller(OIConstants.kDriverControllerPort);
   PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
   CommandPS4Controller m_auxController = new CommandPS4Controller(OIConstants.kAuxControllerPort);
 
+  // The robot's subsystems
+  public static final DriveSubsystem m_robotDrive = new DriveSubsystem();
+
+  LEDSubsystem ledSubsystem = new LEDSubsystem();
+  Climb climber = new Climb();
+  EndEffector endEffector = new EndEffector(m_driverController, ledSubsystem, climber);
+  Pivot pivot = new Pivot(m_robotDrive, ledSubsystem);
+
+
+
+
   // KitBotShooter kbShooter = new KitBotShooter();
   // Commands
-  Command intakeCommand = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Feed), endEffector);
-  Command stopIntake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.OFF), endEffector);
-  Command intakeOn = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.On), endEffector);
-  Command outtake = new InstantCommand(() -> endEffector.setIntakeState(IntakeState.Outtake));
   Command pivotZero = new InstantCommand(() -> pivot.zeroPivot(), pivot);
   Command autoFeedAndShoot = new ShootIntake(endEffector);
 
@@ -95,7 +96,6 @@ public class RobotContainer {
   Command autoIntake = new autoIntakeToggle(endEffector);
 
   // Pivot Arm
-  Climb climber = new Climb();
 
  Command PathfindToPickUp = Commands.none();
  Command PathfindToScore = Commands.none();
@@ -153,8 +153,15 @@ public class RobotContainer {
   final Trigger driverR2 = m_driverControllerCommand.R2();
   final Trigger driverCross = m_driverControllerCommand.cross();
   final Trigger driverCircle = m_driverControllerCommand.circle();
+  final Trigger driverTriangle = m_driverControllerCommand.triangle();
+  final Trigger driverSquare = m_driverControllerCommand.square();
   final Trigger driverDPADUP = m_driverControllerCommand.povUp();
   final Trigger driverDPADDOWN = m_driverControllerCommand.povDown();
+  final Trigger driverDPADLEFT = m_driverControllerCommand.povLeft();
+  final Trigger driverDPADRIGHT = m_driverControllerCommand.povRight();
+  final Trigger driverPSButton = m_driverControllerCommand.PS();
+  final Trigger driverFunnyLeft = m_driverControllerCommand.share(); // funny left
+  final Trigger driverFunnyRight = m_driverControllerCommand.options(); // funny right
 
 
   final Trigger auxL1 = m_auxController.L1();
@@ -169,6 +176,7 @@ public class RobotContainer {
 
   final Trigger auxSquare = m_auxController.square();
 
+
   boolean isRed = false;
 
   HttpCamera camera = new HttpCamera("Limelight", "http://10.27.10.11:5800/stream.mjpg");
@@ -178,24 +186,20 @@ public class RobotContainer {
   // AUTO COMMANDS
 
   Command shootCommand = Commands.sequence(
-    endEffector.toggleOuttakeCommand(),
-    Commands.waitSeconds(0.08),
     endEffector.stopIntakeCommand(),
-    endEffector.toggleFlywheelCommand(),
-    new WaitUntilCommand(endEffector::AtShootingSpeed),
-    endEffector.toggleFeed(),
-    Commands.waitSeconds(0.3),
-    endEffector.toggleIntakeCommand(),
-    endEffector.toggleFlywheelCommand()
+    endEffector.toggleOuttakeCommand(),
+    Commands.waitSeconds(0.11),
+    endEffector.stopIntakeCommand(),
+    endEffector.flywheelAutoCommand(),
+    Commands.race(
+      new WaitUntilCommand(endEffector::atShootingSpeed),
+      Commands.waitSeconds(3)
+    ),
+    endEffector.feedCommand(),
+    Commands.waitSeconds(0.2),
+    endEffector.stopIntakeCommand(),
+    endEffector.stopFlywheelCommand()
   );
-
-
-  // Command shootCommand = Commands.sequence(
-  //   autoFeedAndShoot,
-  //   endEffector.stopIntakeCommand(),
-  //   endEffector.stopFlywheelCommand()
-
-  // );
 
     Command shootOnMoveCommand = Commands.race(
     new autoRotatePP(true, m_robotDrive),
@@ -364,9 +368,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // AUX COMMANDS
 
-    // END EFFECTOR COMMANDS
-    // auxR1.onTrue(endEffector.toggleFlywheelCommand());
-
+    //two player controls
+    /* 
     auxR1.onTrue(endEffector.toggleFlywheelCommand());
 
     auxTriangle.onTrue(new InstantCommand(() -> {
@@ -410,28 +413,6 @@ public class RobotContainer {
     driverL2.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotStow));
 
 
-
-
-
-    // trigger and state machine (prob better implemenetation)
-    // uncomment to test
-    // auxR1.onTrue(shooterOn).onFalse(shooterOff);
-    // auxTriangle.onTrue(intakeOn).onFalse(stopIntake);
-    // auxL1.onTrue(feed).onFalse(stopIntake);
-    // auxSquare.onTrue(outtake).onFalse(stopIntake);
-
-    
-    // auxR2.onTrue(new InstantCommand(() -> {
-    //   pivot.setAngleDegree(0);
-    // }));
-    // auxL2.onTrue(new InstantCommand(() -> {
-    //   pivot.setAngleDegree(80);
-    // }));
-
-    // auxCross.onTrue(new InstantCommand(() -> {
-    //   pivot.setAngleDegree(80);
-    // }));
-
     // DRIVER COMMANDS
     driverCross.onTrue(new InstantCommand(() -> {
       m_robotDrive.zeroHeading();
@@ -452,7 +433,50 @@ public class RobotContainer {
     })).onFalse(new InstantCommand(() -> {
       endEffector.stopIntake();
     }));
+    */
+    //SINGLE CONTROLLER COMMANDS
 
+    driverL1.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotStow)); // Pivot Stow & Amp
+    driverL2.onTrue(new InstantCommand(() -> { // [Hold] Amp Shoot
+      endEffector.ampFlywheel();
+    }, endEffector)).onFalse(new InstantCommand(() -> {
+      endEffector.stopFlywheel();
+      endEffector.stopIntake();
+    }));
+    driverR1.onTrue(endEffector.toggleFlywheelCommand()); // [Toggle] Flywheel
+    driverR2.onTrue(endEffector.feedCommand()).onFalse(endEffector.stopIntakeCommand()); // Feed
+    
+    driverTriangle.whileTrue(new IntakeWithBB(endEffector)); // [Hold] Intake
+    driverSquare.onTrue(new InstantCommand(() -> { // [Hold] Outtake
+      endEffector.outtake();
+    })).onFalse(new InstantCommand(() -> {
+      endEffector.stopIntake();
+    }));
+    driverCircle.whileTrue(new RunCommand(() -> { // [Hold] AutoAim
+      pivot.autoAimPivot();
+    }, pivot)).onFalse(new InstantCommand(() -> {
+      pivot.setAngleDegree(0);
+    }));
+    driverCross.onTrue(new InstantCommand(() -> { // Zero Heading
+      m_robotDrive.zeroHeading();
+    }, m_robotDrive));
+
+    driverDPADUP.onTrue(new InstantCommand(() -> { // [Hold] Climber Up
+      climber.climbUP();
+    })).onFalse( new InstantCommand(() -> {
+      climber.stopClimb();
+    }));
+    driverDPADDOWN.onTrue(new InstantCommand(() -> { // [Hold] Climber Down
+      climber.climbDown();
+    })).onFalse( new InstantCommand(() -> {
+      climber.stopClimb();
+    }));
+    driverDPADLEFT.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotZero)); // Pivot Down
+    driverDPADRIGHT.onTrue(new InstantCommand(() -> { // Zero Pivot
+      pivot.zeroPivot();
+    }, pivot));
+
+    
   }
 
   /**
