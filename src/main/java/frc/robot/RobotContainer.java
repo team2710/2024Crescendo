@@ -368,8 +368,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // AUX COMMANDS
 
-    //two player controls
-    /* 
+    //two player controls 
     auxR1.onTrue(endEffector.toggleFlywheelCommand());
 
     auxTriangle.onTrue(new InstantCommand(() -> {
@@ -433,8 +432,9 @@ public class RobotContainer {
     })).onFalse(new InstantCommand(() -> {
       endEffector.stopIntake();
     }));
-    */
-    //SINGLE CONTROLLER COMMANDS
+    
+    //SINGLE CONTROLLER COMMANDS 
+    /* 
 
     driverL1.onTrue(pivot.pivotMoveCommand(PivotConstants.kPivotStow)); // Pivot Stow & Amp
     driverL2.onTrue(new InstantCommand(() -> { // [Hold] Amp Shoot
@@ -475,7 +475,7 @@ public class RobotContainer {
     driverDPADRIGHT.onTrue(new InstantCommand(() -> { // Zero Pivot
       pivot.zeroPivot();
     }, pivot));
-
+    */
     
   }
 
