@@ -250,15 +250,11 @@ public class RobotContainer {
     );
 
     Command PathFindtoScoreSeq = Commands.sequence(
-      m_robotDrive.velocityControlEnabledCommand(true),
-      PathfindToScore,
-      m_robotDrive.velocityControlEnabledCommand(false)
+      PathfindToScore
     );
 
     Command PathFindtoPickupSeq = Commands.sequence(
-      m_robotDrive.velocityControlEnabledCommand(true),
-      PathfindToPickUp,
-      m_robotDrive.velocityControlEnabledCommand(false)
+      PathfindToPickUp
     );
 
     SmartDashboard.putData("PathFindToScore", PathFindtoScoreSeq);
