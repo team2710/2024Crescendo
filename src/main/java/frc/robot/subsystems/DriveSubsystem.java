@@ -293,17 +293,113 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
-  public double autoAim(double vx, double vy, Pose2d robot_pose, double shooter_velocity, Translation2d target_pose){
-    Vector<N2> addedVelocity = VecBuilder.fill(vx , vy);
-    SmartDashboard.putNumber("added velocity", addedVelocity.norm());
-    Vector<N2> robotToTarget = VecBuilder.fill(target_pose.getX() - robot_pose.getX()  , target_pose.getY() - robot_pose.getY());
-    Vector<N2> scaledRobotToTarget = robotToTarget.times(shooter_velocity/robotToTarget.norm());
-    Vector<N2> correctVector = scaledRobotToTarget.minus(addedVelocity);
-    double correctAngle = Math.atan(correctVector.get(1,0)/correctVector.get(0,0));
+  public double autoAim(double vx, double vy, Pose2d robotPose, double shooterVelocity, Translation2d targetPose) {
+    // Extract robot's current position
+    double rx = robotPose.getX();
+    double ry = robotPose.getY();
 
-    return correctAngle;
+    // Extract target's position
+    double tx = targetPose.getX();
+    double ty = targetPose.getY();
 
+    // Calculate relative position (dx, dy) from robot to target
+    double dx = tx - rx;
+    double dy = ty - ry;
+
+    // Debug: Display relative position
+    SmartDashboard.putNumber("Relative Position X (dx)", dx);
+    SmartDashboard.putNumber("Relative Position Y (dy)", dy);
+
+    // Calculate the coefficients of the quadratic equation: a*t^2 + b*t + c = 0
+    // Derived from the equation: (dx + vx * t)^2 + (dy + vy * t)^2 = (v_p * t)^2
+    double a = (vx * vx + vy * vy - shooterVelocity * shooterVelocity);
+    double b = 2 * (dx * vx + dy * vy);
+    double c = dx * dx + dy * dy;
+
+    // Debug: Display quadratic coefficients
+    SmartDashboard.putNumber("Quadratic Coefficient a", a);
+    SmartDashboard.putNumber("Quadratic Coefficient b", b);
+    SmartDashboard.putNumber("Quadratic Coefficient c", c);
+
+    // Calculate discriminant
+    double discriminant = b * b - 4 * a * c;
+
+    // Debug: Display discriminant
+    SmartDashboard.putNumber("Discriminant", discriminant);
+
+    // Check if the discriminant is negative or a is zero (no solution)
+    if (discriminant < 0 || Math.abs(a) < 1e-6) {
+        SmartDashboard.putString("AutoAim Status", "No solution: Target cannot be hit with the given projectile speed.");
+        throw new IllegalArgumentException("No solution: Target cannot be hit with the given projectile speed.");
+    }
+
+    // Calculate both possible times to impact
+    double sqrtDiscriminant = Math.sqrt(discriminant);
+    double t1 = (-b + sqrtDiscriminant) / (2 * a);
+    double t2 = (-b - sqrtDiscriminant) / (2 * a);
+
+    // Debug: Display possible times to impact
+    SmartDashboard.putNumber("Time to Impact t1", t1);
+    SmartDashboard.putNumber("Time to Impact t2", t2);
+
+    // Select the smallest positive time
+    double tImpact = Double.MAX_VALUE;
+    if (t1 > 0 && t1 < tImpact) {
+        tImpact = t1;
+    }
+    if (t2 > 0 && t2 < tImpact) {
+        tImpact = t2;
+    }
+
+    // Check if a positive time solution exists
+    if (tImpact == Double.MAX_VALUE) {
+        SmartDashboard.putString("AutoAim Status", "No positive time solution: Target cannot be hit.");
+        throw new IllegalArgumentException("No positive time solution: Target cannot be hit.");
+    }
+
+    // Debug: Display selected time to impact
+    SmartDashboard.putNumber("Selected Time to Impact (s)", tImpact);
+
+    // Calculate the required projectile velocity components to hit the target in tImpact seconds
+    double Vpx = dx / tImpact;
+    double Vpy = dy / tImpact;
+
+    // Adjust for the robot's velocity to get the projectile's relative velocity
+    double VpRelX = Vpx - vx;
+    double VpRelY = Vpy - vy;
+
+    // Calculate the launch angle using atan2 to get the correct quadrant
+    double theta = Math.atan2(VpRelY, VpRelX);
+
+    // Adjust the angle by 180 degrees (π radians) since the shooter is at the back
+    theta += Math.PI;
+
+    // Normalize the angle to the range [-π, π]
+    theta = normalizeAngle(theta);
+
+    // Convert angle to degrees for debugging
+    double thetaDegrees = Math.toDegrees(theta);
+    SmartDashboard.putNumber("Launch Angle (Radians)", theta);
+    SmartDashboard.putNumber("Launch Angle (Degrees)", thetaDegrees);
+
+    return theta;
   }
+
+  /**
+  * Normalizes an angle to the range [-pi, pi].
+  *
+  * @param angle Angle in radians.
+  * @return Normalized angle in radians.
+  */
+  private double normalizeAngle(double angle) {
+    while (angle > Math.PI) {
+      angle -= 2 * Math.PI;
+    }
+    while (angle <= -Math.PI) {
+      angle += 2 * Math.PI;
+    }
+    return angle;
+  }  
 
   // For balance auto
   public void forwardDrive(double speed) {
@@ -336,7 +432,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     if(controller.getSquareButton()){
       double angle = autoAim(getRobotRelativeSpeeds().vxMetersPerSecond, getRobotRelativeSpeeds().vyMetersPerSecond, getPose(), 45, target_pose.toTranslation2d());
-      rot = m_botAnglePID.calculate(getPose().getRotation().rotateBy(new Rotation2d(Math.PI)).getRadians(), angle);
+      rot = m_botAnglePID.calculate(getPose().getRotation().getRadians(), angle);
       SmartDashboard.putNumber("Auto Aim Rotation", rot);
       if(slowAutoAim){
         xSpeed = xSpeed * 0.5;

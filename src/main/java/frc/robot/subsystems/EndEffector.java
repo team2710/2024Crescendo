@@ -285,7 +285,7 @@ public class EndEffector extends SubsystemBase {
     isFlywheelRunning = true;
 
 
-    flywheelMotorTop.set(-0.9);
+    flywheelMotorTop.set(-0.92);
     // flywheelMotorBottom.set(-1);
   }
 
