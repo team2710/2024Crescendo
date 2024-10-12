@@ -38,6 +38,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -123,6 +124,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putData("Field", m_field);
     zeroHeading();
 
+
     AutoBuilder.configureHolonomic(
       this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
       new HolonomicPathFollowerConfig(
@@ -162,12 +164,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.velocityControlEnabled(control);
     m_rearLeft.velocityControlEnabled(control);
     m_rearRight.velocityControlEnabled(control);
-  }
-
-  public Command velocityControlEnabledCommand(boolean state) {
-    return new InstantCommand(() -> {
-      enableVelocityControl(state);
-    });
   }
 
   ChassisSpeeds getRobotRelativeSpeeds() {
