@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4694120229027585,
-        "y": 4.097305368134887
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 2.4694120229027585,
-        "y": 4.836881622062169
-      },
-      "isLocked": false,
-      "linkedName": "pickup_note_3"
-    },
-    {
-      "anchor": {
         "x": 1.3679858486729504,
         "y": 5.556066607628711
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.441414260288271,
+        "y": 4.391019014596169
+      },
+      "isLocked": false,
+      "linkedName": "subwoofer_start"
+    },
+    {
+      "anchor": {
+        "x": 2.4694120229027585,
+        "y": 4.097305368134887
+      },
       "prevControl": {
-        "x": 2.107562102600232,
-        "y": 5.54682190445462
+        "x": 1.4694120229027585,
+        "y": 4.097305368134887
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "subwoofer_start"
+      "linkedName": "pickup_note_3"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.35,
+      "name": "Intake",
+      "waypointRelativePos": 0.7095238095238097,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
@@ -43,7 +43,7 @@
             {
               "type": "named",
               "data": {
-                "name": "outtake"
+                "name": "toggle_intake"
               }
             }
           ]

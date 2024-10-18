@@ -1,26 +1,26 @@
 {
-  "version": 1.0,
+  "version": "2025.0",
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4923170567061854,
-        "y": 7.007485005961003
+        "x": 2.6603258931025917,
+        "y": 7.019756150424644
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9561242726089048,
-        "y": 6.785612129782819
+        "x": 2.124133109005311,
+        "y": 6.79788327424646
       },
       "isLocked": false,
       "linkedName": "pickup_note_2"
     },
     {
       "anchor": {
-        "x": 1.2997503472484422,
+        "x": 1.3679858486729504,
         "y": 5.556066607628711
       },
       "prevControl": {
-        "x": 2.520051166228458,
+        "x": 2.588286667652966,
         "y": 5.565311310802802
       },
       "nextControl": null,
@@ -30,12 +30,14 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.75,
+      "waypointRelativePos": 0.4,
+      "endWaypointRelativePos": null,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
@@ -50,21 +52,22 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.85,
-    "maxAcceleration": 3.25,
+    "maxVelocity": 6.9,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
-    "rotateFast": false
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Note Paths",
-  "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

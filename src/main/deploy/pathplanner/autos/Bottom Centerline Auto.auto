@@ -19,25 +19,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Subwoofer Top Pickup Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "auto_intake_sequence"
+            "pathName": "Bottom to White Centerline Note"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Score Note 2 Subwoofer Top"
+            "pathName": "Score Bottom to White Centerline Note 1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "pivot_subwoofer"
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": " Bottom to White Centerline Note 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Score Bottom to White Centerline Note 1"
           }
         },
         {

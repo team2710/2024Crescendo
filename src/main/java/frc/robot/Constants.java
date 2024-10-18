@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -55,7 +54,7 @@ public final class Constants {
 
     public static final double kPivotPodiumAngle = 20;
     public static final double kPivotWingAngle = 25;
-    public static final double kPivotAmpAngle = 91;
+    public static final double kPivotAmpAngle = 105;
     public static final double kPivotZero = 0;
     public static final double kPivotStow = 72;
     
@@ -87,8 +86,8 @@ public final class Constants {
     public static final int kClimberMotorID = 30;
     public static final double kMaxPosition = 1;
     public static final double kMinPosition = 0;
-    public static final double kUpSpeed = 1;
-    public static final double kDownSpeed = -1;
+    public static final double kUpSpeed = -1;
+    public static final double kDownSpeed = 1;
   }
 
   public static final class DriveConstants {
@@ -206,8 +205,6 @@ public final class Constants {
   public static final class AutoConstants {
     public static final double kSwerveDiscreteTimestep = 0.02;
     public static final double kSwerveDriveRadiusMeters = Units.inchesToMeters(DriveConstants.kDriveWidth) / 2;
-    public static final PIDConstants kTranslationPIDConstants = new PIDConstants(5.0, 0.0, 0.0);
-    public static final PIDConstants kRotationPIDConstants = new PIDConstants(5.0, 0.0, 0.0);
   }
 
   public static final class NeoMotorConstants {

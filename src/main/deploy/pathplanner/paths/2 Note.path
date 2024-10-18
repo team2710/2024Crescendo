@@ -1,5 +1,5 @@
 {
-  "version": 1.0,
+  "version": "2025.0",
   "waypoints": [
     {
       "anchor": {
@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3836460901189713,
+        "x": 1.5716735004898588,
         "y": 5.546821904454621
       },
       "isLocked": false,
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 1.3216735004898588,
-        "y": 5.546821904454621
+        "x": 1.8085563183648736,
+        "y": 1.2042259504912576
       },
       "prevControl": {
-        "x": 0.9144865638778501,
-        "y": 5.546821904454621
+        "x": 1.401369381752865,
+        "y": 1.2042259504912576
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,10 +46,12 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "shoot_sub",
       "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
         "data": {
@@ -67,6 +69,7 @@
     {
       "name": "intake",
       "waypointRelativePos": 0.6,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
         "data": {
@@ -74,7 +77,7 @@
             {
               "type": "named",
               "data": {
-                "name": "toggle_intake"
+                "name": "auto_intake_sequence"
               }
             }
           ]
@@ -84,6 +87,7 @@
     {
       "name": "stop_intake",
       "waypointRelativePos": 1.55,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -91,7 +95,7 @@
             {
               "type": "named",
               "data": {
-                "name": "toggle_intake"
+                "name": "auto_intake_sequence"
               }
             }
           ]
@@ -101,6 +105,7 @@
     {
       "name": "shoot_sub",
       "waypointRelativePos": 2.0,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -120,18 +125,19 @@
     "maxVelocity": 1.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
-    "rotateFast": false
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
-  "previewStartingState": {
-    "rotation": 0.0,
-    "velocity": 0
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4694120229027585,
-        "y": 4.097305368134887
+        "x": 3.1376192576946558,
+        "y": 5.473956035631369
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4694120229027585,
-        "y": 4.836881622062169
+        "x": 4.137619257694658,
+        "y": 5.473956035631369
       },
       "isLocked": false,
-      "linkedName": "pickup_note_3"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3679858486729504,
-        "y": 5.556066607628711
+        "x": 7.943799045492829,
+        "y": 4.032102099291918
       },
       "prevControl": {
-        "x": 2.107562102600232,
-        "y": 5.54682190445462
+        "x": 6.4838085816522515,
+        "y": 2.5993164267030298
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "subwoofer_start"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.35,
+      "waypointRelativePos": 0.75,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
@@ -43,7 +43,7 @@
             {
               "type": "named",
               "data": {
-                "name": "outtake"
+                "name": "auto_intake_sequence"
               }
             }
           ]

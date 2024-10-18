@@ -1,5 +1,5 @@
 {
-  "version": 1.0,
+  "version": "2025.0",
   "waypoints": [
     {
       "anchor": {
@@ -20,7 +20,7 @@
         "y": 4.03239917590732
       },
       "prevControl": {
-        "x": 1.1401670781350106,
+        "x": 1.1401670781350108,
         "y": 4.039097681573854
       },
       "nextControl": {
@@ -152,8 +152,8 @@
         "y": 6.9877483323899865
       },
       "nextControl": {
-        "x": 5.0528778057027,
-        "y": 6.145683402479793
+        "x": 5.069495716005909,
+        "y": 6.0852546377457255
       },
       "isLocked": false,
       "linkedName": null
@@ -325,7 +325,7 @@
       },
       "prevControl": {
         "x": 6.036661169769039,
-        "y": 0.7834252419773882
+        "y": 0.7834252419773886
       },
       "nextControl": {
         "x": 8.9078146312648,
@@ -373,7 +373,7 @@
       },
       "prevControl": {
         "x": 5.333433042507531,
-        "y": 4.030392385655632
+        "y": 4.030392385655633
       },
       "nextControl": null,
       "isLocked": false,
@@ -382,49 +382,40 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 10.8,
-      "rotationDegrees": -15.0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 11.7,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 9.6,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 11.549999999999999,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 13.75,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 15.95,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 19.8,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
       "waypointRelativePos": 1.8499999999999999,
-      "rotationDegrees": 0,
-      "rotateFast": false
+      "rotationDegrees": 0.0
     },
     {
       "waypointRelativePos": 4.15,
-      "rotationDegrees": 0,
-      "rotateFast": false
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 9.6,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 10.8,
+      "rotationDegrees": -14.999999999999998
+    },
+    {
+      "waypointRelativePos": 11.549999999999999,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 11.7,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 13.75,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 15.95,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 19.8,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [
@@ -436,14 +427,18 @@
         "maxVelocity": 2.0,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
       }
     }
   ],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Intake First Note",
       "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
         "data": {
@@ -467,6 +462,7 @@
     {
       "name": "Intake First Note Off",
       "waypointRelativePos": 0.9,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
         "data": {
@@ -484,6 +480,7 @@
     {
       "name": "Shoot First Note",
       "waypointRelativePos": 1.3,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
         "data": {
@@ -501,6 +498,7 @@
     {
       "name": "Intake Second Note",
       "waypointRelativePos": 1.8,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
         "data": {
@@ -518,6 +516,7 @@
     {
       "name": "Intake Second Note Off",
       "waypointRelativePos": 3.2,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
         "data": {
@@ -535,6 +534,7 @@
     {
       "name": "Shoot Second Note",
       "waypointRelativePos": 3.4499999999999997,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -552,6 +552,7 @@
     {
       "name": "Intake Third Note",
       "waypointRelativePos": 4.0,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -569,6 +570,7 @@
     {
       "name": "Intake Third Note Off",
       "waypointRelativePos": 4.8999999999999995,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -586,6 +588,7 @@
     {
       "name": "Shoot Third Note",
       "waypointRelativePos": 5.75,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -603,6 +606,7 @@
     {
       "name": "Intake 4th Note",
       "waypointRelativePos": 6.750000000000001,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "deadline",
         "data": {
@@ -620,6 +624,7 @@
     {
       "name": "Intake 4th Note Off",
       "waypointRelativePos": 8.4,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -637,6 +642,7 @@
     {
       "name": "Shoot 4th Note",
       "waypointRelativePos": 8.85,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "sequential",
         "data": {
@@ -654,6 +660,7 @@
     {
       "name": "Intake 5th Note",
       "waypointRelativePos": 10.65,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -671,6 +678,7 @@
     {
       "name": "Intake 5th Note Off",
       "waypointRelativePos": 11.450000000000001,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -688,125 +696,7 @@
     {
       "name": "Shoot 5th Note",
       "waypointRelativePos": 13.200000000000001,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "auto_aim"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Intake 6th Note Off",
-      "waypointRelativePos": 14.35,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "toggle_intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Intake 7th Note",
-      "waypointRelativePos": 16.45,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "toggle_intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Intake 7th Note Off",
-      "waypointRelativePos": 17.3,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "toggle_intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Shoot 7th Note",
-      "waypointRelativePos": 18.05,
-      "command": {
-        "type": "deadline",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "auto_aim"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Intake 8th Note",
-      "waypointRelativePos": 19.9,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "toggle_intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Intake 8th Note Off",
-      "waypointRelativePos": 20.6,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "toggle_intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Shoot 8th Note",
-      "waypointRelativePos": 21.849999999999998,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -824,6 +714,7 @@
     {
       "name": "Intake 6th Note",
       "waypointRelativePos": 13.899999999999999,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -839,8 +730,135 @@
       }
     },
     {
+      "name": "Intake 6th Note Off",
+      "waypointRelativePos": 14.35,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "toggle_intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake 7th Note",
+      "waypointRelativePos": 16.45,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "toggle_intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake 7th Note Off",
+      "waypointRelativePos": 17.3,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "toggle_intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shoot 7th Note",
+      "waypointRelativePos": 18.05,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "deadline",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "auto_aim"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
       "name": "Shoot 6th Note",
       "waypointRelativePos": 18.15,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "auto_aim"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake 8th Note",
+      "waypointRelativePos": 19.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "toggle_intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake 8th Note Off",
+      "waypointRelativePos": 20.6,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "toggle_intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shoot 8th Note",
+      "waypointRelativePos": 21.849999999999998,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -860,18 +878,19 @@
     "maxVelocity": 6.7,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.0708244547870314,
-    "rotateFast": false
+    "rotation": 1.0708244547870314
   },
   "reversed": false,
   "folder": null,
-  "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }

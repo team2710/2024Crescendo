@@ -1,12 +1,5 @@
 {
-  "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 0.6988446409325251,
-      "y": 6.6561862853455445
-    },
-    "rotation": 60.0
-  },
+  "version": "2025.0",
   "command": {
     "type": "sequential",
     "data": {
@@ -24,6 +17,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 12.0
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Taxi"
@@ -32,6 +31,7 @@
       ]
     }
   },
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

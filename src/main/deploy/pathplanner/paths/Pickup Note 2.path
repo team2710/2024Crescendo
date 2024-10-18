@@ -1,43 +1,27 @@
 {
-  "version": 1.0,
+  "version": "2025.0",
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2997503472484422,
+        "x": 1.3679858486729504,
         "y": 5.556066607628711
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3367291599448063,
-        "y": 6.1292382044223555
+        "x": 1.3349364555147474,
+        "y": 6.266040717900476
       },
       "isLocked": false,
       "linkedName": "subwoofer_start"
     },
     {
       "anchor": {
-        "x": 1.8082090218234488,
-        "y": 7.007485005961003
+        "x": 2.6603258931025917,
+        "y": 7.019756150424644
       },
       "prevControl": {
-        "x": 1.28126094090026,
-        "y": 7.007485005961003
-      },
-      "nextControl": {
-        "x": 2.473827650358003,
-        "y": 7.007485005961003
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.4923170567061854,
-        "y": 7.007485005961003
-      },
-      "prevControl": {
-        "x": 2.488480733718224,
-        "y": 7.002862654373957
+        "x": 1.7443258931025918,
+        "y": 7.019756150424644
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,10 +30,12 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
+  "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.45,
+      "waypointRelativePos": 0.25,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,7 +43,7 @@
             {
               "type": "named",
               "data": {
-                "name": "toggle_intake"
+                "name": "auto_intake_sequence"
               }
             }
           ]
@@ -66,21 +52,22 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.85,
-    "maxAcceleration": 3.25,
+    "maxVelocity": 6.9,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
-    "rotateFast": false
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Note Paths",
-  "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

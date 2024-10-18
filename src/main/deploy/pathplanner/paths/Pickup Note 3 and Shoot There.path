@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4694120229027585,
-        "y": 4.097305368134887
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 2.4694120229027585,
-        "y": 4.836881622062169
-      },
-      "isLocked": false,
-      "linkedName": "pickup_note_3"
-    },
-    {
-      "anchor": {
         "x": 1.3679858486729504,
         "y": 5.556066607628711
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.034630875085549,
+        "y": 5.556066607628711
+      },
+      "isLocked": false,
+      "linkedName": "subwoofer_start"
+    },
+    {
+      "anchor": {
+        "x": 2.566318641409213,
+        "y": 4.249740429305421
+      },
       "prevControl": {
-        "x": 2.107562102600232,
-        "y": 5.54682190445462
+        "x": 2.3164709346544394,
+        "y": 4.2410155551297954
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "subwoofer_start"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -43,7 +43,7 @@
             {
               "type": "named",
               "data": {
-                "name": "outtake"
+                "name": "auto_intake_sequence"
               }
             }
           ]
@@ -61,7 +61,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -25.0
   },
   "reversed": false,
   "folder": null,

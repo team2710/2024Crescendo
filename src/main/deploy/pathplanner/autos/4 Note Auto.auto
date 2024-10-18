@@ -1,12 +1,5 @@
 {
-  "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.2997503472484422,
-      "y": 5.556066607628711
-    },
-    "rotation": 0
-  },
+  "version": "2025.0",
   "command": {
     "type": "sequential",
     "data": {
@@ -26,13 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Note 1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "toggle_intake"
+            "pathName": "Pickup Note 1 Real"
           }
         },
         {
@@ -44,25 +31,13 @@
         {
           "type": "named",
           "data": {
-            "name": "pivot_subwoofer"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Note 2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "toggle_intake"
+            "pathName": "Pickup Note 2 Real"
           }
         },
         {
@@ -74,25 +49,13 @@
         {
           "type": "named",
           "data": {
-            "name": "pivot_subwoofer"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "shoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Note 3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "toggle_intake"
+            "pathName": "Pickup Note 3 Real"
           }
         },
         {
@@ -104,24 +67,13 @@
         {
           "type": "named",
           "data": {
-            "name": "pivot_subwoofer"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Pickup Note 1"
           }
         }
       ]
     }
   },
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }

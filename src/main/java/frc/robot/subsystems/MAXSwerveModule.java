@@ -136,6 +136,8 @@ public class MAXSwerveModule {
         talonFxConfigs.Slot0.kI = ModuleConstants.kDrivingI;
         talonFxConfigs.Slot0.kD = ModuleConstants.kDrivingD;
         talonFxConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        talonFxConfigs.CurrentLimits.StatorCurrentLimit = ModuleConstants.kDrivingMotorCurrentLimit;
+        talonFxConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         talonFxConfigs.Feedback.SensorToMechanismRatio = ModuleConstants.kDrivingMotorReduction / ModuleConstants.kWheelCircumferenceMeters;
         m_drivingKraken.getConfigurator().apply(talonFxConfigs);
 
@@ -239,11 +241,11 @@ public class MAXSwerveModule {
         SmartDashboard.putNumber("Module " + m_drivingCANId + " Optimized Speed (m/s)", optimizedDesiredState.speedMetersPerSecond);
 
         // === 3. Calculate Acceleration with Low-Pass Filter ===
-        double currentSpeed = optimizedDesiredState.speedMetersPerSecond;
+        double currentSpeed = m_drivingKraken.getVelocity().getValue();
         // Apply low-pass filter to speed
         filteredSpeed = LOW_PASS_ALPHA * currentSpeed + (1 - LOW_PASS_ALPHA) * filteredSpeed;
         // Calculate acceleration based on filtered speed
-        filteredAcceleration = (filteredSpeed - previousSpeed) / UPDATE_RATE;
+        filteredAcceleration = m_drivingKraken.getAcceleration().getValue();
         previousSpeed = filteredSpeed;
         SmartDashboard.putNumber("Module " + m_drivingCANId + " Acceleration (m/s²)", filteredAcceleration);
 

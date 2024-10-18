@@ -3,54 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4694120229027585,
-        "y": 4.097305368134887
+        "x": 2.4665677401530246,
+        "y": 6.761649488211257
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4694120229027585,
-        "y": 4.836881622062169
+        "x": 1.8227210138630805,
+        "y": 6.335441091934815
       },
       "isLocked": false,
-      "linkedName": "pickup_note_3"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3679858486729504,
-        "y": 5.556066607628711
+        "x": 1.7467977793098448,
+        "y": 5.57
       },
       "prevControl": {
-        "x": 2.107562102600232,
-        "y": 5.54682190445462
+        "x": 1.8959762881931785,
+        "y": 6.114095825033755
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "subwoofer_start"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.35,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "outtake"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.9,
     "maxAcceleration": 4.0,
@@ -64,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Note Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

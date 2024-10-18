@@ -23,7 +23,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.EndEffectorConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.subsystems.LEDSubsystem.LEDState;
 
 import com.revrobotics.SparkPIDController;
@@ -70,6 +72,7 @@ public class EndEffector extends SubsystemBase {
   private PS4Controller m_driveController;
   private Climb m_Climb;
   private LEDSubsystem m_LedSubsystem;
+
 
   public EndEffector(PS4Controller driveController, LEDSubsystem ledSubsystem, Climb climb) {
     m_LedSubsystem = ledSubsystem;
@@ -305,6 +308,15 @@ public class EndEffector extends SubsystemBase {
 
   public double flywheelRPM() {
     return Math.abs(flywheelMotorBottom.getEncoder().getVelocity());
+  }
+
+  public void setFlywheelforShootandPassing(){
+    if(4.5 < RobotContainer.m_robotDrive.getRobotRelativeSpeeds().vxMetersPerSecond){
+      setpoint = -0.5;
+    }
+    else{
+      setpoint = -0.7;
+    }
   }
 
   public boolean atSubwooferShootingSpeed(){

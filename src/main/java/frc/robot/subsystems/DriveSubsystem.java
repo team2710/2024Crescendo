@@ -12,11 +12,9 @@ import org.littletonrobotics.junction.Logger;
 import com.google.flatbuffers.Constants;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.GeometryUtil;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -107,15 +105,9 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       },
       limelightMeasurement.pose);
-  // SwerveDriveOdometry m_poseEstimator = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(getHeading()), 
-  //   new SwerveModulePosition[] {
-  //     m_frontLeft.getPosition(),
-  //     m_frontRight.getPosition(),
-  //     m_rearLeft.getPosition(),
-  //     m_rearRight.getPosition()
-  //   });
 
   private Field2d m_field = new Field2d();
+  RobotConfig config;
 
   
 
@@ -124,38 +116,37 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putData("Field", m_field);
     zeroHeading();
 
+    try{
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
+  // Configure AutoBuilder last
+  AutoBuilder.configure(
+    this::getPose, // Robot pose supplier
+    this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+    this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+    (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+    new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+            new com.pathplanner.lib.config.PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+            new com.pathplanner.lib.config.PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+    ),
+    config, // The robot configuration
+    () -> {
+      // Boolean supplier that controls when the path will be mirrored for the red alliance
+      // This will flip the path being followed to the red side of the field.
+      // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-    AutoBuilder.configureHolonomic(
-      this::getPose, this::resetOdometry, this::getRobotRelativeSpeeds, this::driveRobotRelative, 
-      new HolonomicPathFollowerConfig(
-        new PIDConstants(4, 0.001, 0.01),
-        new PIDConstants(1.0, 0.0, 0.01),
-        DriveConstants.kMaxSpeedMetersPerSecond, 
-        AutoConstants.kSwerveDriveRadiusMeters, 
-
-        new ReplanningConfig()
-
-      ), () -> {
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
-      }, this);
-
-
-      if(DriverStation.getAlliance().isPresent()){
-        isRed = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()) {
+        return alliance.get() == DriverStation.Alliance.Red;
       }
-      else{
-        isRed = false;
-      }
-
-      if(isRed){
-        target_pose = DriveConstants.redSpeaker;
-      }
-  }
-
+      return false;
+    },
+    this // Reference to this subsystem to set requirements
+);
+}
 
 
   // PATHPLANNER STUFF
@@ -252,15 +243,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public AHRS getGyro() {
     return m_gyro;
-  }
-
-  public void resetOdometryWithAlliance(Pose2d pose) {
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent() && alliance.get() == Alliance.Red) {
-      resetOdometry(GeometryUtil.flipFieldPose(pose));
-    } else {
-      resetOdometry(pose);
-    }
   }
 
   public Optional<Rotation2d> autoAimPP(boolean override){
